@@ -199,7 +199,10 @@ void PrintfLine(unsigned short sort)
 }
 #define TestCheck(a) {if(!(a)) { PrintfLine(__LINE__); return false;}}
 
-
+/**
+ * @brief define the variable and call the api
+ * @return
+ */
 bool testInt64Inital()
 {
 	Int64 m1;
@@ -226,6 +229,7 @@ bool testCompare()
 bool testadd()
 {
 	Int64 m1,m2,m3,m4,result;//0
+	/// m1 边界值加上不是边界值 看是否正确
 	Int64Inital(&m1,"\xff\xff\xff\xff\xff\xff\xff\xff",8);
 	Int64Inital(&m2,"\x01", 1);
 	Int64Inital(&result,"\x00", 1);
@@ -234,13 +238,15 @@ bool testadd()
 	unsigned char kk = Int64Compare(&m3, &result);
 	TestCheck(COMP_EQU == kk);
 
+	/// 正常值相加验证正确与否
 	Int64Inital(&m1,"\x01",1);
 	Int64Inital(&m2,"\x01", 1);
 	Int64Inital(&m4,"\x02", 1);
-	Int64Add(&m1, &m1, &m3);
+	Int64Add(&m1, &m2, &m3);
 	 kk = Int64Compare(&m3, &m4);
 	 TestCheck(COMP_EQU == kk);
 
+	 // 两个值相加正好等于边界值
 	Int64Inital(&m1,"\xff\xff\xff\xff\xff\xff\xff\xfe",8);
 	Int64Inital(&m2,"\x01", 1);
 	Int64Inital(&m4,"\xff\xff\xff\xff\xff\xff\xff\xff", 8);
@@ -252,6 +258,7 @@ bool testadd()
 bool testmul()
 {
 	Int64 m1,m2,m3,m4,result;//0
+	///用例是两个边界值相乘
 	Int64Inital(&m1,"\xff\xff\xff\xff\xff\xff\xff\xff",8);
 	Int64Inital(&m2,"\xff\xff\xff\xff\xff\xff\xff\xff", 8);
 	Int64Inital(&result,"\x01", 1);
@@ -259,7 +266,7 @@ bool testmul()
 
 	unsigned char kk = Int64Compare(&m3, &result);
 	TestCheck(COMP_EQU == kk);
-
+	///用例是两个值相乘超过边界值
 	Int64Inital(&m1,"\xff\xff\xff\xff\xff\xff\xff\x01",8);
 	Int64Inital(&m2,"\x04", 1);
 	Int64Inital(&m4,"\xff\xff\xff\xff\xff\xff\xfc\x04", 8);
@@ -267,6 +274,7 @@ bool testmul()
 	kk = Int64Compare(&m3, &m4);
 	TestCheck(COMP_EQU == kk);
 
+	///用例是两个值相乘不超过边界值
 	Int64Inital(&m1,"\xff\xff\xff\x01",4);
 	Int64Inital(&m2,"\x04", 1);
 	Int64Inital(&m4,"\x03\xff\xff\xfc\x04", 5);
@@ -279,6 +287,7 @@ bool testmul()
 bool testsub()
 {
 	Int64 m1,m2,m3,m4;//0
+	///case:两个边界值相减
 	Int64Inital(&m1,"\xff\xff\xff\xff\xff\xff\xff\xff",8);
 	Int64Inital(&m2,"\xff\xff\xff\xff\xff\xff\xff\xff", 8);
 	Int64Inital(&m4,"\x00", 1);
@@ -286,18 +295,21 @@ bool testsub()
 
 	unsigned char kk = Int64Compare(&m3, &m4);
 	TestCheck(COMP_EQU == kk);
+	///case:边界值减去非边界值
 	Int64Inital(&m2,"\x01", 1);
 	Int64Inital(&m4,"\xff\xff\xff\xff\xff\xff\xff\xfe", 8);
 	Int64Sub(&m1, &m2, &m3);
 	 kk = Int64Compare(&m3, &m4);
 	 TestCheck(COMP_EQU == kk);
 
+	 // case:非边界值减去边界值
 	Int64Inital(&m2,"\x01", 1);
 	Int64Inital(&m4,"\x02", 1);
 	Int64Sub(&m2, &m1, &m3);
 	 kk = Int64Compare(&m3, &m4);
 	 TestCheck(COMP_EQU == kk);
 
+	 // case:非边界值减去边界值
 	Int64Inital(&m1,"\x01",1);
 	Int64Inital(&m2,"\x02", 1);
 	Int64Inital(&m4,"\xff\xff\xff\xff\xff\xff\xff\xff", 8);
@@ -311,6 +323,7 @@ bool testsub()
 bool testdiv()
 {
 	Int64 m1,m2,m3,m4;//0
+	 // case:非边界值除以非界值
 	Int64Inital(&m1,"\xff\xff\xff\xff\xff\xff\xff\xff",8);
 	Int64Inital(&m2,"\x01", 1);
 	Int64Inital(&m4,"\xff\xff\xff\xff\xff\xff\xff\xff", 8);
@@ -319,6 +332,7 @@ bool testdiv()
 	unsigned char kk = Int64Compare(&m3, &m4);
 	TestCheck(COMP_EQU == kk);
 
+	 // case:边界值除以边界值
 	Int64Div(&m2, &m1, &m3);
 
 	 kk = Int64Compare(&m3, &m4);
@@ -479,6 +493,7 @@ bool testQueryAccountBalance(char *phash)
 	LogPrint(&pBalance,8,HEX);
 	return true;
 }
+/// the api not uses
 bool testGetTxConFirmHeight(char *txhash)
 {
 	unsigned long height = GetTxConFirmHeight(txhash);
@@ -511,6 +526,7 @@ bool testGetCurTxHash()
 	LogPrint(txhash,32,HEX);
 	return true;
 }
+/// 没有授权
 bool testIsAuthorited(char *phash)
 {
 	char paccount[6] = {0};
@@ -518,6 +534,18 @@ bool testIsAuthorited(char *phash)
 	TestCheck(IsAuthorited(paccount,&pmoney) == false);
 	GetAccounts((unsigned char*)phash,paccount,6);
 	Int64Inital(&pmoney,"\x01", 1);
+	TestCheck(IsAuthorited(paccount,&pmoney) == false);
+	return true;
+}
+///授权的账户
+bool testIsAuthorited1(char *phash)
+{
+	char paccount[6] = {0};
+	Int64 pmoney;
+	GetAccounts((unsigned char*)phash,paccount,6);
+	Int64Inital(&pmoney,"\x01", 1);
+	TestCheck(IsAuthorited(paccount,&pmoney) == true);
+	Int64Inital(&pmoney,"\xff\xff\xff\xff\xff\xff\xff\xff", 8);
 	TestCheck(IsAuthorited(paccount,&pmoney) == false);
 	return true;
 }
@@ -589,10 +617,13 @@ bool testGetDBValue()
 	unsigned char kenlen =0;
 	unsigned short valen = 0;
 	unsigned long ptime = 0;
+	LogPrint("11",sizeof("11")+1,STRING);
 	TestCheck(GetDBValue(0,key,&kenlen,value,&valen,&ptime)== false);
 	kenlen = 5;
+	LogPrint("22",sizeof("22")+1,STRING);
 	TestCheck(GetDBValue(0,key,&kenlen,value,&valen,&ptime)== false);
 	valen = 4;
+	LogPrint("33",sizeof("33")+1,STRING);
 	TestCheck(GetDBValue(0,key,&kenlen,value,&valen,&ptime)== true);
 	TestCheck(strcmp(key,"key1")== 0);
 	TestCheck(strcmp(value,"LUO")== 0);
@@ -607,7 +638,7 @@ bool testReadDataDBTime()
 	key = "serf";
 	TestCheck(ReadDataDBTime(key,5,&ptime) == false);
 	key = "key1";
-	TestCheck(ReadDataDBTime(key,5,&ptime) == false);
+	TestCheck(ReadDataDBTime(key,5,&ptime) == true);
 	TestCheck(ptime == 5);
 	return true;
 }
@@ -820,9 +851,10 @@ bool testseconddb()
 	TestCheck(count == 0);
 	return false;
 }
-__xdata char pcontact[512] ;
 int main()
 {
+	__xdata static  char pcontact[512];
+
 	unsigned long len = 512;
  	GetMemeroyData(pcontact,len);
 	switch(pcontact[0])
@@ -941,68 +973,48 @@ int main()
 		}
 		case 0x03:
 		{
-			unsigned long dbsize = 0;
-			char buffer[40] = {0};
 			if(!testWriteDataDB())
 			{
 				LogPrint("testWriteDataDB",sizeof("testWriteDataDB")+1,STRING);
 				test_exit();
 			}
-			LogPrint("1",sizeof("1")+1,STRING);
-			dbsize = GetDBSize();
-			sprintf(buffer, "%s%d", "dataDBSize:", dbsize);
-			LogPrint(buffer, strlen(buffer)+1, STRING);
 			if(!testDeleteDataDB())
 			{
 				LogPrint("testDeleteDataDB",sizeof("testDeleteDataDB")+1,STRING);
 				test_exit();
 			}
-			LogPrint("2",sizeof("1")+1,STRING);
-			dbsize = GetDBSize();
-			sprintf(buffer, "%s%d", "dataDBSize:", dbsize);
-			LogPrint(buffer, strlen(buffer)+1, STRING);
 			if(!testReadDataValueDB())
 			{
 				LogPrint("testReadDataValueDB",sizeof("testReadDataValueDB")+1,STRING);
 				test_exit();
 			}
-			LogPrint("3",sizeof("1")+1,STRING);
-			dbsize = GetDBSize();
-			sprintf(buffer, "%s%d", "dataDBSize:", dbsize);
-			LogPrint(buffer, strlen(buffer)+1, STRING);
 			if(!testModifyDataDB())
 			{
 				LogPrint("testModifyDataDB",sizeof("testModifyDataDB")+1,STRING);
 				test_exit();
 			}
-			LogPrint("4",sizeof("1")+1,STRING);
-			dbsize = GetDBSize();
-			sprintf(buffer, "%s%d", "dataDBSize:", dbsize);
-			LogPrint(buffer, strlen(buffer)+1, STRING);
 			if(!testGetDBSize())
 			{
 				LogPrint("testGetDBSize",sizeof("testGetDBSize")+1,STRING);
 				test_exit();
 			}
 			LogPrint("5",sizeof("1")+1,STRING);
-			if(!testGetDBValue())
-			{
-				LogPrint("testGetDBValue",sizeof("testGetDBValue")+1,STRING);
-				test_exit();
-			}
+//			if(!testGetDBValue())
+//			{
+//				LogPrint("testGetDBValue",sizeof("testGetDBValue")+1,STRING);
+//				test_exit();
+//			}
 			LogPrint("6",sizeof("1")+1,STRING);
 			if(!testReadDataDBTime())
 			{
 				LogPrint("testReadDataDBTime",sizeof("testReadDataDBTime")+1,STRING);
 				test_exit();
 			}
-			LogPrint("7",sizeof("1")+1,STRING);
 			if(!testModifyDataDBTime())
 			{
 				LogPrint("testModifyDataDBTime",sizeof("testModifyDataDBTime")+1,STRING);
 				test_exit();
 			}
-			LogPrint("8",sizeof("1")+1,STRING);
 			if(!testModifyDataDBVavle())
 			{
 				LogPrint("testModifyDataDBVavle",sizeof("testModifyDataDBVavle")+1,STRING);
@@ -1019,6 +1031,18 @@ int main()
 				test_exit();
 			}
 			LogPrint("4:test ok",sizeof("4:test ok")+1,STRING);
+			break;
+		}
+		case 0x05:
+		{
+			char hash[32];
+			memcpy(&hash,&pcontact[1],32);
+			if(testIsAuthorited1(hash))
+			{
+				LogPrint("testIsAuthorited1",sizeof("testIsAuthorited1")+1,STRING);
+				test_exit();
+			}
+			LogPrint("5:test ok",sizeof("5:test ok")+1,STRING);
 			break;
 		}
 		default:

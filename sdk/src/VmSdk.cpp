@@ -24,7 +24,8 @@ enum CALL_API_FUN {
 	GETTXCONFIRH_FUNC,        //!< GETTXCONFIRH_FUNC
 	GETTIPH_FUNC,             //!< GETTIPH_FUNC
 	GETBLOCKHASH_FUNC,        //!< GETBLOCKHASH_FUNC
-	ISAUTHORIT_FUNC,                //!<ISAUTHORIT
+	ISAUTHORIT_FUNC,          //!<ISAUTHORIT
+	GETAUTHORITDEFINE_FUNC,	  //!<GETAUTHORITDEFINE_FUNC
 
 
 	//// tx api
@@ -555,4 +556,18 @@ bool IsAccountRegID(const void* const account)
 		return true;
 	}
 	return false;
+}
+unsigned short GetAuthoritedDefine(const void* const account,void *const pout,const unsigned short maxlen)
+{
+	ClearParaSpace();
+
+	InsertOutData(account, 6);
+	__CallApi(GETAUTHORITDEFINE_FUNC);
+
+	FUN_RET_DATA *retdata = GetInterflowP();
+	if (retdata->len > maxlen ||  retdata->len <= 0) {
+		return 0;
+	}
+	memcpy(pout, retdata->buffer, retdata->len);
+	return retdata->len;
 }

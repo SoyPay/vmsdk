@@ -155,7 +155,7 @@ bool SignatureVerify(void const* data, unsigned short datalen, void const* key, 
  *@param pkey: The secret key,8 bytes for Des,16 bytes for 3Des,others are invalid¡£
  *@param keylen: the length of pkey£¬8 bytes for Des,16 bytes for 3Des,others are invalid¡£
  *@param IsEn: if true encrypt false decrypt
- *@param pOut: result of encrypt or decrypt
+ *@param pOut: result of encrypt or decrypt the return of length is The integral multiples of 8
  *@return true run ok
  *
  */
@@ -207,8 +207,8 @@ bool GetTxContacts(const unsigned char * const txhash,void* const pcotact,const 
 
 /**@brief
  *  get tx accounts
- * @param txhash  the tx hash
- * @param paccoutn   the signed account every account is six char
+ * @param txhash:  the tx hash
+ * @param paccoutn:   the signed account every account is six char
  * @param maxConter:   the max ram cache  prevent overflow
  * @return the all of account's length
  */
@@ -217,7 +217,7 @@ unsigned short GetAccounts(const unsigned char *txhash,void* const paccoutn,unsi
 
 /**@brief
  *obtain some of tx's  public content
- *@param accounid: accountid
+ *@param accounid: accountid and the length is six
  *@param pubkey: obtain the tx publickey keep in int the  pubkey
  *@param maxlength: maxlength<MAXPUKLEN \n
  *the  tx's pubkey Contain(flag(one char true explain the function can get the contact Correct)+data(char*))
@@ -329,7 +329,7 @@ unsigned long GetDBSize();
 bool GetDBValue(const unsigned long index,void* const key,unsigned char * const keylen,void* const value,unsigned short* const maxbuffer, unsigned long* const ptime);
 /**@brief
  *get current tip block height
- *@return return current block height
+ *@return return tip block height
  *
  */
 unsigned long GetTipHeight();
@@ -365,4 +365,12 @@ bool IsAuthorited(const void* const account,const Int64* const pmoney);
 void InsertOutData(void const* pfrist, unsigned short len);
 unsigned long GetMemeroyData(void * const pfrist, unsigned long const len);
 bool IsAccountRegID(const void* const account);
+/**@brief
+ *@param account: the account id ,the account of length is 6
+ *@param pout: run the functoin the define char put into pout
+ *@param maxlen: the pout of length
+ *@return return the pout of length
+ *
+ */
+unsigned short GetAuthoritedDefine(const void* const account,void *const pout,const unsigned short maxlen);
 
