@@ -9,6 +9,7 @@
 #include"VmSdk.h"
 
 typedef unsigned char uchar;
+typedef unsigned long u32;
 
 /**
  * Lottery Operate Type
@@ -20,40 +21,29 @@ enum OPERATETYPE {
 };
 
 /**
- * lottery contract data handle
- */
-typedef struct _DataHandle{
-	OPERATETYPE type;
-	uchar databuf[0];
-}DataHandle;
-
-/**
  *reg lottery data struct
  */
-typedef struct _RegData{
+typedef struct {
 	OPERATETYPE type;
-	uchar regid[6];
-	uchar money[8];
-}RegData;
+	Int64 money;
+	u32 hight;
+}REG_DATA;
 
 /**
  * order lottery data struct
  */
-typedef struct _OrderData{
+typedef struct {
 	OPERATETYPE type;
-	uchar txhash[32];
-	uchar regid[6];
 	uchar num[15];
-	uchar money[8];
-}OrderData;
+	Int64 money;
+}ORDER_DATA;
 
 /**
  * open lottery data struct
  */
-typedef struct _OpenData{
+typedef struct {
 	OPERATETYPE type;
-	uchar txhash[32];
-}OpenData;
+}OPEN_DATA;
 
 /**
  * @brief get contract data
@@ -84,6 +74,40 @@ static bool IsAccountIdUsed(const void *pdata)
 }
 
 /**
+ * @brief check whether the reg amount is more than the min amount
+ * @param pdata:the reg amount
+ * @return
+ */
+static bool CheckMinimumAmount(const Int64 *pdata)
+{
+	if(pdata == NULL)
+	{
+		return false;
+	}
+	return true;
+}
+
+/**
+ * @brief check reg hight,is it higher than the current hight
+ * @param phight:the reg hight
+ * @return
+ */
+static bool CheckRegHight(const u32 *phight)
+{
+	if(phight == NULL)
+	{
+		return false;
+	}
+
+	if(*phight <= GetCurRunEnvHeight())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+/**
  * @brief check reg data
  * 1.check whether the account id have already used in this script
  * 2.check the account balance,whether the balance is enough to pay the reg amount
@@ -92,31 +116,48 @@ static bool IsAccountIdUsed(const void *pdata)
  */
 static bool RegDataCheck(const void *pdata)
 {
-	RegData *pregdata = (RegData *)pdata;
+	REG_DATA *pregdata = (REG_DATA *)pdata;
 	Int64 balance, amount;
+	uchar txhash[32] = {0}, accid[6] = {0};
+
 
 	if(pdata == NULL)
 	{
 		return false;
 	}
 
-	if(IsAccountIdUsed(pregdata->regid))
+	if(!GetCurTxHash(txhash))
+	{
+		return false;
+	}
+
+	GetAccounts(txhash, accid, sizeof(accid));
+
+	if(IsAccountIdUsed(accid))
 	{
 		printf("the AccountId Already Reg in this Script!\r\n");
 		return false;
 	}
 
-	if(!QueryAccountBalance(pregdata->regid, ACOUNT_ID, &balance))
+	if(!QueryAccountBalance(accid, ACOUNT_ID, &balance))
 	{
 		printf("get account balance err, QueryAccountBalance return false!\r\n");
 		return false;
 	}
 
-	Int64Inital(&amount, (char *)pregdata->money, sizeof(Int64));
-
-	if(Int64Compare(&balance, &amount) != COMP_LARGER)
+	if(Int64Compare(&balance, &pregdata->money) != COMP_LARGER)
 	{
 		printf("account balance  <  reg amount!\r\n");
+		return false;
+	}
+
+	if(!CheckMinimumAmount(&pregdata->money))
+	{
+		return false;
+	}
+
+	if(!CheckRegHight(&pregdata->hight))
+	{
 		return false;
 	}
 
@@ -185,20 +226,6 @@ static bool RegLottery(const void *pdata)
 }
 
 /**
- * @brief check reg lottery tx contact
- * @param pdata:order data hanlde
- * @return
- */
-static bool CheckRegLotteryTx(const void *pdata)
-{
-	if(pdata == NULL)
-	{
-		return false;
-	}
-	return true;
-}
-
-/**
  * @brief check order num and order amount
  * @param pdata:order data hanlde
  * @return
@@ -213,6 +240,30 @@ static bool CheckOrderNumAndAmount(const void *pdata)
 }
 
 /**
+ * @brief get reg hight
+ * @return reg hight
+ */
+static u32 GetRegHight(void)
+{
+	return 0;
+}
+
+/**
+ * @brief check order hight
+ * @param phight:order hight
+ * @return
+ */
+static bool CheckOrderHight(void)
+{
+	if(GetCurRunEnvHeight() > GetRegHight())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+/**
  * @brief order data check
  * 1.check the reg tx's contact
  * 2.check account balance,is it enough to pay the order amount
@@ -222,33 +273,40 @@ static bool CheckOrderNumAndAmount(const void *pdata)
  */
 static bool OrderDataCheck(const void *pdata)
 {
+	ORDER_DATA *porderdata = (ORDER_DATA *)pdata;
+	Int64 balance, amount;
+	uchar txhash[32] = {0}, accid[6] = {0};
+
 	if(pdata == NULL)
 	{
 		return false;
 	}
-	OrderData *porderdata = (OrderData *)pdata;
-	Int64 balance, amount;
 
-	if(!CheckRegLotteryTx(porderdata->txhash))
+	if(!GetCurTxHash(txhash))
 	{
 		return false;
 	}
 
-	if(!QueryAccountBalance(porderdata->regid, ACOUNT_ID, &balance))
+	GetAccounts(txhash, accid, sizeof(accid));
+
+	if(!QueryAccountBalance(accid, ACOUNT_ID, &balance))
 	{
 		printf("get account balance err, QueryAccountBalance return false!\r\n");
 		return false;
 	}
 
-	Int64Inital(&amount, (char *)porderdata->money, sizeof(Int64));
-
-	if(Int64Compare(&balance, &amount) != COMP_LARGER)
+	if(Int64Compare(&balance, &porderdata->money) != COMP_LARGER)
 	{
 		printf("account balance  <  order amount!\r\n");
 		return false;
 	}
 
 	if(!CheckOrderNumAndAmount(pdata))
+	{
+		return false;
+	}
+
+	if(!CheckOrderHight())
 	{
 		return false;
 	}
@@ -305,33 +363,22 @@ static bool OrderLottery(const void *pdata)
 
 /**
  * @brief get the hight of lottery open
- * @param pdata:open data handle
  * @return the hight
  */
-static unsigned long GetOpenLotteryHight(const void *pdata)
+static unsigned long GetOpenLotteryHight(void)
 {
-	if(pdata == NULL)
-	{
-		return 0;
-	}
 	return 0;
 }
 
 /**
  * @brief check whether the current block hight is higher than open lottery hight
- * @param pdata:open data handle
  * @return
  */
-static bool BlockHightCheck(const void *pdata)
+static bool CheckOpenHight(void)
 {
-	if(pdata == NULL)
-	{
-		return false;
-	}
-
 	unsigned long hight = GetCurRunEnvHeight();
 
-	unsigned long openhight = GetOpenLotteryHight(pdata);
+	unsigned long openhight = GetOpenLotteryHight();
 	return true;
 }
 
@@ -359,19 +406,14 @@ static bool GetOpenLotteryStatus(const void *pdata)
  */
 static bool OpenDataCheck(const void *pdata)
 {
-	OpenData *popendata = (OpenData *)pdata;
+	OPEN_DATA *popendata = (OPEN_DATA *)pdata;
 
 	if(pdata == NULL)
 	{
 		return false;
 	}
 
-	if(!CheckRegLotteryTx(popendata->txhash))
-	{
-		return false;
-	}
-
-	if(!BlockHightCheck(pdata))
+	if(!CheckOpenHight())
 	{
 		return false;
 	}
@@ -438,7 +480,7 @@ static bool OpenLottery(const void *pdata)
  */
 static bool RunContractData(const void *pdata)
 {
-	DataHandle *phandle = (DataHandle *)pdata;
+	OPEN_DATA *phandle = (OPEN_DATA *)pdata;
 	bool ret = false;
 
 	if(pdata == NULL)
