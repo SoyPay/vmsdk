@@ -88,6 +88,7 @@ bool ProcessFirstContract(const FIRST_CONTRACT* const pContract)
 		return false;
 	}
 	WriteFirstContact(pContract);
+        return true;
 }
 /*
 * @brief 	step1:hash的有效性\n
@@ -105,13 +106,14 @@ bool ProcessSecondContract(const NEXT_CONTRACT* pContract)
 {
    if(!CheckSecondContact(pContract))
 	   return false;
-   FIRST_CONTRACT* pfContract;
+   FIRST_CONTRACT* pfContract = NULL;
    WriteSecondContact(pfContract);
+   return true;
 }
 enum TXTYPE{
 	TX_TRADE,
 	TX_CONFIM
-}
+};
 int main()
 {
 	__xdata static  char pcontact[100];
@@ -143,5 +145,5 @@ int main()
 		}
  	}
  	__exit(RUN_SCRIPT_OK);
-  return 0;
+    return 0;
 }

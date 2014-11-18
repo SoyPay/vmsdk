@@ -332,7 +332,6 @@ bool testModifyDataDB()
 bool testGetDBSize()
 {
 	TestCheck(GetDBSize() == 1);
-
 	return true;
 }
 bool testGetDBValue()
@@ -416,8 +415,11 @@ bool testModifyDataDBVavle()
 bool testseconddb()
 {
 	unsigned long count = GetDBSize();
+	char buffer[10] = {0};
+	sprintf(buffer,"bb:%d",count);
+	LogPrint(buffer,sizeof(buffer),STRING);
 	TestCheck(count == 2);
-	return false;
+	return true;
 }
 int main()
 {

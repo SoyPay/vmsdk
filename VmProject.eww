@@ -2,13 +2,22 @@
 
 <workspace>
   <project>
+    <path>$WS_DIR$\anonymous\anony.ewp</path>
+  </project>
+  <project>
     <path>$WS_DIR$\bet\Bet.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\darksecure\darksecure.ewp</path>
   </project>
   <project>
     <path>$WS_DIR$\sdk\sdk.ewp</path>
   </project>
   <project>
     <path>$WS_DIR$\SecuredTrade\SecuredTrade.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\APItest\TestAPI.ewp</path>
   </project>
   <batchBuild/>
 </workspace>

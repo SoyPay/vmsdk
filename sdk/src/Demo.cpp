@@ -692,7 +692,7 @@ bool testseconddb()
 {
 	unsigned long count = GetDBSize();
 	TestCheck(count == 2);
-	return false;
+	return true;
 }
 int main()
 {
