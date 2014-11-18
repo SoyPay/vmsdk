@@ -71,7 +71,7 @@ unsigned char buffer[1];
 
 #define  ClearParaSpace()   {((unsigned char * )GetInterflowP())[0] = 0 ;((unsigned char * )GetInterflowP())[1] = 0;}
 
-
+static void InsertOutData(void const* pfrist, unsigned short len);
 unsigned short GetVecLen(unsigned char const * data) {
 	return *((unsigned short*)data);
 }
@@ -88,7 +88,7 @@ static bool IsOverShortFlow(unsigned short len1, unsigned short len2) {
 	return (len3 < len1 || len3 < len2);
 }
 
-static void InsertOutData(void const* pfrist, unsigned short len) {
+void InsertOutData(void const* pfrist, unsigned short len) {
 	unsigned char * pbuffer = (unsigned char *) GetInterflowP();
 	unsigned short len2 = GetVecLen(pbuffer);
 	unsigned short len3 = len2 + (len + sizeof(len));
@@ -241,7 +241,7 @@ unsigned long GetCurRunEnvHeight() {
 	ClearParaSpace()
 	;
 	__CallApi(GETCTXCONFIRMH_FUNC);
-
+	#pragma data_alignment = 1
 	FUN_RET_DATA *retdata = GetInterflowP();
 	if (retdata->len != 4) {
 		return 0;
@@ -257,7 +257,7 @@ bool GetTxContacts(const unsigned char * const txhash,void* const pcotact,const 
 	;
 	InsertOutData(txhash, 32);
 	__CallApi(GETTX_CONTRACT_FUNC);
-
+	#pragma data_alignment = 1
 	FUN_RET_DATA *retdata = GetInterflowP();
 	if (retdata->len > maxLen || retdata->len <= 0) {
 		return false;
@@ -330,7 +330,7 @@ unsigned long GetTxConFirmHeight(const void * const txhash) {
 }
 bool WriteDataDB(const void* const key,const unsigned char keylen,const void * const value,const unsigned short valuelen,const unsigned long time) {
 	ClearParaSpace();
-	if(keylen <=0 ||keylen >8 || valuelen<=0)
+	if(keylen <=0 || valuelen<=0)
 	{
 		return false;
 	}
@@ -350,7 +350,7 @@ bool WriteDataDB(const void* const key,const unsigned char keylen,const void * c
 }
 bool DeleteDataDB(const void* const key,const unsigned char keylen) {
 	ClearParaSpace();
-	if(keylen <= 0||keylen >8)
+	if(keylen <= 0)
 		return false;
 	InsertOutData(key, keylen);
 
@@ -366,13 +366,13 @@ bool DeleteDataDB(const void* const key,const unsigned char keylen) {
 }
 unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen, void* const value,unsigned short const maxbuffer) {
 	ClearParaSpace();
-	if(keylen <= 0 ||keylen >8|| maxbuffer <= 0)
+	if(keylen <= 0 || maxbuffer <= 0)
 		return 0;
 	InsertOutData(key, keylen);
 	__CallApi(READDB_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len > maxbuffer) {
+	if (retdata->len > maxbuffer || retdata->len <= 0) {
 		return 0;
 	}
 	memcpy(value, retdata->buffer, retdata->len);
@@ -380,7 +380,7 @@ unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen,
 }
 bool ModifyDataDB(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen,const unsigned long ptime) {
 	ClearParaSpace();
-	if(keylen <= 0 ||keylen >8|| valuelen <= 0)
+	if(keylen <= 0 || valuelen <= 0)
 		return false;
 	InsertOutData(key, keylen);
 	InsertOutData(pvalue, valuelen);
@@ -406,23 +406,31 @@ unsigned long GetDBSize() {
 	memcpy(&size, retdata->buffer, sizeof(size));
 	return size;
 }
-bool GetDBValue(const unsigned long index,void* const key,unsigned char * const keylen,void* const value,unsigned short* const maxbuffer, unsigned long* const ptime)
+bool GetDBValue(const unsigned long index,void* const key,unsigned char * const keylen,unsigned short maxkeylen,void* const value,unsigned short* const maxbuffer, unsigned long* const ptime)
  {
+
 	ClearParaSpace();
-	if(*keylen <=0||*keylen >8 || *maxbuffer <=0)
+	if(*keylen <=0 || *maxbuffer <=0)
 	{
 		return false;
 	}
 	InsertOutData(&index, sizeof(index));
+	if(index == 1)
+	{
+		InsertOutData(key, *keylen);
+	}
 	__CallApi(GETDBVALUE_FUNC);
 
+   #pragma data_alignment = 1
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len > 8 || retdata->len <= 0) {
+	if (retdata->len <= 0 || retdata->len > maxkeylen) {
 		return false;
 	}
-	memcpy(key, retdata->buffer, retdata->len);
-	*keylen = retdata->len;
 
+//	memcpy(key,retdata->buffer, retdata->len);
+	memcpy(key,retdata->buffer, retdata->len);
+	*keylen = retdata->len;
+   #pragma data_alignment = 1
 	retdata = (FUN_RET_DATA *) ((unsigned char*) retdata->buffer + retdata->len);
 	if (retdata->len > *maxbuffer) {
 		return false;
@@ -430,11 +438,13 @@ bool GetDBValue(const unsigned long index,void* const key,unsigned char * const 
 	memcpy(value, retdata->buffer, retdata->len);
 	*maxbuffer = retdata->len;
 
+   #pragma data_alignment = 1
 	retdata = (FUN_RET_DATA *) ((unsigned char*) retdata->buffer + retdata->len);
 	if (retdata->len != sizeof(*ptime)) {
 		return false;
 	}
 	memcpy((char*) ptime, retdata->buffer, sizeof(*ptime));
+
 	return true;
 }
 unsigned long GetTipHeight() {
@@ -487,7 +497,7 @@ bool IsAuthorited(const void* const account,const Int64* const pmoney) {
 }
 bool ReadDataDBTime(const void* const key,const unsigned char keylen, unsigned long * const ptime) {
 	ClearParaSpace();
-	if(keylen <= 0||keylen >8)
+	if(keylen <= 0)
 	{
 		return false;
 	}
@@ -502,7 +512,7 @@ bool ReadDataDBTime(const void* const key,const unsigned char keylen, unsigned l
 }
 bool ModifyDataDBTime(const void* const key,const unsigned char keylen, const unsigned long ptime) {
 	ClearParaSpace();
-	if(keylen <= 0||keylen >8)
+	if(keylen <= 0)
 	{
 		return false;
 	}
@@ -520,7 +530,7 @@ bool ModifyDataDBTime(const void* const key,const unsigned char keylen, const un
 
 bool ModifyDataDBVavle(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen) {
 	ClearParaSpace();
-	if(keylen <= 0 ||keylen >8|| valuelen<= 0)
+	if(keylen <= 0 || valuelen<= 0)
 	{
 		return false;
 	}
@@ -548,7 +558,7 @@ unsigned long GetMemeroyData(void * const pfrist, unsigned long const len)
 	memcpy((char*)pfrist, retdata->buffer,retdata->len);
 	return retdata->len;
 }
-bool IsAccountRegID(const void* const account)
+bool IsRegID(const void* const account)
 {
 	char pubkey[33] = {0};
 	if(GetAccountPublickey(account,pubkey,33))
@@ -557,7 +567,7 @@ bool IsAccountRegID(const void* const account)
 	}
 	return false;
 }
-unsigned short GetAuthoritedDefine(const void* const account,void *const pout,const unsigned short maxlen)
+unsigned short GetAuthUserDefine(const void* const account,void *const pout,const unsigned short maxlen)
 {
 	ClearParaSpace();
 
