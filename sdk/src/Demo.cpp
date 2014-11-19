@@ -191,12 +191,7 @@ void test_exit()
 {
 	__exit(RUN_SCRIPT_DATA_ERR);
 }
-void PrintfLine(unsigned short sort)
-{
-	char bffer[20]={0};
-	sprintf(bffer,"line:%d ",sort);
-	LogPrint(bffer,20,STRING);
-}
+
 #define TestCheck(a) {if(!(a)) { PrintfLine(__LINE__); return false;}}
 
 /**
@@ -557,7 +552,7 @@ bool testWriteDataDB()
 	char *value = "hello";
 	unsigned long time = 2;
 	TestCheck(WriteDataDB(key,0,value,6,time) == false);
-	TestCheck(WriteDataDB(key,9,value,6,time) == false);
+	TestCheck(WriteDataDB(key,9,value,0,time) == false);
 	key = "key";
 	value = NULL;
 	TestCheck(WriteDataDB(key,4,value,6,time) == true);
@@ -607,26 +602,46 @@ bool testModifyDataDB()
 }
 bool testGetDBSize()
 {
+	int b = GetDBSize();
+	char buffer[10] = {0};
+	sprintf(buffer,"dbsize:%d",b);
+	LogPrint(buffer,sizeof(buffer),STRING);
 	TestCheck(GetDBSize() == 1);
+
 	return true;
 }
 bool testGetDBValue()
 {
-	char key[5] ={0};
-	char value[4] = {4};
+	char key[15] ={0};
+	char value[15] = {0};
 	unsigned char kenlen =0;
 	unsigned short valen = 0;
 	unsigned long ptime = 0;
-	LogPrint("11",sizeof("11")+1,STRING);
-	TestCheck(GetDBValue(0,key,&kenlen,value,&valen,&ptime)== false);
+	TestCheck(GetDBValue(0,key,(unsigned char*)&kenlen,0,value,&valen,&ptime)== false);
 	kenlen = 5;
-	LogPrint("22",sizeof("22")+1,STRING);
-	TestCheck(GetDBValue(0,key,&kenlen,value,&valen,&ptime)== false);
+	TestCheck(GetDBValue(0,key,(unsigned char*)&kenlen,0,value,&valen,&ptime)== false);
+
+	char *wkey = "bit";
+	char *wvalue = "shit";
+	ptime = 7;
+	TestCheck(WriteDataDB(wkey,4,wvalue,5,ptime) == true);
+
+	valen = 15;
+	ptime = 0;
+	kenlen = sizeof(key);
+	TestCheck(GetDBValue(0,key,&kenlen,15,value,&valen,&ptime)== true);
+	TestCheck(strcmp(key,"bit")== 0);
+	TestCheck(strcmp(value,wvalue)== 0);
+	TestCheck(ptime == 7);
+
 	valen = 4;
-	LogPrint("33",sizeof("33")+1,STRING);
-	TestCheck(GetDBValue(0,key,&kenlen,value,&valen,&ptime)== true);
+	ptime = 0;
+	TestCheck(GetDBValue(1,key,&kenlen,15,value,&valen,&ptime)== true);
 	TestCheck(strcmp(key,"key1")== 0);
 	TestCheck(strcmp(value,"LUO")== 0);
+	TestCheck(ptime == 5);
+
+	TestCheck(GetDBValue(1,key,&kenlen,15,value,&valen,&ptime)== false);
 	return true;
 
 }
@@ -673,183 +688,11 @@ bool testModifyDataDBVavle()
 	TestCheck(ptime == 7);
         return true;
 }
-/**
- * 测试有关于对数据库的操作
- */
-void testfirstdb()
-{
-	 char* key = "key";
-	const void *value = "hello";
-	unsigned long time = 2;
-	unsigned char kenlen = 4;
-	bool flag = WriteDataDB((unsigned char*)key,kenlen,value,6,time);
-	if(!flag)
-	{
-		LogPrint("WriteDataDB error",sizeof("WriteDataDB error")+1,STRING);
-	}
-	key = "key1";
-	value = "shello";
-	kenlen = 5;
-	flag = WriteDataDB((unsigned char*)key,kenlen,value,7,time);
-	if(!flag)
-	{
-		LogPrint("WriteDataDB error",sizeof("WriteDataDB error")+1,STRING);
-	}
-	char*readkey = "key";
-	unsigned char keylen = 4;
-	char rvalue[6];
-	unsigned short rvLen = 6;
-	if(!ReadDataValueDB((unsigned char*)readkey,keylen, (unsigned char*)rvalue,rvLen))
-	{
-		LogPrint("ReadDataValueDB error",sizeof("ReadDataValueDB error")+1,STRING);
-	}else
-	{
-		if(!strcmp(rvalue,"hello"))
-		LogPrint("ReadDataValueDB value:",sizeof("ReadDataValueDB value:")+1,STRING);
-	}
-	unsigned long ptime;
-	if(!ReadDataDBTime((unsigned char*)readkey,keylen, &ptime))
-	{
-		LogPrint("ReadDataDBTime error",sizeof("ReadDataDBTime error")+1,STRING);
-	}else
-	{
-		if(ptime != 2)
-		{
-			LogPrint("ReadDataDBTime value error",sizeof("ReadDataDBTime value error")+1,STRING);
-		}
-	}
-	 char*readkey1 = "key1";
-	keylen = 5;
-	char rvalue1[7];
-	rvLen = 7;
-	if(!ReadDataValueDB((unsigned char*)readkey1,keylen, (unsigned char*)rvalue1,rvLen))
-	{
-		LogPrint("ReadDataValueDB error",sizeof("ReadDataValueDB error")+1,STRING);
-	}else
-	{
-		if(!strcmp(rvalue1,"shello"))
-		LogPrint("ReadDataValueDB value:",sizeof("ReadDataValueDB value:")+1,STRING);
-	}
-
-	if(!ReadDataDBTime((unsigned char*)readkey1,keylen, &ptime))
-	{
-		LogPrint("sReadDataDBTime error",sizeof("sReadDataDBTime error")+1,STRING);
-	}else
-	{
-		if(ptime != 5)
-		{
-			LogPrint("ReadDataDBTime value error",sizeof("ReadDataDBTime value error")+1,STRING);
-		}
-	}
-
-	unsigned long count = GetDBSize();
-	if(count != 2)
-	{
-		LogPrint("GetDBSize value error",sizeof("GetDBSize value error")+1,STRING);
-	}
-	const unsigned long index = 0;
-	char ikey[6];
-	unsigned char ikeylen = 0;
-	 rvLen = 6;
-	if(GetDBValue(index,(unsigned char*)ikey,(unsigned char*)&ikeylen,(unsigned char*)rvalue,&rvLen,&ptime))
-	{
-		LogPrint("GetDBValue error",sizeof("GetDBValue error")+1,STRING);
-	}
-	else
-	{
-		if(!strcmp(ikey,"key1"))
-		LogPrint("GetDBValue key:",sizeof("GetDBValue key:")+1,STRING);
-		if(!strcmp(ikey,"shello"))
-		LogPrint("GetDBValue value:",sizeof("GetDBValue key:")+1,STRING);
-		if(ptime != 2)
-		{
-			LogPrint("GetDBValue time:",sizeof("GetDBValue time:")+1,STRING);
-		}
-	}
-
-	rvLen = 7;
-	if(GetDBValue(index,(unsigned char*)ikey,(unsigned char*)&ikeylen,(unsigned char*)rvalue1,&rvLen,&ptime))
-	{
-		LogPrint("GetDBValue error",sizeof("GetDBValue error")+1,STRING);
-	}
-	else
-	{
-		if(!strcmp(ikey,"key1"))
-		LogPrint("GetDBValue key:",sizeof("GetDBValue key:")+1,STRING);
-		if(!strcmp(ikey,"shello"))
-		LogPrint("GetDBValue value:",sizeof("GetDBValue key:")+1,STRING);
-		if(ptime != 5)
-		{
-			LogPrint("GetDBValue time:",sizeof("GetDBValue time:")+1,STRING);
-		}
-	}
-
-	char*mkey = "key";
-	keylen = 4;
-	char * pvalue = "luo";
-	unsigned short valuelen = 4;
-	ptime = 1;
-	if(!ModifyDataDB((unsigned char*)mkey,keylen, pvalue,valuelen,ptime))
-	{
-		LogPrint("ModifyDataDB error:",sizeof("ModifyDataDB error:")+1,STRING);
-	}else
-	{
-		char array[4];
-		rvLen = 4;
-		ReadDataValueDB((unsigned char*)mkey,keylen, (unsigned char*)array,rvLen);
-		ReadDataDBTime((unsigned char*)mkey,keylen, &ptime);
-		if(!strcmp(array,"luo") && ptime != 1)
-		{
-			LogPrint("ModifyDataDB read error:",sizeof("ModifyDataDB read error:")+1,STRING);
-		}
-
-	}
-	char *mvalue = "jin";
-	rvLen = 4;
-	if(!ModifyDataDBVavle((unsigned char*)mkey,keylen, (unsigned char*)mvalue,rvLen))
-	{
-		LogPrint("ModifyDataDBVavle error:",sizeof("ModifyDataDBVavle error:")+1,STRING);
-	}else
-	{
-		char array[4];
-		rvLen = 4;
-		ReadDataValueDB((unsigned char*)mkey,keylen, (unsigned char*)array,rvLen);
-		if(!strcmp(array,"jin"))
-		{
-			LogPrint("ReadDataValueDB error:",sizeof("ReadDataValueDB error:")+1,STRING);
-		}
-	}
-
-	ptime = 3;
-	if(!ModifyDataDBTime((unsigned char*)mkey,keylen,ptime))
-	{
-		LogPrint("ReadDataDBTime error:",sizeof("ReadDataDBTime error:")+1,STRING);
-	}else
-	{
-		ReadDataDBTime((unsigned char*)mkey,keylen, &ptime);
-		if(ptime != 3)
-		{
-			LogPrint("ReadDataDBTime error:",sizeof("ReadDataDBTime error:")+1,STRING);
-		}
-	}
-
-	if(!DeleteDataDB((unsigned char*)mkey,keylen))
-	{
-		LogPrint("DeleteDataDB error:",sizeof("DeleteDataDB error:")+1,STRING);
-	}
-	else
-	{
-		if(ReadDataDBTime((unsigned char*)mkey,keylen, &ptime))
-		{
-			LogPrint("delete after ReadDataDBTime error:",sizeof("delete after ReadDataDBTime error:")+1,STRING);
-		}
-	}
-}
 bool testseconddb()
 {
 	unsigned long count = GetDBSize();
-	TestCheck(count == 0);
-	return false;
+	TestCheck(count == 2);
+	return true;
 }
 int main()
 {
@@ -988,28 +831,31 @@ int main()
 				LogPrint("testReadDataValueDB",sizeof("testReadDataValueDB")+1,STRING);
 				test_exit();
 			}
+
 			if(!testModifyDataDB())
 			{
 				LogPrint("testModifyDataDB",sizeof("testModifyDataDB")+1,STRING);
 				test_exit();
 			}
+
 			if(!testGetDBSize())
 			{
 				LogPrint("testGetDBSize",sizeof("testGetDBSize")+1,STRING);
 				test_exit();
 			}
-			LogPrint("5",sizeof("1")+1,STRING);
-//			if(!testGetDBValue())
-//			{
-//				LogPrint("testGetDBValue",sizeof("testGetDBValue")+1,STRING);
-//				test_exit();
-//			}
-			LogPrint("6",sizeof("1")+1,STRING);
+
+			if(!testGetDBValue())
+			{
+				LogPrint("testGetDBValue",sizeof("testGetDBValue")+1,STRING);
+				test_exit();
+			}
+
 			if(!testReadDataDBTime())
 			{
 				LogPrint("testReadDataDBTime",sizeof("testReadDataDBTime")+1,STRING);
 				test_exit();
 			}
+
 			if(!testModifyDataDBTime())
 			{
 				LogPrint("testModifyDataDBTime",sizeof("testModifyDataDBTime")+1,STRING);
@@ -1033,6 +879,7 @@ int main()
 			LogPrint("4:test ok",sizeof("4:test ok")+1,STRING);
 			break;
 		}
+
 		case 0x05:
 		{
 			char hash[32];
