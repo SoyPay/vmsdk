@@ -12,14 +12,14 @@
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
       <file>$TOOLKIT_DIR$\lib\dlib\dl8051Normal.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
-      <file>$PROJ_DIR$\Debug\Exe\sdk.bin</file>
-      <file>$PROJ_DIR$\Debug\Obj\Demo.r51</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\Demo.r51</file>
+      <file>$PROJ_DIR$\Debug\Exe\sdk.bin</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
       <file>$PROJ_DIR$\main.cpp</file>
       <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
@@ -33,6 +33,15 @@
       <file>$PROJ_DIR$\Debug\Obj\Demo.pbi</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
     </outputs>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 21 11</file>
+        </tool>
+      </outputs>
+    </file>
     <file>
       <name>$PROJ_DIR$\src\VmSdk.cpp</name>
       <outputs>
@@ -48,11 +57,11 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 13 7 11 16 5 10 6 3 25 20 4 12 0</file>
+          <file> 7 12 6 16 5 9 13 3 25 20 4 8 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 13 7 11 16 5 10 6 3 25 20 0</file>
+          <file> 7 12 6 16 5 9 13 3 25 20 0</file>
         </tool>
       </inputs>
     </file>
@@ -61,7 +70,7 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 9</file>
+          <file> 10</file>
         </tool>
         <tool>
           <name>BICOMP</name>
@@ -71,11 +80,11 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 13 7 11 16 5 10 6 3 25 20 4 12 0</file>
+          <file> 7 12 6 16 5 9 13 3 25 20 4 8 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 13 7 11 16 5 10 6 3 25 20 0</file>
+          <file> 7 12 6 16 5 9 13 3 25 20 0</file>
         </tool>
       </inputs>
     </file>
@@ -93,26 +102,17 @@
       </outputs>
     </file>
     <file>
-      <name>[ROOT_NODE]</name>
-      <outputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 21 8</file>
-        </tool>
-      </outputs>
-    </file>
-    <file>
       <name>$PROJ_DIR$\Debug\Exe\sdk.d51</name>
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 8</file>
+          <file> 11</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 23 9 22 18</file>
+          <file> 23 10 22 18</file>
         </tool>
       </inputs>
     </file>
