@@ -13,6 +13,7 @@
 typedef unsigned char uchar;
 typedef unsigned long u32;
 
+
 #define TOTALNUMSIZE (15)
 #define LUCKYNUMSIZE (6)
 #define HASHSIZE (32)

@@ -7,12 +7,6 @@
 
 调用虚拟机API几乎可以实现当前所有山寨币功能
 
-Provided Features:
-
--   Correct case conversion, case folding and normalization.
--   Collation (sorting), including support for 4 Unicode
-    collation levels.
--   ......
 
 \section main_tutorial 目录
 
@@ -20,7 +14,8 @@ Provided Features:
 
 - \subpage Demo
     - \ref lottery "彩票"
-    - \ref subpage1_ref2
-- \subpage subpage3
+- \subpage TestCode
+	- \ref APItest "APItest"
+	- \ref  Demo  "DemoTest"
 */
 

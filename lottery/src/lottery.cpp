@@ -9,6 +9,9 @@
 #include"lottery.h"
 #include<assert.h>
 
+/**
+ * @todo  建议 ： 把 u32 改成 u8 和 u16 减少空间
+ */
 typedef struct
 {
  u32 m;

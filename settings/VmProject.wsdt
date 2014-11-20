@@ -5,7 +5,7 @@
     
     
     
-  <CurrentConfigs><Project>Bet/Debug</Project><Project>darksecure/Debug</Project><Project>SecuredTrade/Debug</Project><Project>sdk/Debug</Project><Project>TestAPI/Debug</Project><Project>anony/Debug</Project></CurrentConfigs><CurrentProj>anony</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
+  <CurrentConfigs><Project>Bet/Debug</Project><Project>anony/Debug</Project><Project>sdk/Debug</Project><Project>TestAPI/Debug</Project><Project>SecuredTrade/Debug</Project></CurrentConfigs><CurrentProj>anony</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
   <Desktop>
     <Static>
       <Workspace>
@@ -14,7 +14,7 @@
           
           
           
-        <Column0>165</Column0><Column1>27</Column1><Column2>27</Column2><Column3>0</Column3></ColumnWidths>
+        <Column0>223</Column0><Column1>0</Column1><Column2>27</Column2><Column3>0</Column3></ColumnWidths>
       </Workspace>
       <Build>
         
@@ -34,7 +34,7 @@
             <Factory>Workspace</Factory>
             <Session>
               
-            <NodeDict><ExpandedNode>&lt;ws&gt;</ExpandedNode><ExpandedNode>&lt;ws&gt;/TestAPI</ExpandedNode><ExpandedNode>&lt;ws&gt;/anony</ExpandedNode><ExpandedNode>&lt;ws&gt;/darksecure</ExpandedNode><ExpandedNode>&lt;ws&gt;/test</ExpandedNode><ExpandedNode>&lt;ws&gt;/test/Output</ExpandedNode><ExpandedNode>Bet</ExpandedNode><ExpandedNode>anony</ExpandedNode><ExpandedNode>sdk</ExpandedNode></NodeDict></Session>
+            <NodeDict><ExpandedNode>&lt;ws&gt;</ExpandedNode><ExpandedNode>Bet</ExpandedNode><ExpandedNode>anony</ExpandedNode><ExpandedNode>sdk</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
         
@@ -54,14 +54,14 @@
       
       
       
-    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\darksecure\src\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>108</YPos2><SelStart2>2700</SelStart2><SelEnd2>2715</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sdk\src\VmSdk.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>174</SelStart2><SelEnd2>174</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\darksecure\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>33</SelStart2><SelEnd2>33</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\anonymous\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>33</SelStart2><SelEnd2>33</SelEnd2></Tab><ActiveTab>3</ActiveTab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Pane/><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
       
       
       
       
       
-    <Top><Row0><Sizes><Toolbar-00833110><key>iaridepm.enu1</key></Toolbar-00833110></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>344</Bottom><Right>256</Right><x>-2</x><y>-2</y><xscreen>190</xscreen><yscreen>168</yscreen><sizeHorzCX>139092</sizeHorzCX><sizeHorzCY>244898</sizeHorzCY><sizeVertCX>188873</sizeVertCX><sizeVertCY>504373</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>297</Bottom><Right>1368</Right><x>-2</x><y>-2</y><xscreen>1370</xscreen><yscreen>299</yscreen><sizeHorzCX>1002928</sizeHorzCX><sizeHorzCY>435860</sizeHorzCY><sizeVertCX>139092</sizeVertCX><sizeVertCY>244898</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-00bfd998><key>iaridepm.enu1</key></Toolbar-00bfd998></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>418</Bottom><Right>270</Right><x>-2</x><y>-2</y><xscreen>200</xscreen><yscreen>200</yscreen><sizeHorzCX>138889</sizeHorzCX><sizeHorzCY>244499</sizeHorzCY><sizeVertCX>188889</sizeVertCX><sizeVertCY>513447</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>355</Bottom><Right>1442</Right><x>-2</x><y>-2</y><xscreen>1444</xscreen><yscreen>357</yscreen><sizeHorzCX>1002778</sizeHorzCX><sizeHorzCY>436430</sizeHorzCY><sizeVertCX>138889</sizeVertCX><sizeVertCY>244499</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 

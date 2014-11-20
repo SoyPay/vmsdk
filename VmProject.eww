@@ -8,9 +8,6 @@
     <path>$WS_DIR$\bet\Bet.ewp</path>
   </project>
   <project>
-    <path>$WS_DIR$\darksecure\darksecure.ewp</path>
-  </project>
-  <project>
     <path>$WS_DIR$\sdk\sdk.ewp</path>
   </project>
   <project>
