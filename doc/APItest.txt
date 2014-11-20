@@ -1,0 +1,14 @@
+
+/*!
+
+\page APItest  APItest
+
+	自动测试 部分可以独立测试的api函数
+
+
+
+- \subpage code
+    - \ref APItestmain.cpp "code"
+
+*/
+

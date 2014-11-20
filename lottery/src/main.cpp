@@ -7,9 +7,7 @@
 #include <string.h>
 #include<stdlib.h>
 #include"VmSdk.h"
-
-typedef unsigned char uchar;
-typedef unsigned long u32;
+#include"lottery.h"
 
 /**
  * Lottery Operate Type

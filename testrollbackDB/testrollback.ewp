@@ -2115,7 +2115,7 @@
     </settings>
   </configuration>
   <file>
-    <name>$PROJ_DIR$\src\main.cpp</name>
+    <name>$PROJ_DIR$\src\testrollbackDBmain.cpp</name>
   </file>
   <file>
     <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>

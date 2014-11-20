@@ -20,8 +20,8 @@
 \section ·µ½±ÂÊ
 -	99.99%
 
-- \subpage subpage2
-    - \ref subpage1_ref2
-- \subpage subpage3
+- \subpage code
+    - \ref lottery.cpp
+
 */
 

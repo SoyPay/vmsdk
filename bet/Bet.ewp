@@ -2115,7 +2115,7 @@
     </settings>
   </configuration>
   <file>
-    <name>$PROJ_DIR$\src\main.cpp</name>
+    <name>$PROJ_DIR$\src\betmain.cpp</name>
   </file>
 </project>
 

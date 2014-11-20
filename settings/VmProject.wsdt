@@ -5,7 +5,7 @@
     
     
     
-  <CurrentConfigs><Project>anony/Debug</Project><Project>Bet/Debug</Project><Project>darksecure/Debug</Project><Project>sdk/Debug</Project><Project>SecuredTrade/Debug</Project><Project>TestAPI/Debug</Project><Project>testrollback/Debug</Project></CurrentConfigs><CurrentProj>testrollback</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
+  <CurrentConfigs><Project>Bet/Debug</Project><Project>anony/Debug</Project><Project>sdk/Debug</Project><Project>SecuredTrade/Debug</Project><Project>TestAPI/Debug</Project><Project>testrollback/Debug</Project></CurrentConfigs><CurrentProj>anony</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
   <Desktop>
     <Static>
       <Workspace>
@@ -14,7 +14,7 @@
           
           
           
-        <Column0>234</Column0><Column1>27</Column1><Column2>27</Column2><Column3>0</Column3></ColumnWidths>
+        <Column0>209</Column0><Column1>0</Column1><Column2>27</Column2><Column3>0</Column3></ColumnWidths>
       </Workspace>
       <Build>
         
@@ -22,11 +22,11 @@
         
         
       <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1035</ColumnWidth1><ColumnWidth2>276</ColumnWidth2><ColumnWidth3>69</ColumnWidth3></Build>
-    <TerminalIO/></Static>
+    </Static>
     <Windows>
       
       
-    <Wnd0>
+    <Wnd2>
         <Tabs>
           <Tab>
             <Identity>TabID-27474-12933</Identity>
@@ -34,11 +34,11 @@
             <Factory>Workspace</Factory>
             <Session>
               
-            <NodeDict><ExpandedNode>&lt;ws&gt;</ExpandedNode><ExpandedNode>&lt;ws&gt;/TestAPI</ExpandedNode><ExpandedNode>&lt;ws&gt;/anony</ExpandedNode><ExpandedNode>&lt;ws&gt;/darksecure</ExpandedNode><ExpandedNode>&lt;ws&gt;/test</ExpandedNode><ExpandedNode>&lt;ws&gt;/test/Output</ExpandedNode><ExpandedNode>&lt;ws&gt;/testrollback</ExpandedNode><ExpandedNode>Bet</ExpandedNode><ExpandedNode>anony</ExpandedNode><ExpandedNode>sdk</ExpandedNode></NodeDict></Session>
+            <NodeDict><ExpandedNode>&lt;ws&gt;</ExpandedNode><ExpandedNode>&lt;ws&gt;/testrollback</ExpandedNode><ExpandedNode>Bet</ExpandedNode><ExpandedNode>anony</ExpandedNode><ExpandedNode>sdk</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
         
-      <SelectedTab>0</SelectedTab></Wnd0><Wnd1>
+      <SelectedTab>0</SelectedTab></Wnd2><Wnd3>
         <Tabs>
           <Tab>
             <Identity>TabID-30673-13282</Identity>
@@ -48,20 +48,20 @@
           </Tab>
         </Tabs>
         
-      <SelectedTab>0</SelectedTab></Wnd1></Windows>
+      <SelectedTab>0</SelectedTab></Wnd3></Windows>
     <Editor>
       
       
       
       
-    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\darksecure\src\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>101</YPos2><SelStart2>2700</SelStart2><SelEnd2>2715</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sdk\src\VmSdk.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>346</YPos2><SelStart2>10443</SelStart2><SelEnd2>10443</SelEnd2></Tab><ActiveTab>1</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\darksecure\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>33</SelStart2><SelEnd2>33</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\testrollbackDB\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>78</SelStart2><SelEnd2>78</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\APItest\src\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>78</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\testrollbackDB\src\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>83</YPos2><SelStart2>2140</SelStart2><SelEnd2>2140</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sdk\src\VmSdk.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>348</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Pane/><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
       
       
       
       
       
-    <Top><Row0><Sizes><Toolbar-00da3110><key>iaridepm.enu1</key></Toolbar-00da3110></Sizes></Row0><Row1><Sizes/></Row1></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>479</Bottom><Right>325</Right><x>-2</x><y>-2</y><xscreen>345</xscreen><yscreen>190</yscreen><sizeHorzCX>252562</sizeHorzCX><sizeHorzCY>276968</sizeHorzCY><sizeVertCX>239385</sizeVertCX><sizeVertCY>701166</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>162</Bottom><Right>1368</Right><x>-2</x><y>-2</y><xscreen>1370</xscreen><yscreen>164</yscreen><sizeHorzCX>1002928</sizeHorzCX><sizeHorzCY>239067</sizeHorzCY><sizeVertCX>252562</sizeVertCX><sizeVertCY>276968</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-01153110><key>iaridepm.enu1</key></Toolbar-01153110></Sizes></Row0></Top><Left><Row0><Sizes><Wnd2><Rect><Top>-2</Top><Left>-2</Left><Bottom>344</Bottom><Right>256</Right><x>-2</x><y>-2</y><xscreen>190</xscreen><yscreen>168</yscreen><sizeHorzCX>139092</sizeHorzCX><sizeHorzCY>244898</sizeHorzCY><sizeVertCX>188873</sizeVertCX><sizeVertCY>504373</sizeVertCY></Rect></Wnd2></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>297</Bottom><Right>1368</Right><x>-2</x><y>-2</y><xscreen>1370</xscreen><yscreen>299</yscreen><sizeHorzCX>1002928</sizeHorzCX><sizeHorzCY>435860</sizeHorzCY><sizeVertCX>139092</sizeVertCX><sizeVertCY>244898</sizeVertCY></Rect></Wnd3></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 
