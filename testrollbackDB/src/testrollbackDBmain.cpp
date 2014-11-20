@@ -93,7 +93,7 @@ int main()
 				}
 		case 0x04:
 				{
-					Is4 = true;
+					//Is4 = true;
 					if(!testCheckDeleteRoolbackDB())
 					{
 						LogPrint("testCheckDeleteRoolbackDB error",sizeof("testCheckDeleteRoolbackDB error"),STRING);
