@@ -370,7 +370,7 @@ bool IsRegID(const void* const account);
  */
 unsigned short GetAuthUserDefine(const void* const account,void *const pout,const unsigned short maxlen);
 
-
+bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* const pvalve,short maxlen);
 void inline PrintfLine(unsigned short sort)
 {
 	char bffer[20]={0};
@@ -378,3 +378,4 @@ void inline PrintfLine(unsigned short sort)
 	LogPrint(bffer,strlen(bffer),STRING);
 }
 #define PrintLog(a,b,c) {if(!(a)) { PrintfLine(__LINE__),LogPrint(a,b,c);}}
+

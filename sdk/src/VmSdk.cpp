@@ -26,6 +26,7 @@ enum CALL_API_FUN {
 	GETBLOCKHASH_FUNC,        //!< GETBLOCKHASH_FUNC
 	ISAUTHORIT_FUNC,          //!<ISAUTHORIT
 	GETAUTHORITDEFINE_FUNC,	  //!<GETAUTHORITDEFINE_FUNC
+	GETSCRIPTDATA_FUNC,		  //!<GETSCRIPTDATA_FUNC
 
 
 	//// tx api
@@ -360,10 +361,9 @@ bool DeleteDataDB(const void* const key,const unsigned char keylen) {
 	if (retdata->len != 1) {
 		return false;
 	}
-	bool ret = false;
-	memcpy(&ret, retdata->buffer, 1);
-	return ret;
+	return retdata->buffer[0];
 }
+extern  bool Is4 ;
 unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen, void* const value,unsigned short const maxbuffer) {
 	ClearParaSpace();
 	if(keylen <= 0 || maxbuffer <= 0)
@@ -371,12 +371,16 @@ unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen,
 	InsertOutData(key, keylen);
 	__CallApi(READDB_FUNC);
 
+
+
+#pragma data_alignment = 1
 	FUN_RET_DATA *retdata = GetInterflowP();
 	if (retdata->len > maxbuffer || retdata->len <= 0) {
 		return 0;
 	}
 	memcpy(value, retdata->buffer, retdata->len);
-	return retdata->len;
+	unsigned short size = retdata->len;
+	return size;
 }
 bool ModifyDataDB(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen,const unsigned long ptime) {
 	ClearParaSpace();
@@ -579,5 +583,23 @@ unsigned short GetAuthUserDefine(const void* const account,void *const pout,cons
 		return 0;
 	}
 	memcpy(pout, retdata->buffer, retdata->len);
+	return retdata->len;
+}
+bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* const pvalve,short maxlen)
+{
+	ClearParaSpace();
+	if(scriptID == NULL ||pkey == NULL || len <= 0)
+	{
+		return false;
+	}
+	InsertOutData(scriptID, 6);
+	InsertOutData(pkey, len);
+	__CallApi(GETSCRIPTDATA_FUNC);
+
+	FUN_RET_DATA *retdata = GetInterflowP();
+	if (retdata->len > maxlen ||  retdata->len <= 0) {
+		return 0;
+	}
+	memcpy(pvalve, retdata->buffer, retdata->len);
 	return retdata->len;
 }

@@ -19,6 +19,9 @@
   <project>
     <path>$WS_DIR$\APItest\TestAPI.ewp</path>
   </project>
+  <project>
+    <path>$WS_DIR$\testrollbackDB\testrollback.ewp</path>
+  </project>
   <batchBuild/>
 </workspace>
 
