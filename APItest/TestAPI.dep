@@ -6,13 +6,6 @@
   <configuration>
     <name>Debug</name>
     <outputs>
-      <file>$PROJ_DIR$\Debug\Exe\TestAPI.bin</file>
-      <file>$PROJ_DIR$\Debug\Obj\TestAPImain.r51</file>
-      <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
-      <file>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</file>
-      <file>$PROJ_DIR$\src\TestAPImain.cpp</file>
-      <file>$PROJ_DIR$\src\main.cpp</file>
-      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
@@ -32,13 +25,95 @@
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.r51</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
+      <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
+      <file>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</file>
+      <file>$PROJ_DIR$\src\TestAPImain.cpp</file>
+      <file>$PROJ_DIR$\Debug\Exe\TestAPI.bin</file>
+      <file>$PROJ_DIR$\Debug\Obj\TestAPImain.r51</file>
+      <file>$PROJ_DIR$\src\main.cpp</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
     </outputs>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\TestAPI.d51</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 22</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 9 23 17 3</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 0</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 25</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 22 5</file>
+        </tool>
+      </outputs>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 24</file>
+          <file> 17</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 10 8 4 2 6 11 12 13 14 15 16 1 19</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 10 8 4 2 6 11 12 13 14 15 16 1 19</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\src\TestAPImain.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 23</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 10 8 4 2 6 11 12 13 14 15 16 1 19</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\src\main.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
@@ -48,88 +123,13 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 17 15 11 9 13 18 19 20 21 22 23 8 2</file>
+          <file> 10 8 4 2 6 11 12 13 14 15 16 1 19</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 17 15 11 9 13 18 19 20 21 22 23 8 2</file>
+          <file> 10 8 4 2 6 11 12 13 14 15 16 1 19</file>
         </tool>
       </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\src\TestAPImain.cpp</name>
-      <outputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 1</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 17 15 11 9 13 18 19 20 21 22 23 8 2</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\src\main.cpp</name>
-      <outputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 7</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 6</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 17 15 11 9 13 18 19 20 21 22 23 8 2</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 17 15 11 9 13 18 19 20 21 22 23 8 2</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Debug\Exe\TestAPI.d51</name>
-      <outputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 0</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 16 1 24 10</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\main.cpp</name>
-      <outputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 7</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 6</file>
-        </tool>
-      </outputs>
-    </file>
-    <file>
-      <name>[ROOT_NODE]</name>
-      <outputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 12 0</file>
-        </tool>
-      </outputs>
     </file>
   </configuration>
   <configuration>

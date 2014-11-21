@@ -357,11 +357,18 @@ bool DeleteDataDB(const void* const key,const unsigned char keylen) {
 
 	__CallApi(DELETEDB_FUNC);
 
+#pragma data_alignment = 1
 	FUN_RET_DATA *retdata = GetInterflowP();
 	if (retdata->len != 1) {
 		return false;
 	}
+//	bool falg = false;
+//	memcpy(&falg,retdata->buffer,1);
+//	char buffer[10] = {0};
+//	memcpy(buffer,retdata,10);
+//	LogPrint(buffer,10,HEX);
 	return retdata->buffer[0];
+	//return falg;
 }
 extern  bool Is4 ;
 unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen, void* const value,unsigned short const maxbuffer) {
