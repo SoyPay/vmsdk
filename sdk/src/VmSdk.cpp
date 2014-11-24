@@ -175,7 +175,7 @@ bool SHA256(void const* pfrist, const unsigned short len, void * const pout) {
 		memcpy(pout, retdata->buffer, 32);
 		return true;
 	}
-	__exit(RUN_SCRIPT_DATA_ERR);
+//	__exit(RUN_SCRIPT_DATA_ERR);
 	 return false;
 }
 
@@ -203,7 +203,7 @@ bool SignatureVerify(void const* data, unsigned short datalen, void const* key, 
 unsigned short Des(void const* pdata, unsigned short len, void const* pkey, unsigned short keylen, bool IsEn, void * const pOut,unsigned short poutlen) {
 	ClearParaSpace()
 	;
-	if(len <= 0 || keylen <=0)
+	if(len <= 0 || keylen <= 0)
 	{
 		return false;
 	}
@@ -218,7 +218,7 @@ unsigned short Des(void const* pdata, unsigned short len, void const* pkey, unsi
 		return retdata->len;
 	}
 	LogPrint("Des error",sizeof("Des error")+1,STRING);
-	__exit(RUN_SCRIPT_DATA_ERR);
+//	__exit(RUN_SCRIPT_DATA_ERR);
 	 return 0;
 }
 
