@@ -157,12 +157,17 @@ bool testdiv()
 }
 bool testSHA256()
 {
-	char* phashdata = NULL;
-	unsigned short len= 0;
 	char hash[32] = {0};
-	TestCheck(SHA256(phashdata,len,hash) == false);
-	char xx[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-	TestCheck(SHA256(xx,8,hash) == true);
+	char hashdata[] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
+//error paras test
+	TestCheck(SHA256(hashdata, 0, hash) == false);
+	//NULL input need to test or not
+
+//normal paras test
+	TestCheck(SHA256(hashdata, sizeof(hashdata), hash) == true);
+
+	TestCheck(memcmp(hash, "\xea\x96\xdb\xb9\xbb\x08\xcf\xb3\x8a\x22\xfd\x3e\x7f\x40\xf8\xa3\x56\xeb\x1f\x61\xbe\x58\x3f\x23\xab\x21\xfb\x5a\x1d\x87\x9d\xac", sizeof(hash)) == 0);
+
     return true;
 }
 bool testSignatureVerify()
@@ -220,26 +225,50 @@ bool testSignatureVerify()
 
 bool testDes()
 {
-	unsigned char mm[50] = { 0 };
-	TestCheck(Des("", 0, "", 0, true,mm,50) == 0);
-	TestCheck(Des("", 0, "", 0, false,mm,50) == 0);
-	// ¼ÓÃÜÊý¾Ý
-	unsigned short len = Des("\x01\x02\x03\x04\x05\xa7\x48\x89\x20\xb3\x8b\xd8\xe4", 13, "\x01\x02\x03\x04\x05\x06\x07\x08", 8, true,mm,50);
-	TestCheck(len > 0);
-	unsigned char des[16] = { 0 };
-	TestCheck(Des(mm, len, "\x01\x02\x03\x04\x05\x06\x07\x08",8, false, des,16) == 16);
-	//TestCheck(strcmp((char*)des,"\x01\x02\x03\x04\x05\xa7\x48\x89\x20\xb3\x8b\xd8\xe4") != 0);
-	mm[len-5] ='\x09';
-	mm[len-1] ='\x05';
-	TestCheck(Des(mm, len, "\x01\x02\x03\x04\x05\x06\x07\x08",8, false, des,16) >0);
-	//TestCheck(strcmp((char*)des,"\x01\x02\x03\x04\x05\xa7\x48\x89\x20\xb3\x8b\xd8\xe4") == 0);
+	unsigned char input[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0xa7, 0x48, 0x89, 0x20, 0xb3, 0x8b, 0xd8, 0xe4};
+	unsigned char result[50] = { 0 };
+	unsigned short rltlen = 0;
+	unsigned char key1[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
+	unsigned char key3[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18};
+//error paras test
+	TestCheck(Des(input, 0, "", 0, true, result, sizeof(result)) == 0);
+	TestCheck(Des(input, 0, "", 0, false, result, sizeof(result)) == 0);
+	TestCheck(Des(input, sizeof(input), key1, 4, true, result, sizeof(result)) == 0);
+	TestCheck(Des(input, sizeof(input), key1, 5, false, result, sizeof(result)) == 0);
+	TestCheck(Des(input, sizeof(input), key3, 13, false, result, sizeof(result)) == 0);
+	TestCheck(Des(input, sizeof(input), key3, 14, false, result, sizeof(result)) == 0);
+
+//normal paras test-des
+	rltlen = Des(input, sizeof(input), key1, sizeof(key1), true, result, sizeof(result));
+	TestCheck(rltlen > 0);
+	TestCheck(memcmp(result, "\x17\x26\xc7\x5f\x28\x16\x71\x5f\xde\x89\x62\x08\x43\x34\x39\xa7", rltlen) == 0);
+	{
+		unsigned char rtmp[50] = { 0 };
+		unsigned short rtmplen = Des(result, rltlen, key1, sizeof(key1), false, rtmp, sizeof(rtmp));
+		TestCheck(rtmplen >= sizeof(input));
+		TestCheck(memcmp(input, rtmp, sizeof(input)) == 0);
+	}
+	//clear data
+	memset(result, 0, sizeof(result));
+	rltlen = 0;
+
+//normal paras test-3des
+	rltlen = Des(input, sizeof(input), key3, sizeof(key3), true, result, sizeof(result));
+	TestCheck(rltlen > 0);
+	TestCheck(memcmp(result, "\x74\x9b\x65\x42\xf9\x74\x1d\x39\x2d\xab\xae\x84\x7e\x50\x82\x70", rltlen) == 0);
+	{
+		unsigned char rtmp[50] = { 0 };
+		unsigned short rtmplen = Des(result, rltlen, key3, sizeof(key3), false, rtmp, sizeof(rtmp));
+		TestCheck(rtmplen >= sizeof(input));
+		TestCheck(memcmp(input, rtmp, sizeof(input)) == 0);
+	}
 
 	return true;
 }
 bool testWriteOutput()
 {
 	VM_OPERATE data;
-	WriteOutput( &data, 1);
+	WriteOutput(&data, 1);
 	return true;
 }
 bool testGetCurRunEnvHeight()
