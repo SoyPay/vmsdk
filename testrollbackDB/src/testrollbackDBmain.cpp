@@ -43,6 +43,7 @@ bool testCheckModifyRoolbackDB()
 	char* key = "key1";
 	char buffer[7] = {0};
 	TestCheck(ReadDataValueDB(key,5,buffer,7)> 0);
+	LogPrint(buffer,7,STRING);
 	TestCheck(strcmp(buffer,"hellow")== 0);
 	return true;
 }
