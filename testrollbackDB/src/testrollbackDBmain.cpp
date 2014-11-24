@@ -24,9 +24,9 @@ bool testModifyDataDB()
 }
 bool testDeleteDataDB()
 {
-//	char* key = "key";
-	bool flag = DeleteDataDB("key",4);
-//	LogPrint(&flag,1,HEX);
+	char* key = "key";
+	bool flag = DeleteDataDB(key,4);
+	LogPrint(&flag,1,HEX);
 	TestCheck(flag == true);
 	return true;
 }
@@ -94,11 +94,13 @@ int main()
 		case 0x04:
 				{
 					//Is4 = true;
+					LogPrint("start",sizeof("start"),STRING);
 					if(!testCheckDeleteRoolbackDB())
 					{
 						LogPrint("testCheckDeleteRoolbackDB error",sizeof("testCheckDeleteRoolbackDB error"),STRING);
 						__exit(RUN_SCRIPT_DATA_ERR);
 					}
+					LogPrint("end",sizeof("end"),STRING);
 					break;
 				}
 		case 0x05:
