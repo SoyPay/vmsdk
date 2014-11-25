@@ -19,29 +19,22 @@
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.r51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
-      <file>$PROJ_DIR$\Debug\Exe\SecuredTrade.bin</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
+      <file>$PROJ_DIR$\Debug\Exe\SecuredTrade.bin</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
       <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
       <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$PROJ_DIR$\src\main.cpp</file>
-      <file>$PROJ_DIR$\Debug\Exe\SecuredTrade.d51</file>
-      <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\SecuredTrademain.r51</file>
+      <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
+      <file>$PROJ_DIR$\Debug\Exe\SecuredTrade.d51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\SecuredTrademain.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\SecuredTrademain.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\SecuredTrade.pbd</file>
     </outputs>
-    <file>
-      <name>[ROOT_NODE]</name>
-      <outputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 13 20</file>
-        </tool>
-      </outputs>
-    </file>
     <file>
       <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>
       <outputs>
@@ -51,17 +44,17 @@
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 25</file>
+          <file> 24</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 4 7 15 16 8 12 5 22 14 10 24 3 0</file>
+          <file> 4 7 13 16 8 12 5 20 14 10 23 3 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 4 7 15 16 8 12 5 22 14 10 0</file>
+          <file> 4 7 13 16 8 12 5 20 14 10 23 3 0</file>
         </tool>
       </inputs>
     </file>
@@ -70,13 +63,21 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 23</file>
+          <file> 25</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 26</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 4 7 15 16 8 12 5 22 14 10 24 3 0</file>
+          <file> 4 7 13 16 8 12 5 20 14 10 23 3 0</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 4 7 13 16 8 12 5 20 14 10 23 3 0</file>
         </tool>
       </inputs>
     </file>
@@ -95,11 +96,11 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 4 7 15 16 8 12 5 22 14 10 0</file>
+          <file> 4 7 13 16 8 12 5 20 14 10 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 4 7 15 16 8 12 5 22 14 10 0</file>
+          <file> 4 7 13 16 8 12 5 20 14 10 0</file>
         </tool>
       </inputs>
     </file>
@@ -114,7 +115,7 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 4 7 15 16 8 12 5 22 14 10 24 3 0</file>
+          <file> 4 7 13 16 8 12 5 20 14 10 23 3 0</file>
         </tool>
       </inputs>
     </file>
@@ -123,15 +124,24 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 13</file>
+          <file> 15</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 21 23 11 6</file>
+          <file> 21 25 11 6</file>
         </tool>
       </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 15 22</file>
+        </tool>
+      </outputs>
     </file>
   </configuration>
   <configuration>
