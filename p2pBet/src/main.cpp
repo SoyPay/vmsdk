@@ -20,6 +20,9 @@ enum OPERATETYPE {
 	OPEN   //!< OPEN
 };
 
+/**
+ * send bet data struct
+ */
 typedef struct {
 	OPERATETYPE type;
 	Int64 money;
@@ -27,12 +30,18 @@ typedef struct {
 	uchar dhash[32];
 }SEND_DATA;
 
+/**
+ * accept bet data struct
+ */
 typedef struct {
 	OPERATETYPE type;
 	Int64 money;
 	uchar dhash[32];
 }ACCEPT_DATA;
 
+/**
+ * open bet data struct
+ */
 typedef struct {
 	OPERATETYPE type;
 	uchar dhash[5];
@@ -52,6 +61,11 @@ static bool GetContractData(const void *pdata)
 	return true;
 }
 
+/**
+ * @brief check the script min amount
+ * @param pdata:the input amount
+ * @return
+ */
 static bool CheckMinimumAmount(const Int64 *pdata)
 {
 	if(pdata == NULL)
@@ -61,6 +75,11 @@ static bool CheckMinimumAmount(const Int64 *pdata)
 	return true;
 }
 
+/**
+ * @brief check send bet hight
+ * @param phight:input hight
+ * @return
+ */
 static bool CheckSendBetHight(const u32 *phight)
 {
 	if(phight == NULL)
@@ -76,6 +95,11 @@ static bool CheckSendBetHight(const u32 *phight)
 	return true;
 }
 
+/**
+ * @brief check data hash
+ * @param pdata:the input data
+ * @return
+ */
 static bool CheckDataHash(const void *pdata)
 {
 	if(pdata == NULL)
@@ -86,6 +110,11 @@ static bool CheckDataHash(const void *pdata)
 	return true;
 }
 
+/**
+ * @brief send bet data check
+ * @param pdata:the send bet data
+ * @return
+ */
 static bool SendDataCheck(const void *pdata)
 {
 	SEND_DATA *psdata = (SEND_DATA *)pdata;
@@ -134,6 +163,11 @@ static bool SendDataCheck(const void *pdata)
 	return true;
 }
 
+/**
+ * @brief operate account
+ * @param pdata:the contract data
+ * @return
+ */
 static bool OperateAccount(const void *pdata)
 {
 	if(pdata == NULL)
@@ -143,6 +177,11 @@ static bool OperateAccount(const void *pdata)
 	return true;
 }
 
+/**
+ * @brief record send bet status
+ * @param pdata:the contract data
+ * @return
+ */
 static bool RecordSendBetStatus(const void *pdata)
 {
 	if(pdata == NULL)
@@ -182,11 +221,20 @@ static bool SendP2PBet(const void *pdata)
 	return true;
 }
 
+/**
+ * @brief check if the database have someone send a bet
+ * @return
+ */
 static bool IsHaveSendBet(void)
 {
 	return true;
 }
 
+/**
+ * @brief accept bet data check
+ * @param pdata:accept bet contract data
+ * @return
+ */
 static bool AcceptDataCheck(const void *pdata)
 {
 	SEND_DATA *psdata = (SEND_DATA *)pdata;
@@ -235,6 +283,11 @@ static bool AcceptDataCheck(const void *pdata)
 	return true;
 }
 
+/**
+ * @brief record accept bet status
+ * @param pdata:the contract data
+ * @return
+ */
 static bool RecordAcceptBetStatus(const void *pdata)
 {
 	if(pdata == NULL)
@@ -244,6 +297,11 @@ static bool RecordAcceptBetStatus(const void *pdata)
 	return true;
 }
 
+/**
+ * @brief accept a bet
+ * @param pdata:the contract data
+ * @return
+ */
 static bool AcceptP2PBet(const void *pdata)
 {
 	if(pdata == NULL)
@@ -269,18 +327,30 @@ static bool AcceptP2PBet(const void *pdata)
 	return true;
 }
 
+/**
+ * @brief check if the database have a full bet
+ * @return
+ */
 static bool IsHaveP2PBet(void)
 {
 	return true;
 }
 
+/**
+ * @brief chech if the bet is opened by himself in database
+ * @return
+ */
 static bool IsAlreadyOpen(void)
 {
 	return true;
 }
 
-
-
+/**
+ * @brief check if the open data is meet with hashdata
+ * @param pdata:input data
+ * @param len:input len
+ * @return
+ */
 static bool IsDataVaild(const void *pdata, u32 len)
 {
 	uchar checkhash[32] = {0};
@@ -295,6 +365,11 @@ static bool IsDataVaild(const void *pdata, u32 len)
 	return true;
 }
 
+/**
+ * @brief open bet data check
+ * @param pdata:the open bet contract data
+ * @return
+ */
 static bool OpenDataCheck(const void *pdata)
 {
 	OPEN_DATA *podata = (OPEN_DATA *)pdata;
@@ -322,6 +397,11 @@ static bool OpenDataCheck(const void *pdata)
 	return true;
 }
 
+/**
+ * @brief record open bet status
+ * @param pdata:the contract data
+ * @return
+ */
 static bool RecordOpenBetStatus(const void *pdata)
 {
 	if(pdata == NULL)
@@ -331,6 +411,11 @@ static bool RecordOpenBetStatus(const void *pdata)
 	return true;
 }
 
+/**
+ * @brief open a bet
+ * @param pdata:the open bet contract data
+ * @return
+ */
 static bool OpenP2PBet(const void *pdata)
 {
 	if(pdata == NULL)
