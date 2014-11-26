@@ -73,8 +73,7 @@ enum ACCOUNT_TYPE {
 	KEY_ID,
 };
 typedef struct tagVMOPERATE{
-	ACCOUNT_TYPE TYPE;
-	ACCOUNT_ID accountid;
+	unsigned char accountid[6];
 	OperType opeatortype;
 	unsigned long outheight;
 	Int64 money;

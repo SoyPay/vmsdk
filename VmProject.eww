@@ -8,6 +8,12 @@
     <path>$WS_DIR$\bet\Bet.ewp</path>
   </project>
   <project>
+    <path>$WS_DIR$\sendsriptid\script.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\sendsriptid\scripttest.ewp</path>
+  </project>
+  <project>
     <path>$WS_DIR$\sdk\sdk.ewp</path>
   </project>
   <project>
@@ -18,6 +24,9 @@
   </project>
   <project>
     <path>$WS_DIR$\testrollbackDB\testrollback.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\testscriptid\testscriptid.ewp</path>
   </project>
   <batchBuild/>
 </workspace>

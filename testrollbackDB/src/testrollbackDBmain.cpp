@@ -26,7 +26,6 @@ bool testDeleteDataDB()
 {
 	char* key = "key";
 	bool flag = DeleteDataDB(key,4);
-	LogPrint(&flag,1,HEX);
 	TestCheck(flag == true);
 	return true;
 }
@@ -43,6 +42,7 @@ bool testCheckModifyRoolbackDB()
 	char* key = "key1";
 	char buffer[7] = {0};
 	TestCheck(ReadDataValueDB(key,5,buffer,7)> 0);
+	LogPrint(buffer,7,STRING);
 	TestCheck(strcmp(buffer,"hellow")== 0);
 	return true;
 }
@@ -66,6 +66,7 @@ int main()
 	{
 		case 0x01:
 				{
+					LogPrint("testWriteDataDB",sizeof("testWriteDataDB"),STRING);
 					if(!testWriteDataDB())
 					{
 						LogPrint("testWriteDataDB error",sizeof("testWriteDataDB error"),STRING);
@@ -75,6 +76,7 @@ int main()
 				}
 		case 0x02:
 				{
+					LogPrint("testModifyDataDB",sizeof("testModifyDataDB"),STRING);
 					if(!testModifyDataDB())
 					{
 						LogPrint("testModifyDataDB error",sizeof("testModifyDataDB error"),STRING);
@@ -84,6 +86,7 @@ int main()
 				}
 		case 0x03:
 				{
+					LogPrint("testDeleteDataDB",sizeof("testDeleteDataDB"),STRING);
 					if(!testDeleteDataDB())
 					{
 						LogPrint("testDeleteDataDB error",sizeof("testDeleteDataDB error"),STRING);
@@ -93,18 +96,17 @@ int main()
 				}
 		case 0x04:
 				{
-					//Is4 = true;
-					LogPrint("start",sizeof("start"),STRING);
+					LogPrint("testCheckDeleteRoolbackDB",sizeof("testCheckDeleteRoolbackDB"),STRING);
 					if(!testCheckDeleteRoolbackDB())
 					{
 						LogPrint("testCheckDeleteRoolbackDB error",sizeof("testCheckDeleteRoolbackDB error"),STRING);
 						__exit(RUN_SCRIPT_DATA_ERR);
 					}
-					LogPrint("end",sizeof("end"),STRING);
 					break;
 				}
 		case 0x05:
 				{
+					LogPrint("testCheckModifyRoolbackDB",sizeof("testCheckModifyRoolbackDB"),STRING);
 					if(!testCheckModifyRoolbackDB())
 					{
 						LogPrint("testCheckModifyRoolbackDB error",sizeof("testCheckModifyRoolbackDB error"),STRING);
