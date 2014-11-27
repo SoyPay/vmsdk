@@ -5,6 +5,7 @@
 
 
 
+
 /**
  *LogPint format
  */
@@ -72,8 +73,7 @@ enum ACCOUNT_TYPE {
 	KEY_ID,
 };
 typedef struct tagVMOPERATE{
-	ACCOUNT_TYPE TYPE;
-	ACCOUNT_ID accountid;
+	unsigned char accountid[6];
 	OperType opeatortype;
 	unsigned long outheight;
 	Int64 money;
@@ -326,7 +326,7 @@ unsigned long GetDBSize();
  *
  */
 
-bool GetDBValue(const unsigned long index,void* const key,unsigned char * const keylen,void* const value,unsigned short* const maxbuffer, unsigned long* const ptime);
+bool GetDBValue(const unsigned long index,void* const key,unsigned char * const keylen,unsigned short maxkeylen,void* const value,unsigned short* const maxbuffer, unsigned long* const ptime);
 /**@brief
  *get current tip block height
  *@return return tip block height
@@ -357,14 +357,9 @@ bool GetCurTxHash(void * const poutHash);
  * @return: true Expressed permission false No authorization
  */
 bool IsAuthorited(const void* const account,const Int64* const pmoney);
-/**
- *
- * @param pfrist
- * @param len
- */
-void InsertOutData(void const* pfrist, unsigned short len);
+
 unsigned long GetMemeroyData(void * const pfrist, unsigned long const len);
-bool IsAccountRegID(const void* const account);
+bool IsRegID(const void* const account);
 /**@brief
  *@param account: the account id ,the account of length is 6
  *@param pout: run the functoin the define char put into pout
@@ -372,5 +367,14 @@ bool IsAccountRegID(const void* const account);
  *@return return the pout of length
  *
  */
-unsigned short GetAuthoritedDefine(const void* const account,void *const pout,const unsigned short maxlen);
+unsigned short GetAuthUserDefine(const void* const account,void *const pout,const unsigned short maxlen);
+
+bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* const pvalve,short maxlen);
+void inline PrintfLine(unsigned short sort)
+{
+	char bffer[20]={0};
+	sprintf(bffer,"line:%d ",sort);
+	LogPrint(bffer,strlen(bffer),STRING);
+}
+#define PrintLog(a,b,c) {if(!(a)) { PrintfLine(__LINE__),LogPrint(a,b,c);}}
 

@@ -1,0 +1,27 @@
+
+/*!
+
+\page lottery  彩票Demo
+
+
+主要玩法:
+
+-   Correct case conversion, case folding and normalization.
+-   Collation (sorting), including support for 4 Unicode
+    collation levels.
+-   ......
+
+\section 随机数的产生
+-	采用hash
+-	好东东
+-	公平的
+
+
+\section 返奖率
+-	99.99%
+
+- \subpage code
+    - \ref lottery.cpp
+
+*/
+

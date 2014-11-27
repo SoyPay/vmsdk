@@ -1,0 +1,21 @@
+
+/*!
+
+\mainpage VmSdk
+
+\section main_intro DACRS虚拟机API
+
+调用虚拟机API几乎可以实现当前所有山寨币功能
+
+
+\section main_tutorial 目录
+
+- \subpage VmSdk.h  "SDK"
+
+- \subpage Demo
+    - \ref lottery "彩票"
+- \subpage TestCode
+	- \ref APItest "APItest"
+	- \ref  Demo  "DemoTest"
+*/
+
