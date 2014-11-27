@@ -24,6 +24,8 @@
 
 #include <string.h>
 #include<stdlib.h>
+#include<stdio.h>
+#include <stdarg.h>
 #include"VmSdk.h"
 
 #define ACCOUNT_ID_SIZE 6
@@ -70,10 +72,32 @@ enum Role {
  * 			step5:权限自定义字段中的值与各角色是否匹配
  */
 
+void PrintString(const char *format, ...)
+{
+    va_list arg;
+    static char tmp[255];
+    va_start(arg, format);
+    vsprintf(tmp, format, arg);
+    va_end(arg);
+
+    LogPrint(tmp,strlen(tmp),STRING);
+}
+
+void PrintHex(const char *format, ...) {
+	va_list arg;
+	static char tmp[255];
+	va_start(arg, format);
+	vsprintf(tmp, format, arg);
+	va_end(arg);
+
+	LogPrint(tmp, strlen(tmp), HEX);
+}
+
 bool CheckContract1(const FIRST_CONTRACT* pContract) {
 	//step1
+	char szBuffer[100];
 	unsigned long nRunTimeHeight = GetCurRunEnvHeight();
-	if ((unsigned long)pContract->nHeight>nRunTimeHeight)
+	if ((unsigned long)pContract->nHeight<nRunTimeHeight)
 		return false;
 
 	//step2
@@ -82,25 +106,32 @@ bool CheckContract1(const FIRST_CONTRACT* pContract) {
 		return false;
 
 	//step3
-	if (1 != pContract->nArbitratorCount || IsAccountRegID((const void*)pContract->arbitrator[0].accounid) )
+	if (1 != pContract->nArbitratorCount || !IsAccountRegID((const void*)pContract->arbitrator[0].accounid) )
 		return false;
 
 	//step4
 	Int64	nTotalFreeMoney;
 	if (!QueryAccountBalance((const unsigned char* const)pContract->seller.accounid,ACOUNT_ID,&nTotalFreeMoney))
 		return false;
+	PrintString("44444444");
 	COMP_RET ret = Int64Compare(&pContract->nFineMoney,&nTotalFreeMoney);
 	if (COMP_ERR == ret || COMP_LARGER == ret)
 		return false;
 
+	//todo:check userdefine data
+	return true;
 	//step5
 	char szRole[10] = {0};
 	if (GetAuthoritedDefine((const void* const ) pContract->buyer.accounid, szRole, sizeof(szRole) / sizeof(szRole[0]))
 			|| BUYER != szRole[0])
 		return false;
+
+	PrintString("66666");
 	if (GetAuthoritedDefine((const void* const ) pContract->seller.accounid, szRole, sizeof(szRole) / sizeof(szRole[0]))
 			|| SELLER != szRole[0])
 		return false;
+
+	PrintString("77777");
 	if (GetAuthoritedDefine((const void* const ) pContract->arbitrator[0].accounid, szRole, sizeof(szRole) / sizeof(szRole[0]))
 			|| ARBITRATOR != szRole[0])
 		return false;
@@ -405,7 +436,7 @@ bool WriteDB4(const char* pKey,FIRST_CONTRACT* pFirstContract) {
  * @return
  */
 bool ProcessContract1(const FIRST_CONTRACT* pContract) {
-	if (!CheckContract1(pContract)) {
+	if (CheckContract1(pContract)) {
 		VM_OPERATE vmOper[2];
 		if (OperAccount1(vmOper, sizeof(vmOper) / sizeof(vmOper[0]), pContract))
 			return WriteOutput1(vmOper, sizeof(vmOper)/sizeof(vmOper[0]));
@@ -467,8 +498,7 @@ bool ProcessContract4(const ARBIT_RES_CONTRACT* pContract) {
 int main() {
 	__xdata static  char pContract[512];
 	unsigned long len = 512;
-	GetMemeroyData(pContract,len);
-
+	int nRet = GetMemeroyData(pContract,len);
 	#pragma data_alignment = 1
 //	FIRST_CONTRACT firstcontract;
 //	memcpy(firstcontract.buyer.accounid,"111111",ACCOUNT_ID_SIZE);
@@ -485,23 +515,30 @@ int main() {
 //	memcpy(secondcontract.hash,"11111111222222223333333344444444",32);
 //	secondcontract.nType = 2;
 //	memcpy(pContract,&secondcontract,sizeof(NEXT_CONTRACT));
+	bool bProcessRet = false;
 	switch (pContract[0]) {
 	case 1:
-		ProcessContract1((FIRST_CONTRACT*)pContract);
+		bProcessRet = ProcessContract1((FIRST_CONTRACT*)pContract);
 		break;
 
 	case 2:
-		ProcessContract2((NEXT_CONTRACT*)pContract);
+		bProcessRet = ProcessContract2((NEXT_CONTRACT*)pContract);
 		break;
 
 	case 3:
-		ProcessContract3((NEXT_CONTRACT*)pContract);
+		bProcessRet = ProcessContract3((NEXT_CONTRACT*)pContract);
 		break;
 
 	case 4:
-		ProcessContract4((ARBIT_RES_CONTRACT*)pContract);
+		bProcessRet = ProcessContract4((ARBIT_RES_CONTRACT*)pContract);
 		break;
 	}
+
+//	char* pRes = bProcessRet?"success":"failed";
+//	PrintString("exec res is %s",pRes);
+	PrintString("11111111111111");
+	__exit(RUN_SCRIPT_OK);
+	return 1;
 }
 
 
