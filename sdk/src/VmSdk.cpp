@@ -370,7 +370,7 @@ bool DeleteDataDB(const void* const key,const unsigned char keylen) {
 	return retdata->buffer[0];
 	//return falg;
 }
-extern  bool Is4 ;
+
 unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen, void* const value,unsigned short const maxbuffer) {
 	ClearParaSpace();
 	if(keylen <= 0 || maxbuffer <= 0)
