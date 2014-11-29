@@ -40,7 +40,7 @@ typedef struct  {
 	ACCOUNT_ID 	buyer;						//!<买家ID（采用6字节的账户ID）
 	ACCOUNT_ID seller;						//!<卖家ID（采用6字节的账户ID）
 	ACCOUNT_ID arbitrator[MAX_ARBITRATOR];	//!<仲裁者ID（采用6字节的账户ID）
-	int nHeight;							//!<超时绝对高度
+	long nHeight;							//!<超时绝对高度
 	Int64 nFineMoney;						//!<卖家违约后最大罚款金额
 	Int64 nPayMoney;						//!<买家向卖家支付的金额
 	Int64 nFee;								//!<仲裁手续费
@@ -88,6 +88,7 @@ bool CheckContract1(const FIRST_CONTRACT* pContract) {
 	unsigned long nRunTimeHeight = GetCurRunEnvHeight();
 	if ((unsigned long)pContract->nHeight<nRunTimeHeight)
 		return false;
+	PrintString("nHeight is %d",pContract->nHeight);
 
 	//step2
 	if (!IsRegID((const void* const)pContract->buyer.accounid) ||
@@ -95,17 +96,20 @@ bool CheckContract1(const FIRST_CONTRACT* pContract) {
 		return false;
 
 	//step3
-	if (1 != pContract->nArbitratorCount || IsRegID((const void*)pContract->arbitrator[0].accounid) )
+	if (1 != pContract->nArbitratorCount || !IsRegID((const void*)pContract->arbitrator[0].accounid) )
 		return false;
 
 	//step4
 	Int64	nTotalFreeMoney;
 	if (!QueryAccountBalance((const unsigned char* const)pContract->seller.accounid,ACOUNT_ID,&nTotalFreeMoney))
 		return false;
+
 	COMP_RET ret = Int64Compare(&pContract->nFineMoney,&nTotalFreeMoney);
 	if (COMP_ERR == ret || COMP_LARGER == ret)
 		return false;
 
+	//todo:check AuthUserDefine
+	return true;
 	//step5
 	char szRole[10] = {0};
 	if (GetAuthUserDefine((const void* const ) pContract->buyer.accounid, szRole, sizeof(szRole) / sizeof(szRole[0]))
@@ -132,19 +136,25 @@ bool CheckContract1(const FIRST_CONTRACT* pContract) {
 
 bool CheckContract2(const NEXT_CONTRACT* pContract,FIRST_CONTRACT* pFirstContract) {
 	//step1
+	PrintString("2-11111");
+	LogPrint(pContract->hash,32,HEX);
 	if (!GetTxContacts((const unsigned char * const)pContract->hash,(void* const)pFirstContract,sizeof(FIRST_CONTRACT)))
 		return false;
 
 	//step2
 	char szValue[2] = {0};
-	if (!ReadDataValueDB(pContract->hash,sizeof(pContract->hash),szValue,sizeof(szValue)/sizeof(szValue[0])))
+	PrintString("2-22222");
+	if (ReadDataValueDB(pContract->hash,sizeof(pContract->hash),szValue,sizeof(szValue)/sizeof(szValue[0]))
+			&& 1 == szValue[0])
 		return false;
 
 	//step3
+	PrintString("2-33333");
 	ACCOUNT_ID sellID;
 	if (ACCOUNT_ID_SIZE != GetAccounts((const unsigned char *)pContract->hash,(void*)sellID.accounid,sizeof(sellID))
 			||!memcmp((const void*)sellID.accounid,(const void*)pFirstContract->seller.accounid,ACCOUNT_ID_SIZE) )
 		return false;
+	PrintString("2-4444");
 	return true;
 }
 
@@ -155,19 +165,23 @@ bool CheckContract2(const NEXT_CONTRACT* pContract,FIRST_CONTRACT* pFirstContrac
  */
 bool CheckContract3(const NEXT_CONTRACT* pContract, FIRST_CONTRACT* pFirstContract) {
 	//step1
+	PrintString("3-1111");
 	NEXT_CONTRACT contract2;
 	if (!GetTxContacts((const unsigned char * const ) pContract->hash, (void* const ) &contract2, sizeof(NEXT_CONTRACT)))
 		return false;
 
+	PrintString("3-2222");
 	if (!GetTxContacts((const unsigned char * const ) contract2.hash, (void* const ) pFirstContract,
 			sizeof(FIRST_CONTRACT)))
 		return false;
 
 	//step2
+	PrintString("3-3333");
 	char szValue[2] = { 0 };
 	if (!ReadDataValueDB(pContract->hash, sizeof(pContract->hash), szValue, sizeof(szValue) / sizeof(szValue[0])))
 		return false;
 
+	PrintString("3-4444");
 	return true;
 }
 
@@ -211,56 +225,62 @@ bool CheckContract4(const ARBIT_RES_CONTRACT* pContract, FIRST_CONTRACT* pFirstC
  * @param pContract 第一个合约结构
  */
 bool OperAccount1(VM_OPERATE *vmoper,unsigned char nVmSize,const void* pContract) {
+	PrintString("OperAccount1  1");
 	if (NULL == vmoper || NULL == pContract || nVmSize!=2)
 		return false;
 
+	PrintString("OperAccount1  2");
 	FIRST_CONTRACT* pContractData = (FIRST_CONTRACT*)pContract;
-	vmoper[0].accountid = pContractData->buyer;
+	memcpy(vmoper[0].accountid,pContractData->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[0].opeatortype = MINUS_FREE;
 	vmoper[0].outheight = pContractData->nHeight;
 	vmoper[0].money = pContractData->nPayMoney;
+	LogPrint(vmoper[0].money.data,8,HEX);
+	LogPrint(vmoper[0].accountid,6,HEX);
 
-	vmoper[1].accountid = pContractData->buyer;
+	memcpy(vmoper[1].accountid,pContractData->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[1].opeatortype = ADD_FREEZD;
 	vmoper[1].outheight = pContractData->nHeight;
 	vmoper[1].money = pContractData->nPayMoney;
-
+	LogPrint(vmoper[1].accountid,6,HEX);
   return true;
 }
 
 /**
- * @brief step1:从买家的自由金额中扣除金额(应支付给卖家的钱)\n
- *        step2:把上一步操作的钱转入买家的冻结金额中
+ * @brief step1:从买家的冻结转入卖家的冻结金额中\n
+ * 		  step2:卖家自由金额中扣除最大罚款到冻结金额中
  * @param vmoper 操作账户的结构体数组
  * @param nVmSize 数组大小
- * @param pContract 第一个合约结构
+ * @param pContract 第二个合约结构
  */
 bool OperAccount2(VM_OPERATE *vmoper, unsigned short nVmSize,FIRST_CONTRACT* pFirstContract) {
 	if (NULL == vmoper || NULL == pFirstContract || nVmSize != 4)
 		return false;
 
+	PrintString("id in OperAccount2:");
+	LogPrint(pFirstContract->buyer.accounid,6,HEX);
+	LogPrint(pFirstContract->seller.accounid,6,HEX);
 	//step1
-	vmoper[0].accountid = pFirstContract->buyer;
+	unsigned long nHeight = 98/*pFirstContract->nHeight*/;
+	memcpy(vmoper[0].accountid,pFirstContract->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[0].opeatortype = MINUS_FREEZD;
-	vmoper[0].outheight = pFirstContract->nHeight;
+	vmoper[0].outheight = nHeight;
 	vmoper[0].money = pFirstContract->nPayMoney;
 
-	vmoper[1].TYPE = ACOUNT_ID;
-	vmoper[1].accountid = pFirstContract->seller;
+	memcpy(vmoper[1].accountid,pFirstContract->seller.accounid,ACCOUNT_ID_SIZE);
 	vmoper[1].opeatortype = ADD_FREEZD;
-	vmoper[1].outheight = pFirstContract->nHeight;
+	vmoper[1].outheight = nHeight;
 	vmoper[1].money = pFirstContract->nPayMoney;
 
 	//step 2
-	vmoper[2].accountid = pFirstContract->buyer;
+	memcpy(vmoper[2].accountid,pFirstContract->seller.accounid,ACCOUNT_ID_SIZE);
 	vmoper[2].opeatortype = MINUS_FREE;
-	vmoper[2].outheight = pFirstContract->nHeight;
+	vmoper[2].outheight = nHeight;
 	vmoper[2].money = pFirstContract->nFineMoney;
 
-	vmoper[3].TYPE = ACOUNT_ID;
-	vmoper[3].accountid = pFirstContract->seller;
+	memcpy(vmoper[3].accountid,pFirstContract->seller.accounid,ACCOUNT_ID_SIZE);
 	vmoper[3].opeatortype = ADD_FREEZD;
-	vmoper[3].outheight = pFirstContract->nHeight;
+	vmoper[3].outheight = nHeight;
 	vmoper[3].money = pFirstContract->nFineMoney;
 	return true;
 }
@@ -275,12 +295,12 @@ bool OperAccount3(VM_OPERATE *vmoper, unsigned short nVmSize,FIRST_CONTRACT* pFi
 	if (NULL == vmoper || NULL == pFirstContract || nVmSize != 2)
 		return false;
 
-	vmoper[0].accountid = pFirstContract->arbitrator[0];
+	memcpy(vmoper[0].accountid,pFirstContract->arbitrator[0].accounid,ACCOUNT_ID_SIZE);
 	vmoper[0].opeatortype = MINUS_FREE;
 	vmoper[0].outheight = pFirstContract->nHeight;
 	vmoper[0].money = pFirstContract->ndeposit;
 
-	vmoper[1].accountid = pFirstContract->buyer;
+	memcpy(vmoper[1].accountid,pFirstContract->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[1].opeatortype = ADD_FREEZD;
 	vmoper[1].outheight = pFirstContract->nHeight;
 	vmoper[1].money = pFirstContract->ndeposit;
@@ -299,34 +319,34 @@ bool OperAccount4(VM_OPERATE *vmoper, unsigned short nVmSize,FIRST_CONTRACT* pFi
 		return false;
 
 	//step 1
-	vmoper[0].accountid = pFirstContract->seller;
+	memcpy(vmoper[0].accountid,pFirstContract->seller.accounid,ACCOUNT_ID_SIZE);
 	vmoper[0].opeatortype = MINUS_FREEZD;
 	vmoper[0].outheight = pFirstContract->nHeight;
 	vmoper[0].money = pFirstContract->nFineMoney;
 
-	vmoper[1].accountid = pFirstContract->buyer;
+	memcpy(vmoper[1].accountid,pFirstContract->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[1].opeatortype = ADD_FREE;
 	vmoper[1].outheight = pFirstContract->nHeight;
 	vmoper[1].money = pFirstContract->nFineMoney;
 
 	//step 2
-	vmoper[2].accountid = pFirstContract->buyer;
+	memcpy(vmoper[2].accountid,pFirstContract->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[2].opeatortype = MINUS_FREEZD;
 	vmoper[2].outheight = pFirstContract->nHeight;
 	vmoper[2].money = pFirstContract->ndeposit;
 
-	vmoper[3].accountid = pFirstContract->arbitrator[0];
+	memcpy(vmoper[3].accountid,pFirstContract->arbitrator[0].accounid,ACCOUNT_ID_SIZE);
 	vmoper[3].opeatortype = ADD_FREE;
 	vmoper[3].outheight = pFirstContract->nHeight;
 	vmoper[3].money = pFirstContract->ndeposit;
 
 	//step 3
-	vmoper[4].accountid = pFirstContract->buyer;
+	memcpy(vmoper[4].accountid,pFirstContract->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[4].opeatortype = MINUS_FREE;
 	vmoper[4].outheight = pFirstContract->nHeight;
 	vmoper[4].money = pFirstContract->nFee;
 
-	vmoper[5].accountid = pFirstContract->arbitrator[0];
+	memcpy(vmoper[5].accountid,pFirstContract->arbitrator[0].accounid,ACCOUNT_ID_SIZE);
 	vmoper[5].opeatortype = ADD_FREE;
 	vmoper[5].outheight = pFirstContract->nHeight;
 	vmoper[5].money = pFirstContract->nFee;
@@ -382,7 +402,7 @@ bool WriteOutput4( const VM_OPERATE* data, unsigned short conter){
  */
 bool WriteDB2(const char* pKey,FIRST_CONTRACT* pFirstContract) {
 	bool bFlag = true;
-	return WriteDataDB((const void* const)pKey,32,&bFlag,1,pFirstContract->nHeight);
+	return WriteDataDB((const void* const)pKey,HASH_SIZE,&bFlag,1,pFirstContract->nHeight);
 }
 
 /**
@@ -425,7 +445,7 @@ bool ProcessContract1(const FIRST_CONTRACT* pContract) {
 bool ProcessContract2(const NEXT_CONTRACT* pContract) {
 	VM_OPERATE vmOper[4];
 	FIRST_CONTRACT firstcontract;
-	if (!CheckContract2(pContract,&firstcontract)) {
+	if (CheckContract2(pContract,&firstcontract)) {
 		if (OperAccount2(vmOper, sizeof(vmOper) / sizeof(vmOper[0]), &firstcontract)) {
 			if (WriteDB2((const char*)pContract->hash,&firstcontract))
 				return WriteOutput2(vmOper, sizeof(vmOper)/sizeof(vmOper[0]));
@@ -472,6 +492,7 @@ int main() {
 	__xdata static  char pContract[512];
 	unsigned long len = 512;
 	int nRet = GetMemeroyData(pContract,len);
+	PrintString("nRet is %d",nRet);
 	#pragma data_alignment = 1
 //	FIRST_CONTRACT firstcontract;
 //	memcpy(firstcontract.buyer.accounid,"111111",ACCOUNT_ID_SIZE);
@@ -510,6 +531,14 @@ int main() {
 //	char* pRes = bProcessRet?"success":"failed";
 //	PrintString("exec res is %s",pRes);
 	PrintString("11111111111111");
-	__exit(RUN_SCRIPT_OK);
+	if (bProcessRet)
+	{
+		__exit(RUN_SCRIPT_OK);
+	}
+	else
+	{
+		__exit(RUN_SCRIPT_DATA_ERR);
+	}
+
 	return 1;
 }
