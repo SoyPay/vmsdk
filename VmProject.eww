@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\anonymous\anony.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\bet\Bet.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\sendsriptid\scripttest.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\sdk\sdk.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\SecuredTrade\SecuredTrade.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\testUint\test.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\APItest\TestAPI.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\testrollbackDB\testrollback.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\testscriptid\testscriptid.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>
+
+
