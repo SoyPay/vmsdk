@@ -327,7 +327,7 @@ unsigned long GetTxConFirmHeight(const void * const txhash) {
 
 	unsigned long height = 0;
 	memcpy(&height, retdata->buffer, retdata->len);
-	return true;
+	return height;
 }
 bool WriteDataDB(const void* const key,const unsigned char keylen,const void * const value,const unsigned short valuelen,const unsigned long time) {
 	ClearParaSpace();
@@ -370,7 +370,7 @@ bool DeleteDataDB(const void* const key,const unsigned char keylen) {
 	return retdata->buffer[0];
 	//return falg;
 }
-extern  bool Is4 ;
+
 unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen, void* const value,unsigned short const maxbuffer) {
 	ClearParaSpace();
 	if(keylen <= 0 || maxbuffer <= 0)
