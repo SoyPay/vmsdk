@@ -9,6 +9,7 @@
 #include"VmSdk.h"
 
 typedef unsigned char uchar;
+typedef unsigned int u16;
 typedef unsigned long u32;
 
 /**
@@ -27,7 +28,7 @@ typedef struct {
 	OPERATETYPE type;
 	Int64 money;
 	u32 hight;
-	uchar dhash[32];
+	uchar dhash[33];//32 + one byte checksum
 }SEND_DATA;
 
 /**
@@ -36,7 +37,7 @@ typedef struct {
 typedef struct {
 	OPERATETYPE type;
 	Int64 money;
-	uchar dhash[32];
+	uchar dhash[33];//32 + one byte checksum
 }ACCEPT_DATA;
 
 /**
@@ -47,17 +48,51 @@ typedef struct {
 	uchar dhash[5];
 }OPEN_DATA;
 
+enum BETSTATUS {
+	BETSEND,  //!< SEND
+	BETACCEPT,//!< ACCEPT
+	BETOPEN1,//!< ONE OPEN
+	BETOPEN   //!< OPEN
+};
+
+/**
+ * the data struct saved in database
+ */
+typedef struct {
+	BETSTATUS status;
+	uchar sendid[6];//send bet account id
+	uchar acceptid[6];//accept bet account id
+	Int64 money;//bet amount
+	uchar shash[33];//send data hash
+	uchar ahash[33];//accept data hash
+	uchar sdata[5];//send data
+	uchar adata[5];//accept data
+}SAVE_DATA;
+
+
 /**
  * @brief get contract data
  * @param pdata:out data point
  * @return
  */
-static bool GetContractData(const void *pdata)
+static bool GetContractData(void const *pdata, u16 bufsize)
 {
-	if(pdata == NULL)
+	uchar txhash[32] = {0};
+	if(pdata == NULL || bufsize == 0)
 	{
 		return false;
 	}
+
+	if(!GetCurTxHash(txhash))
+	{
+		return false;
+	}
+
+	if(!GetTxContacts(txhash, (void* const)pdata, bufsize))
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -68,10 +103,20 @@ static bool GetContractData(const void *pdata)
  */
 static bool CheckMinimumAmount(const Int64 *pdata)
 {
+	Int64 minamount;
+
 	if(pdata == NULL)
 	{
 		return false;
 	}
+
+	Int64Inital(&minamount,"\x00\x00\x00\x00\x00\x01\x00\x00",8);
+
+	if(Int64Compare(pdata, &minamount) != COMP_LARGER)
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -102,7 +147,18 @@ static bool CheckSendBetHight(const u32 *phight)
  */
 static bool CheckDataHash(const void *pdata)
 {
+	uchar checksum = 0;
 	if(pdata == NULL)
+	{
+		return false;
+	}
+
+	for(uchar ii = 0; ii < 32; ii++)
+	{
+		checksum += pdata[ii];
+	}
+
+	if(checksum != pdata[32])
 	{
 		return false;
 	}
@@ -170,11 +226,102 @@ static bool SendDataCheck(const void *pdata)
  */
 static bool OperateAccount(const void *pdata)
 {
-	if(pdata == NULL)
+	OPEN_DATA *phandle = (OPEN_DATA *)pdata;
+	bool ret = false;
+
+	switch(phandle->type)
 	{
-		return false;
+	case SEND:
+		{
+			VM_OPERATE operate;
+			uchar txhash[32] = {0};
+			SEND_DATA *psdata = (SEND_DATA *)pdata;
+
+			if(pdata == NULL)
+			{
+				return false;
+			}
+
+			if(!GetCurTxHash(txhash))
+			{
+				return false;
+			}
+
+			GetAccounts(txhash, operate.accountid, sizeof(operate.accountid));
+
+			operate.money = psdata->money;
+			operate.opeatortype = MINUS_FREE;
+			operate.outheight = psdata->hight;
+
+			WriteOutput(&operate, 1);
+
+			ret = true;
+		}
+		break;
+
+	case ACCEPT:
+		{
+			VM_OPERATE operate;
+			uchar txhash[32] = {0};
+			ACCEPT_DATA *psdata = (ACCEPT_DATA *)pdata;
+
+			if(pdata == NULL)
+			{
+				return false;
+			}
+
+			if(!GetCurTxHash(txhash))
+			{
+				return false;
+			}
+
+			GetAccounts(txhash, operate.accountid, sizeof(operate.accountid));
+
+			operate.money = psdata->money;
+			operate.opeatortype = MINUS_FREE;
+			operate.outheight = 100;//???
+
+			WriteOutput(&operate, 1);
+
+			ret = true;
+		}
+		break;
+
+	case OPEN:
+		{
+			SAVE_DATA savedata;
+			if(ReadDataValueDB("test", sizeof("test"), &savedata, sizeof(SAVE_DATA)))
+			{
+				return false;
+			}
+
+			if(savedata.status == BETACCEPT)//fisrt open
+			{
+
+			}
+			else if(savedata.status == BETOPEN1)//second open
+			{
+
+			}
+			else//error status
+			{
+				ret = false;
+				break;
+			}
+
+
+			ret = true;
+		}
+		break;
+
+	default:
+		{
+			ret = false;
+		}
+		break;
 	}
-	return true;
+
+	return ret;
 }
 
 /**
@@ -184,10 +331,34 @@ static bool OperateAccount(const void *pdata)
  */
 static bool RecordSendBetStatus(const void *pdata)
 {
+	SEND_DATA *psdata = (SEND_DATA *)pdata;
+	SAVE_DATA savedata;
+
 	if(pdata == NULL)
 	{
 		return false;
 	}
+
+	memset(&savedata, 0, sizeof(SAVE_DATA));
+	savedata.status = BETSEND;
+	savedata.money = psdata->money;
+	savedata.shash = psdata->dhash;
+
+	{
+		uchar txhash[32] = {0};
+		if(!GetCurTxHash(txhash))
+		{
+			return false;
+		}
+
+		GetAccounts(txhash, savedata.sendid, sizeof(savedata.sendid));
+	}
+
+	if(WriteDataDB("test", sizeof("test"), &savedata, sizeof(SAVE_DATA), 12345))
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -227,6 +398,39 @@ static bool SendP2PBet(const void *pdata)
  */
 static bool IsHaveSendBet(void)
 {
+	SAVE_DATA savedata;
+
+	if(ReadDataValueDB("test", sizeof("test"), &savedata, sizeof(SAVE_DATA)))
+	{
+		return false;
+	}
+
+	if(savedata.status != BETSEND)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+static bool IsEqualSendAmount(const Int64 *pdata)
+{
+	SAVE_DATA savedata;
+	if(pdata == NULL)
+	{
+		return false;
+	}
+
+	if(ReadDataValueDB("test", sizeof("test"), &savedata, sizeof(SAVE_DATA)))
+	{
+		return false;
+	}
+
+	if(Int64Compare(pdata, &savedata.money) != COMP_LARGER)
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -251,7 +455,7 @@ static bool AcceptDataCheck(const void *pdata)
 		return false;
 	}
 
-	if(!CheckMinimumAmount(&psdata->money))
+	if(!IsEqualSendAmount(&psdata->money))
 	{
 		return false;
 	}
@@ -290,10 +494,36 @@ static bool AcceptDataCheck(const void *pdata)
  */
 static bool RecordAcceptBetStatus(const void *pdata)
 {
+	SAVE_DATA savedata;
+	ACCEPT_DATA *psdata = (ACCEPT_DATA *)pdata;
 	if(pdata == NULL)
 	{
 		return false;
 	}
+
+	if(ReadDataValueDB("test", sizeof("test"), &savedata, sizeof(SAVE_DATA)))
+	{
+		return false;
+	}
+
+	savedata.status = ACCEPT;
+	savedata.ahash = psdata->dhash;
+
+	{
+		uchar txhash[32] = {0};
+		if(!GetCurTxHash(txhash))
+		{
+			return false;
+		}
+
+		GetAccounts(txhash, savedata.acceptid, sizeof(savedata.sendid));
+	}
+
+	if(ModifyDataDBVavle("test", sizeof("test"), &savedata, sizeof(SAVE_DATA)))
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -333,15 +563,17 @@ static bool AcceptP2PBet(const void *pdata)
  */
 static bool IsHaveP2PBet(void)
 {
-	return true;
-}
+	SAVE_DATA savedata;
+	if(ReadDataValueDB("test", sizeof("test"), &savedata, sizeof(SAVE_DATA)))
+	{
+		return false;
+	}
 
-/**
- * @brief chech if the bet is opened by himself in database
- * @return
- */
-static bool IsAlreadyOpen(void)
-{
+	if(savedata.status != BETACCEPT || savedata.status != BETOPEN1)
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -353,7 +585,7 @@ static bool IsAlreadyOpen(void)
  */
 static bool IsDataVaild(const void *pdata, u32 len)
 {
-	uchar checkhash[32] = {0};
+	uchar checkhash[33] = {0};
 
 	if(pdata == NULL || len == 0)
 	{
@@ -361,6 +593,46 @@ static bool IsDataVaild(const void *pdata, u32 len)
 	}
 
 	SHA256(pdata, len, checkhash);
+
+	for(uchar ii = 0; ii < 32; ii++)
+	{
+		checkhash[32] += checkhash[ii];
+	}
+
+	{
+		SAVE_DATA savedata;
+		if(ReadDataValueDB("test", sizeof("test"), &savedata, sizeof(SAVE_DATA)))
+		{
+			return false;
+		}
+
+		uchar txhash[32] = {0}, accid[6] = {0};
+		if(!GetCurTxHash(txhash))
+		{
+			return false;
+		}
+
+		GetAccounts(txhash, accid, sizeof(accid));
+
+		if(memcmp(accid, savedata.acceptid, sizeof(accid)) == 0)
+		{
+			if(memcmp(checkhash, savedata.ahash, sizeof(checkhash)) != 0)
+			{
+				return false;
+			}
+		}
+		else if(memcmp(accid, savedata.sendid, sizeof(accid)) == 0)
+		{
+			if(memcmp(checkhash, savedata.shash, sizeof(checkhash)) != 0)
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -384,11 +656,6 @@ static bool OpenDataCheck(const void *pdata)
 		return false;
 	}
 
-	if(!IsAlreadyOpen())
-	{
-		return false;
-	}
-
 	if(!IsDataVaild(podata->dhash, sizeof(podata->dhash)))
 	{
 		return false;
@@ -404,10 +671,24 @@ static bool OpenDataCheck(const void *pdata)
  */
 static bool RecordOpenBetStatus(const void *pdata)
 {
+	SAVE_DATA savedata;
 	if(pdata == NULL)
 	{
 		return false;
 	}
+
+	if(ReadDataValueDB("test", sizeof("test"), &savedata, sizeof(SAVE_DATA)))
+	{
+		return false;
+	}
+
+	savedata.status = OPEN;
+
+	if(ModifyDataDBVavle("test", sizeof("test"), &savedata, sizeof(SAVE_DATA)))
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -481,21 +762,15 @@ static bool RunContractData(const void *pdata)
 
 int main()
 {
-	unsigned char *pcontract = NULL;
+	uchar contractbuf[256] = {0};
 
-	if(GetContractData(pcontract))
+	if(!GetContractData(contractbuf, sizeof(contractbuf)))
 	{
 		printf("get contract err, GetContractData return false!\r\n");
 		return 0;
 	}
 
-	if(pcontract == NULL)
-	{
-		printf("get contract err, pcontract == NULL!\r\n");
-		return 0;
-	}
-
-	if(RunContractData(pcontract))
+	if(RunContractData(contractbuf))
 	{
 		printf("run contract data err, RunContractData return false!\r\n");
 		return 0;
