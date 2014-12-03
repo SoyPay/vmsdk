@@ -217,37 +217,47 @@ static bool SendDataCheck(const BET_CTX *pbetctx)
 static bool SendOperateAccount(const BET_CTX *pbetctx)
 {
 	SEND_DATA *psdata = (SEND_DATA *)gContractData;
-	VM_OPERATE operate;
+	VM_OPERATE operate[2];
 
 	if(pbetctx == NULL)
 	{
 		return false;
 	}
 
-	operate.accountid = pbetctx->accid;
-	operate.money = psdata->money;
-	operate.opeatortype = MINUS_FREE;
-	operate.outheight = psdata->hight;
+	operate[0].accountid = pbetctx->accid;
+	operate[0].money = psdata->money;
+	operate[0].opeatortype = MINUS_FREE;
+	operate[0].outheight = psdata->hight;
 
-    return WriteOutput(&operate, 1);
+	operate[1].accountid = pbetctx->accid;
+	operate[1].money = psdata->money;
+	operate[1].opeatortype = ADD_FREEZD;
+	operate[1].outheight = psdata->hight;
+
+    return WriteOutput(operate, 2);
 }
 
 static bool AcceptOperateAccount(const BET_CTX *pbetctx)
 {
 	ACCEPT_DATA *psdata = (ACCEPT_DATA *)gContractData;
-	VM_OPERATE operate;
+	VM_OPERATE operate[2];
 
 	if(pbetctx == NULL)
 	{
 		return false;
 	}
 
-	operate.accountid = pbetctx->accid;
-	operate.money = psdata->money;
-	operate.opeatortype = MINUS_FREE;
-	operate.outheight = gSaveData.hight;
+	operate[0].accountid = pbetctx->accid;
+	operate[0].money = psdata->money;
+	operate[0].opeatortype = MINUS_FREE;
+	operate[0].outheight = gSaveData.hight;
 
-	return WriteOutput(&operate, 1);
+	operate[1].accountid = pbetctx->accid;
+	operate[1].money = psdata->money;
+	operate[1].opeatortype = ADD_FREEZD;
+	operate[1].outheight = gSaveData.hight;
+
+	return WriteOutput(operate, 2);
 }
 
 static bool OpenOperateAccount(const BET_CTX *pbetctx)
