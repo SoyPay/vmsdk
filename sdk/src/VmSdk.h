@@ -1,6 +1,6 @@
 #define MAX_LEN 21
 #define MAX_PUK_LEN 65
-#define MAX_ACCOUNT_LEN 20
+#define MAX_ACCOUNT_LEN 6
 #define check(a) {if(!(a)) { __exit(RUN_SCRIPT_DATA_ERR);}}
 
 
@@ -370,6 +370,14 @@ bool IsRegID(const void* const account);
 unsigned short GetAuthUserDefine(const void* const account,void *const pout,const unsigned short maxlen);
 
 bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* const pvalve,short maxlen);
+/**@brief
+ *@param account: the scriplt account id ,the account of length is 6
+ *@param account: run the functoin the define char put into pout
+ *@return return true
+ *
+ */
+bool GetCurScritpAccount(void* const account);
+bool GetCurTxAccount(void * const account,unsigned short maxlen);
 void inline PrintfLine(unsigned short sort)
 {
 	char bffer[20]={0};

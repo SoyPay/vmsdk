@@ -6,77 +6,54 @@
   <configuration>
     <name>Debug</name>
     <outputs>
-      <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
-      <file>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</file>
-      <file>$PROJ_DIR$\src\TestAPImain.cpp</file>
+      <file>$PROJ_DIR$\Debug\Exe\TestAPI.bin</file>
+      <file>$PROJ_DIR$\Debug\Obj\TestAPImain.r51</file>
+      <file>$PROJ_DIR$\src\main.cpp</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\TestAPImain.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.r51</file>
       <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
       <file>$TOOLKIT_DIR$\lib\dlib\dl8051Normal.h</file>
       <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
       <file>$PROJ_DIR$\main.cpp</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
-      <file>$TOOLKIT_DIR$\lib\dlib\dl-pli-nlxd-1e16x01n.r51</file>
       <file>$PROJ_DIR$\Debug\Exe\TestAPI.d51</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
+      <file>$TOOLKIT_DIR$\lib\dlib\dl-pli-nlxd-1e16x01n.r51</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
+      <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
+      <file>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</file>
+      <file>$PROJ_DIR$\src\TestAPImain.cpp</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
-      <file>$PROJ_DIR$\Debug\Exe\TestAPI.bin</file>
-      <file>$PROJ_DIR$\Debug\Obj\TestAPImain.r51</file>
-      <file>$PROJ_DIR$\src\main.cpp</file>
-      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\TestAPImain.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
     </outputs>
     <file>
-      <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>
+      <name>$PROJ_DIR$\src\main.cpp</name>
       <outputs>
         <tool>
           <name>ICC8051</name>
+          <file> 6</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
           <file> 3</file>
         </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 21</file>
-        </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 13 14 9 12 6 15 16 17 18 19 20 5 0</file>
+          <file> 12 19 15 13 8 20 21 26 25 22 24 7 16</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 13 14 9 12 6 15 16 17 18 19 20 5 0</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\src\TestAPImain.cpp</name>
-      <outputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 23</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 26</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 13 14 9 12 6 15 16 17 18 19 20 5 0</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 13 14 9 12 6 15 16 17 18 19 20 5 0</file>
+          <file> 12 19 15 13 8 20 21 26 25 22 24 7 16</file>
         </tool>
       </inputs>
     </file>
@@ -85,11 +62,11 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 4</file>
+          <file> 6</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 25</file>
+          <file> 3</file>
         </tool>
       </outputs>
     </file>
@@ -98,36 +75,59 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 22</file>
+          <file> 0</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 7 23 3 10</file>
+          <file> 9 1 5 14</file>
         </tool>
       </inputs>
     </file>
     <file>
-      <name>$PROJ_DIR$\src\main.cpp</name>
+      <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 4</file>
+          <file> 5</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 25</file>
+          <file> 23</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 13 14 9 12 6 15 16 17 18 19 20 5 0</file>
+          <file> 12 19 15 13 8 20 21 26 25 22 24 7 16</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 13 14 9 12 6 15 16 17 18 19 20 5 0</file>
+          <file> 12 19 15 13 8 20 21 26 25 22 24 7 16</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\src\TestAPImain.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 1</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 4</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 12 19 15 13 8 20 21 26 25 22 24 7 16</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 12 19 15 13 8 20 21 26 25 22 24 7 16</file>
         </tool>
       </inputs>
     </file>
@@ -136,7 +136,7 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 11 22</file>
+          <file> 0 11</file>
         </tool>
       </outputs>
     </file>

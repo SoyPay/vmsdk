@@ -13,13 +13,13 @@
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
       <file>$PROJ_DIR$\Debug\Obj\Demo.r51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
+      <file>$PROJ_DIR$\Debug\Exe\sdk.bin</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
       <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
       <file>$PROJ_DIR$\Debug\Obj\Demo.pbi</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
-      <file>$PROJ_DIR$\Debug\Exe\sdk.bin</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
       <file>$TOOLKIT_DIR$\lib\dlib\dl8051Normal.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
@@ -33,6 +33,15 @@
       <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
     </outputs>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 7 20</file>
+        </tool>
+      </outputs>
+    </file>
     <file>
       <name>$PROJ_DIR$\src\VmSdk.cpp</name>
       <outputs>
@@ -48,11 +57,11 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 16 9 17 8 14 6 12 4 3 21 15 10 0</file>
+          <file> 16 13 17 10 14 6 8 4 3 21 15 11 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 16 9 17 8 14 6 12 4 3 21 15 10 0</file>
+          <file> 16 13 17 10 14 6 8 4 3 21 15 11 0</file>
         </tool>
       </inputs>
     </file>
@@ -65,28 +74,19 @@
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 11</file>
+          <file> 12</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 16 9 17 8 14 6 12 4 3 21 15 10 0</file>
+          <file> 16 13 17 10 14 6 8 4 3 21 15 11 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 16 9 17 8 14 6 12 4 3 21 15 10 0</file>
+          <file> 16 13 17 10 14 6 8 4 3 21 15 11 0</file>
         </tool>
       </inputs>
-    </file>
-    <file>
-      <name>[ROOT_NODE]</name>
-      <outputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 13 20</file>
-        </tool>
-      </outputs>
     </file>
     <file>
       <name>$PROJ_DIR$\main.cpp</name>
@@ -106,13 +106,13 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 13</file>
+          <file> 7</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 7 5 19 23</file>
+          <file> 9 5 19 23</file>
         </tool>
       </inputs>
     </file>
