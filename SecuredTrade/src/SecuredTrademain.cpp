@@ -1,30 +1,31 @@
 /*! \mainpage Developer documentation
  *
- * \section Âò¼Ò¹ºÂò½»Ò×°ü
- *ÃèÊö£ºÂòÂô Ë«·½ÉÌÁ¿ºÃ½»Ò×¼Û¸ñ£¬³¬Ê±Ê±¼ä£¬²Ã¾öÈËµÈ£¬Âò¼Ò×éºÏºÃ½»Ò×°ü\n
- *º¯Êı£ºbool ProcessContract1(const FIRST_CONTRACT* pContract);\n
+ * \section ä¹°å®¶è´­ä¹°äº¤æ˜“åŒ…
+ *æè¿°ï¼šä¹°å– åŒæ–¹å•†é‡å¥½äº¤æ˜“ä»·æ ¼ï¼Œè¶…æ—¶æ—¶é—´ï¼Œè£å†³äººç­‰ï¼Œä¹°å®¶ç»„åˆå¥½äº¤æ˜“åŒ…\n
+ *å‡½æ•°ï¼šbool ProcessContract1(const FIRST_CONTRACT* pContract);\n
 
 
- *\section Âô¼ÒÈ·ÈÏ°ü
- *ÃèÊö£ºÂô¼Ò½ÓÊÜÂò¼ÒµÄ×ªÕË\n
- *º¯Êı£ºbool ProcessContract2(const NEXT_CONTRACT* pContract);\n
+ *\section å–å®¶ç¡®è®¤åŒ…
+ *æè¿°ï¼šå–å®¶æ¥å—ä¹°å®¶çš„è½¬è´¦\n
+ *å‡½æ•°ï¼šbool ProcessContract2(const NEXT_CONTRACT* pContract);\n
  *
  *
- *\section Âò¼ÒÉêËß°ü
- *ÃèÊö£ºÂô¼Ò²»·¢»õ£¬Âò¼ÒÌá³öÉêËß\n
- *º¯Êı£ºbool ProcessContract3(const NEXT_CONTRACT* pContract);\n
+ *\section ä¹°å®¶ç”³è¯‰åŒ…
+ *æè¿°ï¼šå–å®¶ä¸å‘è´§ï¼Œä¹°å®¶æå‡ºç”³è¯‰\n
+ *å‡½æ•°ï¼šbool ProcessContract3(const NEXT_CONTRACT* pContract);\n
  *
  *
- *\section ÖÙ²Ã½á¹û°ü
- *ÃèÊö£ºÖÙ²ÃÅĞ¾ö½á¹û\n
- *º¯Êı£ºbool ProcessContract3(const NEXT_CONTRACT* pContract);\n
+ *\section ä»²è£ç»“æœåŒ…
+ *æè¿°ï¼šä»²è£åˆ¤å†³ç»“æœ\n
+ *å‡½æ•°ï¼šbool ProcessContract3(const NEXT_CONTRACT* pContract);\n
  *
  *.
  */
 
 #include <string.h>
 #include<stdlib.h>
-#include <stdio.h>
+#include<stdio.h>
+#include <stdarg.h>
 #include"VmSdk.h"
 
 #define ACCOUNT_ID_SIZE 6
@@ -34,26 +35,26 @@
 
 
 typedef struct  {
-	unsigned char nType;					//!<ÀàĞÍ
-	unsigned char nArbitratorCount;			//!<ÖÙ²ÃÕß¸öÊı
-	ACCOUNT_ID 	buyer;						//!<Âò¼ÒID£¨²ÉÓÃ6×Ö½ÚµÄÕË»§ID£©
-	ACCOUNT_ID seller;						//!<Âô¼ÒID£¨²ÉÓÃ6×Ö½ÚµÄÕË»§ID£©
-	ACCOUNT_ID arbitrator[MAX_ARBITRATOR];	//!<ÖÙ²ÃÕßID£¨²ÉÓÃ6×Ö½ÚµÄÕË»§ID£©
-	int nHeight;							//!<³¬Ê±¾ø¶Ô¸ß¶È
-	Int64 nFineMoney;						//!<Âô¼ÒÎ¥Ô¼ºó×î´ó·£¿î½ğ¶î
-	Int64 nPayMoney;						//!<Âò¼ÒÏòÂô¼ÒÖ§¸¶µÄ½ğ¶î
-	Int64 nFee;								//!<ÖÙ²ÃÊÖĞø·Ñ
-	Int64 ndeposit;							//!<ÖÙ²ÃÑº½ğ,ÉêËßÊ±´ÓÖÙ²ÃÕß¿Û³ıµÄÑº½ğ(Èç¹ûÖÙ²Ã²»ÏìÓ¦Ç®¹éÂò¼Ò·ñÔòÂò¼ÒÍË»¹¸øÖÙ²ÃÕß)
+	unsigned char nType;					//!<ç±»å‹
+	unsigned char nArbitratorCount;			//!<ä»²è£è€…ä¸ªæ•°
+	ACCOUNT_ID 	buyer;						//!<ä¹°å®¶IDï¼ˆé‡‡ç”¨6å­—èŠ‚çš„è´¦æˆ·IDï¼‰
+	ACCOUNT_ID seller;						//!<å–å®¶IDï¼ˆé‡‡ç”¨6å­—èŠ‚çš„è´¦æˆ·IDï¼‰
+	ACCOUNT_ID arbitrator[MAX_ARBITRATOR];	//!<ä»²è£è€…IDï¼ˆé‡‡ç”¨6å­—èŠ‚çš„è´¦æˆ·IDï¼‰
+	long nHeight;							//!<è¶…æ—¶ç»å¯¹é«˜åº¦
+	Int64 nFineMoney;						//!<å–å®¶è¿çº¦åæœ€å¤§ç½šæ¬¾é‡‘é¢
+	Int64 nPayMoney;						//!<ä¹°å®¶å‘å–å®¶æ”¯ä»˜çš„é‡‘é¢
+	Int64 nFee;								//!<ä»²è£æ‰‹ç»­è´¹
+	Int64 ndeposit;							//!<ä»²è£æŠ¼é‡‘,ç”³è¯‰æ—¶ä»ä»²è£è€…æ‰£é™¤çš„æŠ¼é‡‘(å¦‚æœä»²è£ä¸å“åº”é’±å½’ä¹°å®¶å¦åˆ™ä¹°å®¶é€€è¿˜ç»™ä»²è£è€…)
 } FIRST_CONTRACT;
 
 typedef struct {
-	unsigned char nType;				//!<½»Ò×ÀàĞÍ
-	unsigned char hash[HASH_SIZE];		//!<ÉÏÒ»¸ö½»Ò×°üµÄ¹şÏ£
+	unsigned char nType;				//!<äº¤æ˜“ç±»å‹
+	unsigned char hash[HASH_SIZE];		//!<ä¸Šä¸€ä¸ªäº¤æ˜“åŒ…çš„å“ˆå¸Œ
 } NEXT_CONTRACT;
 
 typedef struct {
-	unsigned char nType;				//!<½»Ò×ÀàĞÍ
-	unsigned char hash[HASH_SIZE];		//!<ÉÏÒ»¸ö½»Ò×µÄ¹şÏ£
+	unsigned char nType;				//!<äº¤æ˜“ç±»å‹
+	unsigned char hash[HASH_SIZE];		//!<ä¸Šä¸€ä¸ªäº¤æ˜“çš„å“ˆå¸Œ
 	Int64 nMinus;
 }ARBIT_RES_CONTRACT;
 
@@ -63,19 +64,31 @@ enum Role {
 	ARBITRATOR,
 	UNDIFUNE_ROLE
 };
-/**
- * @brief   step1:block¸ß¶ÈÓĞĞ§ĞÔ\n
- * 			step2:Âò¼ÒºÍÂô¼ÒµØÖ·ÊÇ·ñÓĞĞ§\n
- *    		step3:ÖÙ²ÃÕßµØÖ·ÊÇ·ñ´æÔÚ£¬ÖÙ²ÃÕß¸öÊıÊÇ·ñºÏ·¨£¬ÖÙ²ÃÕßÊÇ·ñ¹ØÁª½Å±¾\n
- * 			step4:Âô¼ÒµÄ×ÔÓÉ½ğ¶îÊÇ·ñ×ã¹»Åâ³¥\n
- * 			step5:È¨ÏŞ×Ô¶¨Òå×Ö¶ÎÖĞµÄÖµÓë¸÷½ÇÉ«ÊÇ·ñÆ¥Åä
- */
 
+ void PrintString(const char *format, ...)
+{
+    va_list arg;
+    static char tmp[255];
+    va_start(arg, format);
+    vsprintf(tmp, format, arg);
+    va_end(arg);
+
+    LogPrint(tmp,strlen(tmp),STRING);
+}
+
+ /**
+  * @brief  step1:blocké«˜åº¦æœ‰æ•ˆæ€§\n
+  * 		step2:ä¹°å®¶å’Œå–å®¶åœ°å€æ˜¯å¦æœ‰æ•ˆ\n
+  *    		step3:ä»²è£è€…åœ°å€æ˜¯å¦å­˜åœ¨ï¼Œä»²è£è€…ä¸ªæ•°æ˜¯å¦åˆæ³•ï¼Œä»²è£è€…æ˜¯å¦å…³è”è„šæœ¬\n
+  * 		step4:å–å®¶çš„è‡ªç”±é‡‘é¢æ˜¯å¦è¶³å¤Ÿèµ”å¿\n
+  * 		step5:æƒé™è‡ªå®šä¹‰å­—æ®µä¸­çš„å€¼ä¸å„è§’è‰²æ˜¯å¦åŒ¹é…
+  */
 bool CheckContract1(const FIRST_CONTRACT* pContract) {
 	//step1
 	unsigned long nRunTimeHeight = GetCurRunEnvHeight();
-	if ((unsigned long)pContract->nHeight>nRunTimeHeight)
+	if ((unsigned long)pContract->nHeight<nRunTimeHeight)
 		return false;
+	PrintString("nHeight is %d",pContract->nHeight);
 
 	//step2
 	if (!IsRegID((const void* const)pContract->buyer.accounid) ||
@@ -83,17 +96,20 @@ bool CheckContract1(const FIRST_CONTRACT* pContract) {
 		return false;
 
 	//step3
-	if (1 != pContract->nArbitratorCount || IsRegID((const void*)pContract->arbitrator[0].accounid) )
+	if (1 != pContract->nArbitratorCount || !IsRegID((const void*)pContract->arbitrator[0].accounid) )
 		return false;
 
 	//step4
 	Int64	nTotalFreeMoney;
 	if (!QueryAccountBalance((const unsigned char* const)pContract->seller.accounid,ACOUNT_ID,&nTotalFreeMoney))
 		return false;
+
 	COMP_RET ret = Int64Compare(&pContract->nFineMoney,&nTotalFreeMoney);
 	if (COMP_ERR == ret || COMP_LARGER == ret)
 		return false;
 
+	//todo:check AuthUserDefine
+	return true;
 	//step5
 	char szRole[10] = {0};
 	if (GetAuthUserDefine((const void* const ) pContract->buyer.accounid, szRole, sizeof(szRole) / sizeof(szRole[0]))
@@ -110,57 +126,69 @@ bool CheckContract1(const FIRST_CONTRACT* pContract) {
 }
 
 /**
- * @brief 	step1:hashµÄÓĞĞ§ĞÔ\n
- * 			step2:´ÓÊı¾İ¿âÖĞ¶ÁÈ¡Êı¾İÅĞ¶ÏÉÏÒ»¸ö½»Ò×ÊÇ·ñÒÑ¾­´¦Àí£¨ÊÇ·ñÒÑ¾­ÓĞÆäËûÂô¼ÒÈ·ÈÏ°ü£¬·ÀÖ¹Âô¼ÒÖØ¸´È·ÈÏ£©£¬Èç¹ûÒÑ¾­´¦ÀíÔò´Ë½»Ò×ÎŞĞ§·µ»Ø¡£\n
- * 			step3:½»Ò×Ç©ÃûÕË»§µØÖ·ÊÇ·ñÊÇµÚÒ»¸ö½»Ò×ÖĞÂô¼ÒµÄµØÖ·\n
+ * @brief 	step1:hashçš„æœ‰æ•ˆæ€§\n
+ * 			step2:ä»æ•°æ®åº“ä¸­è¯»å–æ•°æ®åˆ¤æ–­ä¸Šä¸€ä¸ªäº¤æ˜“æ˜¯å¦å·²ç»å¤„ç†ï¼ˆæ˜¯å¦å·²ç»æœ‰å…¶ä»–å–å®¶ç¡®è®¤åŒ…ï¼Œé˜²æ­¢å–å®¶é‡å¤ç¡®è®¤ï¼‰ï¼Œå¦‚æœå·²ç»å¤„ç†åˆ™æ­¤äº¤æ˜“æ— æ•ˆè¿”å›ã€‚\n
+ * 			step3:å¦‚æœä¹°å®¶æå‡ºç”³è¯‰ï¼Œå–å®¶æ˜¯å¦æœ‰è¶³å¤Ÿçš„é’±èµ”ç»™ä¹°å®¶ã€‚\n
+ * 			step4:äº¤æ˜“ç­¾åè´¦æˆ·åœ°å€æ˜¯å¦æ˜¯ç¬¬ä¸€ä¸ªäº¤æ˜“ä¸­å–å®¶çš„åœ°å€\n
+ * 			step5ï¼šå–å®¶çš„å†»ç»“é¡¹ä¸­æ˜¯å¦æœ‰ä¹°å®¶æ”¯ä»˜è¿‡æ¥çš„æ¬¾é¡¹
  * @param pContract
  */
 
 bool CheckContract2(const NEXT_CONTRACT* pContract,FIRST_CONTRACT* pFirstContract) {
 	//step1
+	PrintString("2-11111");
+	LogPrint(pContract->hash,32,HEX);
 	if (!GetTxContacts((const unsigned char * const)pContract->hash,(void* const)pFirstContract,sizeof(FIRST_CONTRACT)))
 		return false;
 
 	//step2
 	char szValue[2] = {0};
-	if (!ReadDataValueDB(pContract->hash,sizeof(pContract->hash),szValue,sizeof(szValue)/sizeof(szValue[0])))
+	PrintString("2-22222");
+	if (ReadDataValueDB(pContract->hash,sizeof(pContract->hash),szValue,sizeof(szValue)/sizeof(szValue[0]))
+			&& 1 == szValue[0])
 		return false;
 
 	//step3
+	PrintString("2-33333");
 	ACCOUNT_ID sellID;
 	if (ACCOUNT_ID_SIZE != GetAccounts((const unsigned char *)pContract->hash,(void*)sellID.accounid,sizeof(sellID))
 			||!memcmp((const void*)sellID.accounid,(const void*)pFirstContract->seller.accounid,ACCOUNT_ID_SIZE) )
 		return false;
+	PrintString("2-4444");
 	return true;
 }
 
 /**
- * @brief	step1£ºhashµÄÓĞĞ§ĞÔ\n
- * 			step2£ºÉÏÒ»¸ö½»Ò×ÊÇ·ñÓĞ´¦Àí¹ı
+ * @brief	step1ï¼šhashçš„æœ‰æ•ˆæ€§\n
+ * 			step2ï¼šä¸Šä¸€ä¸ªäº¤æ˜“æ˜¯å¦æœ‰å¤„ç†è¿‡
  * @param pContract
  */
 bool CheckContract3(const NEXT_CONTRACT* pContract, FIRST_CONTRACT* pFirstContract) {
 	//step1
+	PrintString("3-1111");
 	NEXT_CONTRACT contract2;
 	if (!GetTxContacts((const unsigned char * const ) pContract->hash, (void* const ) &contract2, sizeof(NEXT_CONTRACT)))
 		return false;
 
+	PrintString("3-2222");
 	if (!GetTxContacts((const unsigned char * const ) contract2.hash, (void* const ) pFirstContract,
 			sizeof(FIRST_CONTRACT)))
 		return false;
 
 	//step2
+	PrintString("3-3333");
 	char szValue[2] = { 0 };
 	if (!ReadDataValueDB(pContract->hash, sizeof(pContract->hash), szValue, sizeof(szValue) / sizeof(szValue[0])))
 		return false;
 
+	PrintString("3-4444");
 	return true;
 }
 
 /**
- * @brief	step1£º¼ì²éµÚÈı¸ö°üµÄhashÓĞĞ§ĞÔ\n
- * 			step2£»¿ÛÇ®½ğ¶îµÄÓĞĞ§ĞÔ\n
- * 			step3£º¼ì²âÉÏÒ»¸ö½»Ò×ÊÇ·ñÓĞ´¦Àí
+ * @brief	step1ï¼šæ£€æŸ¥ç¬¬ä¸‰ä¸ªåŒ…çš„hashæœ‰æ•ˆæ€§\n
+ * 			step2ï¼›æ‰£é’±é‡‘é¢çš„æœ‰æ•ˆæ€§\n
+ * 			step3ï¼šæ£€æµ‹ä¸Šä¸€ä¸ªäº¤æ˜“æ˜¯å¦æœ‰å¤„ç†
  * @param pContract
  */
 bool CheckContract4(const ARBIT_RES_CONTRACT* pContract, FIRST_CONTRACT* pFirstContract) {
@@ -188,74 +216,77 @@ bool CheckContract4(const ARBIT_RES_CONTRACT* pContract, FIRST_CONTRACT* pFirstC
 		return false;
 	return true;
 }
+
 /**
- * @brief step1:´ÓÂò¼ÒµÄ×ÔÓÉ½ğ¶îÖĞ¿Û³ı½ğ¶î(Ó¦Ö§¸¶¸øÂô¼ÒµÄÇ®)\n
- *        step2:°ÑÉÏÒ»²½²Ù×÷µÄÇ®×ªÈëÂò¼ÒµÄ¶³½á½ğ¶îÖĞ
- * @param vmoper ²Ù×÷ÕË»§µÄ½á¹¹ÌåÊı×é
- * @param nVmSize Êı×é´óĞ¡
- * @param pContract µÚÒ»¸öºÏÔ¼½á¹¹
+ * @brief step1:ä»ä¹°å®¶çš„è‡ªç”±é‡‘é¢ä¸­æ‰£é™¤é‡‘é¢(åº”æ”¯ä»˜ç»™å–å®¶çš„é’±)\n
+ *        step2:æŠŠä¸Šä¸€æ­¥æ“ä½œçš„é’±è½¬å…¥ä¹°å®¶çš„å†»ç»“é‡‘é¢ä¸­
+ * @param vmoper æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æ•°ç»„
+ * @param nVmSize æ•°ç»„å¤§å°
+ * @param pContract ç¬¬ä¸€ä¸ªåˆçº¦ç»“æ„
  */
 bool OperAccount1(VM_OPERATE *vmoper,unsigned char nVmSize,const void* pContract) {
+	PrintString("OperAccount1  1");
 	if (NULL == vmoper || NULL == pContract || nVmSize!=2)
 		return false;
 
+	PrintString("OperAccount1  2");
 	FIRST_CONTRACT* pContractData = (FIRST_CONTRACT*)pContract;
-	vmoper[0].TYPE = ACOUNT_ID;
-	vmoper[0].accountid = pContractData->buyer;
+	memcpy(vmoper[0].accountid,pContractData->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[0].opeatortype = MINUS_FREE;
 	vmoper[0].outheight = pContractData->nHeight;
 	vmoper[0].money = pContractData->nPayMoney;
+	LogPrint(vmoper[0].money.data,8,HEX);
+	LogPrint(vmoper[0].accountid,6,HEX);
 
-	vmoper[1].TYPE = ACOUNT_ID;
-	vmoper[1].accountid = pContractData->buyer;
+	memcpy(vmoper[1].accountid,pContractData->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[1].opeatortype = ADD_FREEZD;
 	vmoper[1].outheight = pContractData->nHeight;
 	vmoper[1].money = pContractData->nPayMoney;
-
+	LogPrint(vmoper[1].accountid,6,HEX);
   return true;
 }
 
 /**
- * @brief step1:´ÓÂò¼ÒµÄ¶³½á×ªÈëÂô¼ÒµÄ¶³½á½ğ¶îÖĞ\n
- * 		  step2:Âô¼Ò×ÔÓÉ½ğ¶îÖĞ¿Û³ı×î´ó·£¿îµ½¶³½á½ğ¶îÖĞ
- * @param vmoper ²Ù×÷ÕË»§µÄ½á¹¹ÌåÊı×é
- * @param nVmSize Êı×é´óĞ¡
- * @param pContract µÚ¶ş¸öºÏÔ¼½á¹¹
+ * @brief step1:ä»ä¹°å®¶çš„å†»ç»“è½¬å…¥å–å®¶çš„å†»ç»“é‡‘é¢ä¸­\n
+ * 		  step2:å–å®¶è‡ªç”±é‡‘é¢ä¸­æ‰£é™¤æœ€å¤§ç½šæ¬¾åˆ°å†»ç»“é‡‘é¢ä¸­
+ * @param vmoper æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æ•°ç»„
+ * @param nVmSize æ•°ç»„å¤§å°
+ * @param pContract ç¬¬äºŒä¸ªåˆçº¦ç»“æ„
  */
 bool OperAccount2(VM_OPERATE *vmoper, unsigned short nVmSize,FIRST_CONTRACT* pFirstContract) {
 	if (NULL == vmoper || NULL == pFirstContract || nVmSize != 4)
 		return false;
 
+	PrintString("id in OperAccount2:");
+	LogPrint(pFirstContract->buyer.accounid,6,HEX);
+	LogPrint(pFirstContract->seller.accounid,6,HEX);
 	//step1
-	vmoper[0].TYPE = ACOUNT_ID;
-	vmoper[0].accountid = pFirstContract->buyer;
+	unsigned long nHeight = 98/*pFirstContract->nHeight*/;
+	memcpy(vmoper[0].accountid,pFirstContract->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[0].opeatortype = MINUS_FREEZD;
-	vmoper[0].outheight = pFirstContract->nHeight;
+	vmoper[0].outheight = nHeight;
 	vmoper[0].money = pFirstContract->nPayMoney;
 
-	vmoper[1].TYPE = ACOUNT_ID;
-	vmoper[1].accountid = pFirstContract->seller;
+	memcpy(vmoper[1].accountid,pFirstContract->seller.accounid,ACCOUNT_ID_SIZE);
 	vmoper[1].opeatortype = ADD_FREEZD;
-	vmoper[1].outheight = pFirstContract->nHeight;
+	vmoper[1].outheight = nHeight;
 	vmoper[1].money = pFirstContract->nPayMoney;
 
 	//step 2
-	vmoper[2].TYPE = ACOUNT_ID;
-	vmoper[2].accountid = pFirstContract->buyer;
+	memcpy(vmoper[2].accountid,pFirstContract->seller.accounid,ACCOUNT_ID_SIZE);
 	vmoper[2].opeatortype = MINUS_FREE;
-	vmoper[2].outheight = pFirstContract->nHeight;
+	vmoper[2].outheight = nHeight;
 	vmoper[2].money = pFirstContract->nFineMoney;
 
-	vmoper[3].TYPE = ACOUNT_ID;
-	vmoper[3].accountid = pFirstContract->seller;
+	memcpy(vmoper[3].accountid,pFirstContract->seller.accounid,ACCOUNT_ID_SIZE);
 	vmoper[3].opeatortype = ADD_FREEZD;
-	vmoper[3].outheight = pFirstContract->nHeight;
+	vmoper[3].outheight = nHeight;
 	vmoper[3].money = pFirstContract->nFineMoney;
 	return true;
 }
 
 /**
- * @brief 	´ÓÖÙ²ÃÕß×ÔÓÉ½ğ¶îÖĞ¿Û³ıÖ¸¶¨·ÑÓÃµ½Âò¼Ò¶³½á½ğ¶îÖĞ¡£
+ *
  * @param vmoper
  * @param nVmSize
  * @param pContract
@@ -264,24 +295,21 @@ bool OperAccount3(VM_OPERATE *vmoper, unsigned short nVmSize,FIRST_CONTRACT* pFi
 	if (NULL == vmoper || NULL == pFirstContract || nVmSize != 2)
 		return false;
 
-	vmoper[0].TYPE = ACOUNT_ID;
-	vmoper[0].accountid = pFirstContract->arbitrator[0];
+	memcpy(vmoper[0].accountid,pFirstContract->arbitrator[0].accounid,ACCOUNT_ID_SIZE);
 	vmoper[0].opeatortype = MINUS_FREE;
 	vmoper[0].outheight = pFirstContract->nHeight;
 	vmoper[0].money = pFirstContract->ndeposit;
 
-	vmoper[1].TYPE = ACOUNT_ID;
-	vmoper[1].accountid = pFirstContract->buyer;
+	memcpy(vmoper[1].accountid,pFirstContract->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[1].opeatortype = ADD_FREEZD;
 	vmoper[1].outheight = pFirstContract->nHeight;
 	vmoper[1].money = pFirstContract->ndeposit;
 	return true;
 }
 
+
 /**
- * @brief 	1.	´ÓÂô¼ÒµÄ¶³½á½ğ¶îÖĞ¿Û³ı·£¿îµ½Âò¼ÒµÄ×ÔÓÉ½ğ¶î
-			2.	´ÓÂò¼ÒµÄ¶³½á½ğ¶îÖĞ·µ»¹ÖÙ²ÃÕß¿Û¸øÂò¼ÒµÄÇ®
-			3.	´ÓÂò¼Ò×ÔÓÉ½ğ¶îÖĞ¿Û³ıÖÙ²ÃÊÖĞø·Ñ¸øÖÙ²ÃÕß
+ *
  * @param vmoper
  * @param nVmSize
  * @param pContract
@@ -291,40 +319,34 @@ bool OperAccount4(VM_OPERATE *vmoper, unsigned short nVmSize,FIRST_CONTRACT* pFi
 		return false;
 
 	//step 1
-	vmoper[0].TYPE = ACOUNT_ID;
-	vmoper[0].accountid = pFirstContract->seller;
+	memcpy(vmoper[0].accountid,pFirstContract->seller.accounid,ACCOUNT_ID_SIZE);
 	vmoper[0].opeatortype = MINUS_FREEZD;
 	vmoper[0].outheight = pFirstContract->nHeight;
 	vmoper[0].money = pFirstContract->nFineMoney;
 
-	vmoper[1].TYPE = ACOUNT_ID;
-	vmoper[1].accountid = pFirstContract->buyer;
+	memcpy(vmoper[1].accountid,pFirstContract->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[1].opeatortype = ADD_FREE;
 	vmoper[1].outheight = pFirstContract->nHeight;
 	vmoper[1].money = pFirstContract->nFineMoney;
 
 	//step 2
-	vmoper[2].TYPE = ACOUNT_ID;
-	vmoper[2].accountid = pFirstContract->buyer;
+	memcpy(vmoper[2].accountid,pFirstContract->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[2].opeatortype = MINUS_FREEZD;
 	vmoper[2].outheight = pFirstContract->nHeight;
 	vmoper[2].money = pFirstContract->ndeposit;
 
-	vmoper[3].TYPE = ACOUNT_ID;
-	vmoper[3].accountid = pFirstContract->arbitrator[0];
+	memcpy(vmoper[3].accountid,pFirstContract->arbitrator[0].accounid,ACCOUNT_ID_SIZE);
 	vmoper[3].opeatortype = ADD_FREE;
 	vmoper[3].outheight = pFirstContract->nHeight;
 	vmoper[3].money = pFirstContract->ndeposit;
 
 	//step 3
-	vmoper[4].TYPE = ACOUNT_ID;
-	vmoper[4].accountid = pFirstContract->buyer;
+	memcpy(vmoper[4].accountid,pFirstContract->buyer.accounid,ACCOUNT_ID_SIZE);
 	vmoper[4].opeatortype = MINUS_FREE;
 	vmoper[4].outheight = pFirstContract->nHeight;
 	vmoper[4].money = pFirstContract->nFee;
 
-	vmoper[5].TYPE = ACOUNT_ID;
-	vmoper[5].accountid = pFirstContract->arbitrator[0];
+	memcpy(vmoper[5].accountid,pFirstContract->arbitrator[0].accounid,ACCOUNT_ID_SIZE);
 	vmoper[5].opeatortype = ADD_FREE;
 	vmoper[5].outheight = pFirstContract->nHeight;
 	vmoper[5].money = pFirstContract->nFee;
@@ -332,9 +354,9 @@ bool OperAccount4(VM_OPERATE *vmoper, unsigned short nVmSize,FIRST_CONTRACT* pFi
 }
 
 /**
- * @brief 1.	´ÓÂò¼ÒµÄ×ÔÓÉ½ğ¶î×ªÈëÂò¼ÒµÄ¶³½áÖĞ
- * @param data ²Ù×÷ÕË»§µÄ½á¹¹ÌåÖ¸Õë
- * @param conter ²Ù×÷´ÎÊı
+ * @brief 1.	ä»ä¹°å®¶çš„è‡ªç”±é‡‘é¢è½¬å…¥ä¹°å®¶çš„å†»ç»“ä¸­
+ * @param data æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æŒ‡é’ˆ
+ * @param conter æ“ä½œæ¬¡æ•°
  * @return
  */
 bool WriteOutput1( const VM_OPERATE* data, unsigned short conter){
@@ -342,10 +364,10 @@ bool WriteOutput1( const VM_OPERATE* data, unsigned short conter){
 }
 
 /**
- * @brief	1.	´ÓÂò¼ÒµÄÊä³ö¶³½á×ªµ½Âô¼ÒµÄ¶³½á¡£\n
-			2.	´ÓÂô¼ÒµÄ×ÔÓÉ½ğ¶îÖĞ¿Û¿î×ªµ½Âô¼ÒµÄ¶³½áÖĞ
- * @param data ²Ù×÷ÕË»§µÄ½á¹¹ÌåÖ¸Õë
- * @param conter ²Ù×÷´ÎÊı
+ * @brief	1.	ä»ä¹°å®¶çš„è¾“å‡ºå†»ç»“è½¬åˆ°å–å®¶çš„å†»ç»“ã€‚\n
+			2.	ä»å–å®¶çš„è‡ªç”±é‡‘é¢ä¸­æ‰£æ¬¾è½¬åˆ°å–å®¶çš„å†»ç»“ä¸­
+ * @param data æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æŒ‡é’ˆ
+ * @param conter æ“ä½œæ¬¡æ•°
  * @return
  */
 bool WriteOutput2( const VM_OPERATE* data, unsigned short conter){
@@ -353,9 +375,9 @@ bool WriteOutput2( const VM_OPERATE* data, unsigned short conter){
 }
 
 /**
- * @brief	1.	´ÓÖÙ²ÃÕß×ÔÓÉ½ğ¶îÖĞ¿Û³ıÉÙÁ¿·ÑÓÃµ½Âò¼Ò¶³½á½ğ¶îÖĞ¡£
- * @param data ²Ù×÷ÕË»§µÄ½á¹¹ÌåÖ¸Õë
- * @param conter ²Ù×÷´ÎÊı
+ * @brief	1.	ä»ä»²è£è€…è‡ªç”±é‡‘é¢ä¸­æ‰£é™¤å°‘é‡è´¹ç”¨åˆ°ä¹°å®¶å†»ç»“é‡‘é¢ä¸­ã€‚
+ * @param data æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æŒ‡é’ˆ
+ * @param conter æ“ä½œæ¬¡æ•°
  * @return
  */
 bool WriteOutput3( const VM_OPERATE* data, unsigned short conter){
@@ -363,11 +385,11 @@ bool WriteOutput3( const VM_OPERATE* data, unsigned short conter){
 }
 
 /**
- * @brief	1.	´ÓÖÙ²ÃÕßµÄ¶³½á»Ö¸´Ò»¶¨½ğ¶îµ½×ÔÓÉ½ğ¶îÖĞ\n
-			2.	´ÓÂô¼ÒµÄ¶³½á½ğ¶îÖĞ¿Û³ı·ÑÓÃ¸øÂò¼Ò\n
-			3.	´ÓÂô¼ÒµÄ×ÔÓÉ½ğ¶îÖĞ¿Û³ıÖÙ²Ã·ÑÓÃ¸øÖÙ²ÃÕß
- * @param data ²Ù×÷ÕË»§µÄ½á¹¹ÌåÖ¸Õë
- * @param conter ²Ù×÷´ÎÊı
+ * @brief	1.	ä»ä»²è£è€…çš„å†»ç»“æ¢å¤ä¸€å®šé‡‘é¢åˆ°è‡ªç”±é‡‘é¢ä¸­\n
+			2.	ä»å–å®¶çš„å†»ç»“é‡‘é¢ä¸­æ‰£é™¤è´¹ç”¨ç»™ä¹°å®¶\n
+			3.	ä»å–å®¶çš„è‡ªç”±é‡‘é¢ä¸­æ‰£é™¤ä»²è£è´¹ç”¨ç»™ä»²è£è€…
+ * @param data æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æŒ‡é’ˆ
+ * @param conter æ“ä½œæ¬¡æ•°
  * @return
  */
 bool WriteOutput4( const VM_OPERATE* data, unsigned short conter){
@@ -375,16 +397,16 @@ bool WriteOutput4( const VM_OPERATE* data, unsigned short conter){
 }
 
 /**
- * @brief	½«µÚÒ»¸ö½»Ò×µÄ¹şÏ£×÷ÎªkeyĞ´ÈëÊı¾İ¿â
+ * @brief	å°†ç¬¬ä¸€ä¸ªäº¤æ˜“çš„å“ˆå¸Œä½œä¸ºkeyå†™å…¥æ•°æ®åº“
  * @return
  */
 bool WriteDB2(const char* pKey,FIRST_CONTRACT* pFirstContract) {
 	bool bFlag = true;
-	return WriteDataDB((const void* const)pKey,32,&bFlag,1,pFirstContract->nHeight);
+	return WriteDataDB((const void* const)pKey,HASH_SIZE,&bFlag,1,pFirstContract->nHeight);
 }
 
 /**
- * @brief	½«µÚ¶ş¸ö½»Ò×µÄ¹şÏ£×÷ÎªkeyĞ´ÈëÊı¾İ¿â
+ * @brief	å°†ç¬¬äºŒä¸ªäº¤æ˜“çš„å“ˆå¸Œä½œä¸ºkeyå†™å…¥æ•°æ®åº“
  * @return
  */
 bool WriteDB3(const char* pKey,FIRST_CONTRACT* pFirstContract) {
@@ -393,20 +415,21 @@ bool WriteDB3(const char* pKey,FIRST_CONTRACT* pFirstContract) {
 }
 
 /**
- * @brief	½«µÚÈı¸ö½»Ò×µÄ¹şÏ£×÷ÎªkeyĞ´ÈëÊı¾İ¿â
+ * @brief	å°†ç¬¬ä¸‰ä¸ªäº¤æ˜“çš„å“ˆå¸Œä½œä¸ºkeyå†™å…¥æ•°æ®åº“
  * @return
  */
 bool WriteDB4(const char* pKey,FIRST_CONTRACT* pFirstContract) {
 	bool bFlag = true;
 	return WriteDataDB((const void* const)pKey,32,&bFlag,1,pFirstContract->nHeight);
 }
+
 /**
- * @brief ´¦ÀíµÚÒ»¸ö½»Ò×
+ * @brief å¤„ç†ç¬¬ä¸€ä¸ªäº¤æ˜“
  * @param pContract
  * @return
  */
 bool ProcessContract1(const FIRST_CONTRACT* pContract) {
-	if (!CheckContract1(pContract)) {
+	if (CheckContract1(pContract)) {
 		VM_OPERATE vmOper[2];
 		if (OperAccount1(vmOper, sizeof(vmOper) / sizeof(vmOper[0]), pContract))
 			return WriteOutput1(vmOper, sizeof(vmOper)/sizeof(vmOper[0]));
@@ -415,14 +438,14 @@ bool ProcessContract1(const FIRST_CONTRACT* pContract) {
 }
 
 /**
- * @brief Âô¼ÒÈ·ÈÏ
- * @param pContract ºÏÔ¼ÄÚÈİ
+ * @brief å–å®¶ç¡®è®¤
+ * @param pContract åˆçº¦å†…å®¹
  * @return
  */
 bool ProcessContract2(const NEXT_CONTRACT* pContract) {
 	VM_OPERATE vmOper[4];
 	FIRST_CONTRACT firstcontract;
-	if (!CheckContract2(pContract,&firstcontract)) {
+	if (CheckContract2(pContract,&firstcontract)) {
 		if (OperAccount2(vmOper, sizeof(vmOper) / sizeof(vmOper[0]), &firstcontract)) {
 			if (WriteDB2((const char*)pContract->hash,&firstcontract))
 				return WriteOutput2(vmOper, sizeof(vmOper)/sizeof(vmOper[0]));
@@ -432,8 +455,8 @@ bool ProcessContract2(const NEXT_CONTRACT* pContract) {
 }
 
 /**
- * @brief Ö´ĞĞÉêËß
- * @param pContract ºÏÔ¼ÄÚÈİ
+ * @brief æ‰§è¡Œç”³è¯‰
+ * @param pContract åˆçº¦å†…å®¹
  * @return
  */
 bool ProcessContract3(const NEXT_CONTRACT* pContract) {
@@ -449,8 +472,8 @@ bool ProcessContract3(const NEXT_CONTRACT* pContract) {
 }
 
 /**
- * @brief Ö´ĞĞÖÙ²Ã½á¹û
- * @param pContract ÖÙ²Ã½á¹ûºÏÔ¼½á¹¹Ìå
+ * @brief æ‰§è¡Œä»²è£ç»“æœ
+ * @param pContract ä»²è£ç»“æœåˆçº¦ç»“æ„ä½“
  * @return
  */
 bool ProcessContract4(const ARBIT_RES_CONTRACT* pContract) {
@@ -468,8 +491,8 @@ bool ProcessContract4(const ARBIT_RES_CONTRACT* pContract) {
 int main() {
 	__xdata static  char pContract[512];
 	unsigned long len = 512;
-	GetMemeroyData(pContract,len);
-
+	int nRet = GetMemeroyData(pContract,len);
+	PrintString("nRet is %d",nRet);
 	#pragma data_alignment = 1
 //	FIRST_CONTRACT firstcontract;
 //	memcpy(firstcontract.buyer.accounid,"111111",ACCOUNT_ID_SIZE);
@@ -486,31 +509,36 @@ int main() {
 //	memcpy(secondcontract.hash,"11111111222222223333333344444444",32);
 //	secondcontract.nType = 2;
 //	memcpy(pContract,&secondcontract,sizeof(NEXT_CONTRACT));
+	bool bProcessRet = false;
 	switch (pContract[0]) {
 	case 1:
-		ProcessContract1((FIRST_CONTRACT*)pContract);
+		bProcessRet = ProcessContract1((FIRST_CONTRACT*)pContract);
 		break;
 
 	case 2:
-		ProcessContract2((NEXT_CONTRACT*)pContract);
+		bProcessRet = ProcessContract2((NEXT_CONTRACT*)pContract);
 		break;
 
 	case 3:
-		ProcessContract3((NEXT_CONTRACT*)pContract);
+		bProcessRet = ProcessContract3((NEXT_CONTRACT*)pContract);
 		break;
 
 	case 4:
-		ProcessContract4((ARBIT_RES_CONTRACT*)pContract);
+		bProcessRet = ProcessContract4((ARBIT_RES_CONTRACT*)pContract);
 		break;
 	}
+
+//	char* pRes = bProcessRet?"success":"failed";
+//	PrintString("exec res is %s",pRes);
+	PrintString("11111111111111");
+	if (bProcessRet)
+	{
+		__exit(RUN_SCRIPT_OK);
+	}
+	else
+	{
+		__exit(RUN_SCRIPT_DATA_ERR);
+	}
+
+	return 1;
 }
-
-
-
-
-
-
-
-
-
-
