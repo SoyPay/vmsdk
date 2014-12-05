@@ -33,6 +33,7 @@ typedef struct {
 typedef struct {
 	OPERATETYPE type;
 	uchar num[15];
+	uchar numlen;
 	Int64 money;
 }ORDER_DATA;
 
@@ -244,6 +245,7 @@ static bool RegLottery(const LOTTO_CTX *pctxdata)
 
 static bool CheckOrderNum(const uchar *pdata, uchar datalen)
 {
+	uchar temp[15] = {0};
 	uchar ii = 0;
 	if(pdata == NULL || datalen == 0 || datalen > 15)
 	{
@@ -256,10 +258,42 @@ static bool CheckOrderNum(const uchar *pdata, uchar datalen)
 		{
 			break;
 		}
+		temp[pdata[ii]]++;
+		if(temp[pdata[ii]] > 1)
+		{
+			break;
+		}
+		ii++;
 	}
 	while(ii < datalen);
+
+	return (ii == datalen)?(true):(false);
 }
 
+static bool CheckOrderAmount(const Int64 *pamount, uchar totalnum)
+{
+	Int64 apert, total64, min;
+	u32 total = 0;
+	if(pamount == NULL || totalnum < 6 || totalnum > 15)
+	{
+		return false;
+	}
+
+	total = MselectN(15, totalnum);
+	memset(&total64, 0, sizeof(Int64));
+	memcpy(&total64, &total, sizeof(total));
+	if(!Int64Div(pamount, &total64, &apert))
+	{
+		return false;
+	}
+	Int64Inital(&min,"\x00\x00\x00\x00\x00\x01\x00\x00",8);
+	if(Int64Compare(&apert, &min) != COMP_LARGER)
+	{
+		return false;
+	}
+
+	return true;
+}
 
 /**
  * @brief check order num and order amount
@@ -270,7 +304,15 @@ static bool CheckOrderNumAndAmount(void)
 {
 	ORDER_DATA *porderdata = (ORDER_DATA *)gContractData;
 
+	if(!CheckOrderNum(porderdata->num, porderdata->numlen))
+	{
+		return false;
+	}
 
+	if(!CheckOrderAmount(&porderdata->money, porderdata->numlen))
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -333,6 +375,24 @@ static bool OrderDataCheck(const LOTTO_CTX *pctxdata)
 	return true;
 }
 
+static bool OrderOperateAccount(const LOTTO_CTX *pbetctx)
+{
+	REG_DATA *pregdata = (REG_DATA *)gContractData;
+	VM_OPERATE operate;
+
+	if(pbetctx == NULL)
+	{
+		return false;
+	}
+
+	operate.accountid = pbetctx->accid;
+	operate.money = pregdata->money;
+	operate.opeatortype = MINUS_FREE;
+	operate.outheight = pregdata->hight;
+
+    return WriteOutput(&operate, 1);
+}
+
 /**
  * @brief record account order status in the script database
  * @param pdata:order data hanlde
@@ -367,7 +427,7 @@ static bool OrderLottery(const LOTTO_CTX *pctxdata)
 		return false;
 	}
 
-	if(!OperateAccount(pdata))
+	if(!OrderOperateAccount(pctxdata))
 	{
 		return false;
 	}

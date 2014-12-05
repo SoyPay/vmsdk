@@ -25,6 +25,8 @@ typedef struct
 	u32 top3;
 }REWARD_RESULT;
 
+u32 MselectN(u32 m, u32 n);
+
 REWARD_RESULT DrawLottery(const uchar *phash, const uchar *pdata, uchar datalen, u32 amount);
 
 #endif /* LOTTERY_H_ */
