@@ -44,6 +44,7 @@ enum CALL_API_FUN {
 	GETSCRIPTDATA_FUNC,		  //!<GETSCRIPTDATA_FUNC
 	GETSCRIPTID_FUNC,		  //!<GETSCRIPTID_FUNC
 	GETCURTXACCOUNT_FUNC,		  //!<GETSCRIPTID_FUNC
+	GETCURTXCONTACT_FUNC,		 //!<GETCURTXCONTACT_FUNC
 };
 
 __root __code static const char aa[]@0x0008 = {0x22,0x22}; //{0,0,0,0x80,0xFB};
@@ -628,7 +629,7 @@ bool GetCurScritpAccount(void* const account)
 	memcpy(account, retdata->buffer, retdata->len);
 	return retdata->len;
 	}
-bool GetCurTxAccount(void * const account,unsigned short maxlen)
+unsigned short GetCurTxAccount(void * const account,unsigned short maxlen)
 {
 		ClearParaSpace();
 		if(account == NULL || maxlen <= 0)
@@ -643,4 +644,20 @@ bool GetCurTxAccount(void * const account,unsigned short maxlen)
 		}
 		memcpy(account, retdata->buffer, retdata->len);
 		return retdata->len;
+}
+unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen)
+{
+	ClearParaSpace();
+	if(pContact == NULL || maxlen <= 0)
+	{
+		return false;
+	}
+	__CallApi(GETCURTXCONTACT_FUNC);
+
+	FUN_RET_DATA *retdata = GetInterflowP();
+	if (retdata->len < 6) {
+		return 0;
+	}
+	memcpy(pContact, retdata->buffer, retdata->len);
+	return retdata->len;
 }
