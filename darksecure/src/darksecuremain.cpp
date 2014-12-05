@@ -63,18 +63,30 @@ typedef struct {
 /**
  * @brief   step1:block高度有效性\n
  * 			step2:买家和卖家地址是否有效\n
- *    		step3:买家和卖家是否有权限\n
  */
 bool CheckfirstContact(const FIRST_CONTRACT* const pContract)
 {
+	unsigned long nTipHeight = GetTipHeight();
+	if(pContract->nHeight <= nTipHeight)
+	{
+		return false;
+	}
+	if(!IsRegID(&pContract->buyer))
+	{
+		return false;
+	}
+	if(!IsRegID(&pContract->seller))
+	{
+		return false;
+	}
 //	if(!IsAuthorited(&pContract->buyer,&pContract->nPayMoney))
 //	{
 //		return false;
 //	}
-	Int64 div;
-	Int64Inital(&div,"\x02", 1);
-	Int64 pout;
-	Int64Div(&pContract->nPayMoney,&div,&pout);
+//	Int64 div;
+//	Int64Inital(&div,"\x02", 1);
+//	Int64 pout;
+//	Int64Div(&pContract->nPayMoney,&div,&pout);
 //	if(!IsAuthorited(&pContract->seller,&pout))
 //	{
 //		return false;
@@ -113,6 +125,11 @@ void WriteFirstContact(const FIRST_CONTRACT* const pContract)
 		WriteOutput(&ret,1);
 	}
 }
+/*
+* @brief 	step1:检查合约的有效性\n
+* 			step1:写指令\n
+* 			step3:将当前交易的hash写到数据库中\n
+*/
 bool ProcessFirstContract(const FIRST_CONTRACT* const pContract)
 {
 	if(!CheckfirstContact(pContract))
@@ -130,7 +147,8 @@ bool ProcessFirstContract(const FIRST_CONTRACT* const pContract)
 }
 /*
 * @brief 	step1:hash的有效性\n
-* 			step2:从数据库中读取数据判断上一个交易是否已经处理（是否已经有其他卖家确认包，防止卖家重复确认），如果已经处理则此交易无效返回。\n
+* 			step1:是否是买家发送的确认包\n
+* 			step3:从数据库中读取数据判断上一个交易是否已经处理（是否已经有其他卖家确认包，防止卖家重复确认），如果已经处理则此交易无效返回。\n
 */
 bool CheckSecondContact(const NEXT_CONTRACT* const pContract)
 {
@@ -190,6 +208,11 @@ void WriteSecondContact(const FIRST_CONTRACT* const pContract)
 		WriteOutput(&ret,1);
 	}
 }
+/*
+* @brief 	step1:检查合约的有效性\n
+* 			step1:输出指令\n
+* 			step3:修改交易包在数据库中的状态\n
+*/
 bool ProcessSecondContract(const NEXT_CONTRACT* pContract)
 {
    if(!CheckSecondContact(pContract))

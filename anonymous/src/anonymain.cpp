@@ -178,7 +178,7 @@ void WriteOperate(const CONTRACT* const pContract)
 }
 /*
 * @brief 	step1:检查当前合约内容是否合法\n
-* 			step2:遍历数据库中是有否有大于2条的数据，并且数据是有效的，输出指令流
+* 			step2:遍历数据库中是有否有大于2条的数据，并且数据是有效的，输出指令流\n
 * 			step3:写入当前tx的hash到数据库\n
 */
 bool ProcessContract(const CONTRACT* const pContract)
