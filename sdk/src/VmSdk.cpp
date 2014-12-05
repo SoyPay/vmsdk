@@ -42,6 +42,8 @@ enum CALL_API_FUN {
 	MODIFYDBVALUE_FUNC ,  //!< MODIFYDBVALUE_FUNC
 	WRITEOUTPUT_FUNC,     //!<WRITEOUTPUT_FUNC
 	GETSCRIPTDATA_FUNC,		  //!<GETSCRIPTDATA_FUNC
+	GETSCRIPTID_FUNC,		  //!<GETSCRIPTID_FUNC
+	GETCURTXACCOUNT_FUNC,		  //!<GETSCRIPTID_FUNC
 };
 
 __root __code static const char aa[]@0x0008 = {0x22,0x22}; //{0,0,0,0x80,0xFB};
@@ -609,4 +611,36 @@ bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* c
 	}
 	memcpy(pvalve, retdata->buffer, retdata->len);
 	return retdata->len;
+}
+bool GetCurScritpAccount(void* const account)
+{
+	ClearParaSpace();
+	if(account == NULL)
+	{
+		return false;
+	}
+	__CallApi(GETSCRIPTID_FUNC);
+
+	FUN_RET_DATA *retdata = GetInterflowP();
+	if (retdata->len != 6) {
+			return 0;
+		}
+	memcpy(account, retdata->buffer, retdata->len);
+	return retdata->len;
+	}
+bool GetCurTxAccount(void * const account,unsigned short maxlen)
+{
+		ClearParaSpace();
+		if(account == NULL || maxlen <= 0)
+		{
+			return false;
+		}
+		__CallApi(GETCURTXACCOUNT_FUNC);
+
+		FUN_RET_DATA *retdata = GetInterflowP();
+		if (retdata->len < 6) {
+			return 0;
+		}
+		memcpy(account, retdata->buffer, retdata->len);
+		return retdata->len;
 }
