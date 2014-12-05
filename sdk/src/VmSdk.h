@@ -391,7 +391,8 @@ bool GetCurScritpAccount(void* const account);
  *@return return true
  *
  */
-bool GetCurTxAccount(void * const account,unsigned short maxlen);
+unsigned short GetCurTxAccount(void * const account,unsigned short maxlen);
+unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen);
 void inline PrintfLine(unsigned short sort)
 {
 	char bffer[20]={0};
