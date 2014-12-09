@@ -14,6 +14,7 @@
 
 - \subpage Demo
     - \ref lottery "²ÊÆ±"
+	 - \ref darksecure  ¡°°µºÚ±È½»Ò×¡±
 - \subpage TestCode
 	- \ref APItest "APItest"
 	- \ref  Demo  "DemoTest"

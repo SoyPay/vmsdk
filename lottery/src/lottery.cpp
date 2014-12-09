@@ -39,7 +39,7 @@ static u32 factorial(u32 n) {
 		return n * factorial(n - 1);
 }
 
-static u32 MselectN(u32 m, u32 n) {
+u32 MselectN(u32 m, u32 n) {
 #if 0
 	if (n == 0)
 		return 1;
