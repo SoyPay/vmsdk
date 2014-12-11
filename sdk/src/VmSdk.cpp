@@ -655,7 +655,7 @@ unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen)
 	__CallApi(GETCURTXCONTACT_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len < 6) {
+	if (retdata->len <= 0) {
 		return 0;
 	}
 	memcpy(pContact, retdata->buffer, retdata->len);

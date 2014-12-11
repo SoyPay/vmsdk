@@ -20,6 +20,9 @@
     <path>$WS_DIR$\SecuredTrade\SecuredTrade.ewp</path>
   </project>
   <project>
+    <path>$WS_DIR$\Soypay_test\soypay_test.ewp</path>
+  </project>
+  <project>
     <path>$WS_DIR$\testUint\test.ewp</path>
   </project>
   <project>

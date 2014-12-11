@@ -253,18 +253,14 @@ bool testWriteOutput()
 bool testGetCurRunEnvHeight()
 {
 	unsigned long height = GetCurRunEnvHeight();
-	char buffer[50] = {0};
-	sprintf(buffer,"testGetCurRunEnvHeight:%d",height);
-	LogPrint(buffer,52,STRING);
+	TestCheck(height == 2);
 	return true;
 }
 bool testGetTxContacts(char *phash)
 {
-	LogPrint(phash,32,HEX);
 	char pcontact[50] = {0};
 	GetTxContacts((unsigned char*)phash,pcontact,50);
-	LogPrint("testGetTxContacts:",sizeof("testGetTxContacts:"),STRING);
-	LogPrint(pcontact,50,HEX);
+	TestCheck(pcontact[0] == 0x01);
 	return true;
 }
 bool testGetAccounts(char *phash)
@@ -276,14 +272,14 @@ bool testGetAccounts(char *phash)
 
 	length =GetAccounts((unsigned char*)phash,pcontact,6);
 	TestCheck(length == 6);
-	LogPrint("testGetAccounts:",sizeof("testGetAccounts:"),STRING);
-	LogPrint(pcontact,6,HEX);
+	char compare[6] = {0x00,0x00,0x00,0x00,0x08,0x00};
+	TestCheck(strcmp(pcontact,compare) == 0);
 	return true;
 }
 bool testGetAccountPublickey(char *phash)
 {
 	char pcontact[6] = {0};
-	char pubkey[33] = {0};
+	char pubkey[34] = {0};
 	char*temphash = NULL;
 	unsigned  short length = GetAccountPublickey(temphash,pubkey,33);
 	TestCheck(length == 33);
@@ -291,14 +287,19 @@ bool testGetAccountPublickey(char *phash)
 
 	length = GetAccountPublickey(pcontact,pubkey,33);
 	TestCheck(length == 33);
-	LogPrint("testGetAccountPublickey:",sizeof("testGetAccountPublickey:"),STRING);
-	LogPrint(pubkey,33,HEX);
+	char compare[34]={0x03,0x11,0xca,0x27,0x7a,0x0f,0x38,0x80,
+	0xee,0xfe,0xd3,0x49,0x72,0x7c,0xc9,0x54,
+	0x35,0x4c,0x4e,0x53,0x9b,0x81,0x28,0xc7,
+	0x9f,0x18,0xa8,0x7c,0x6f,0x2b,0x97,0x91,
+	0x86,0x00};
+	TestCheck(strcmp(pubkey,compare) == 0);
 	return true;
 }
 bool testQueryAccountBalance(char *phash)
 {
 	char paccount[6] = {0};
 	Int64 pBalance;
+	Int64Inital(&pBalance,"\x00", 1);
 	TestCheck(QueryAccountBalance((unsigned char*)paccount,ACOUNT_ID,&pBalance) == true);
 	LogPrint(&pBalance,8,HEX);
 	GetAccounts((unsigned char*)phash,paccount,6);
@@ -310,33 +311,25 @@ bool testQueryAccountBalance(char *phash)
 bool testGetTxConFirmHeight(char *txhash)
 {
 	unsigned long height = GetTxConFirmHeight(txhash);
-	char buffer[50] = {0};
-	sprintf(buffer,"testGetTxConFirmHeight:%d",height);
-	LogPrint(buffer,50,STRING);
+	TestCheck(height ==2);
 	return true;
 }
 bool testGetTipHeight()
 {
 	unsigned long height = GetTipHeight();
-	char buffer[50] = {0};
-	sprintf(buffer,"testGetTipHeight:%d",height);
-	LogPrint(buffer,50,STRING);
+	TestCheck(height ==1);
 	return true;
 }
 bool testGetBlockHash()
 {
 	char bhash[32] = {0};
-	GetBlockHash(1,bhash);
-	LogPrint("testGetBlockHash:",sizeof("testGetBlockHash:"),STRING);
-	LogPrint(bhash,32,HEX);
+	TestCheck(GetBlockHash(1,bhash) == true);
 	return true;
 }
 bool testGetCurTxHash()
 {
 	char txhash[32] = {0};
-	GetCurTxHash(txhash);
-	LogPrint("testGetCurTxHash:",sizeof("testGetCurTxHash:"),STRING);
-	LogPrint(txhash,32,HEX);
+	TestCheck(GetCurTxHash(txhash) == true);
 	return true;
 }
 /// Ã»ÓÐÊÚÈ¨
@@ -524,72 +517,72 @@ int main()
 		{
 			if(testInt64Inital() == false)
 			{
-				LogPrint("testInt64Inital",sizeof("testInt64Inital")+1,STRING);
+				LogPrint("testInt64Inital error",sizeof("testInt64Inital error")+1,STRING);
 				test_exit();
 			}
 			if(!testCompare())
 			{
-				LogPrint("testCompare",sizeof("testCompare")+1,STRING);
+				LogPrint("testCompare error",sizeof("testCompare error")+1,STRING);
 				test_exit();
 			}
 			if(!testadd())
 			{
-				LogPrint("testadd",sizeof("testadd")+1,STRING);
+				LogPrint("testadd error",sizeof("testadd error")+1,STRING);
 				test_exit();
 			}
 			if(!testmul())
 			{
-				LogPrint("testmul",sizeof("testmul")+1,STRING);
+				LogPrint("testmul error",sizeof("testmul error")+1,STRING);
 				test_exit();
 			}
 			if(!testsub())
 			{
-				LogPrint("testsub",sizeof("testsub")+1,STRING);
+				LogPrint("testsub error",sizeof("testsub error")+1,STRING);
 				test_exit();
 			}
 			if(!testdiv())
 			{
-				LogPrint("testdiv",sizeof("testdiv")+1,STRING);
+				LogPrint("testdiv error",sizeof("testdiv error")+1,STRING);
 				test_exit();
 			}
 			if(!testSHA256())
 			{
-				LogPrint("testSHA256",sizeof("testSHA256")+1,STRING);
+				LogPrint("testSHA256 error",sizeof("testSHA256 error")+1,STRING);
 				test_exit();
 			}
 			if(!testSignatureVerify())
 			{
-				LogPrint("testSignatureVerify",sizeof("testSignatureVerify")+1,STRING);
+				LogPrint("testSignatureVerify error",sizeof("testSignatureVerify error")+1,STRING);
 				test_exit();
 			}
 			if(!testDes())
 			{
-				LogPrint("testDes",sizeof("testDes")+1,STRING);
+				LogPrint("testDes error",sizeof("testDes error")+1,STRING);
 				test_exit();
 			}
 			if(!testLogPrint())
 			{
-				LogPrint("testLogPrint",sizeof("testLogPrint")+1,STRING);
+				LogPrint("testLogPrint error",sizeof("testLogPrint error")+1,STRING);
 				test_exit();
 			}
 			if(!testGetCurRunEnvHeight())
 			{
-				LogPrint("testGetCurRunEnvHeight",sizeof("testGetCurRunEnvHeight")+1,STRING);
+				LogPrint("testGetCurRunEnvHeight error",sizeof("testGetCurRunEnvHeight error")+1,STRING);
 				test_exit();
 			}
 			if(!testGetTipHeight())
 			{
-				LogPrint("testGetTipHeight",sizeof("testGetTipHeight")+1,STRING);
+				LogPrint("testGetTipHeight error",sizeof("testGetTipHeight error")+1,STRING);
 				test_exit();
 			}
 			if(!testGetBlockHash())
 			{
-				LogPrint("testGetBlockHash",sizeof("testGetBlockHash")+1,STRING);
+				LogPrint("testGetBlockHash error",sizeof("testGetBlockHash error")+1,STRING);
 				test_exit();
 			}
 			if(!testGetCurTxHash())
 			{
-				LogPrint("testGetCurTxHash",sizeof("testGetCurTxHash")+1,STRING);
+				LogPrint("testGetCurTxHash error",sizeof("testGetCurTxHash error")+1,STRING);
 				test_exit();
 			}
 			LogPrint("1:test ok",sizeof("1:test ok")+1,STRING);
@@ -601,34 +594,34 @@ int main()
 			memcpy(&hash,&pcontact[1],32);
 			if(!testGetTxContacts(hash))
 			{
-				LogPrint("testGetTxContacts",sizeof("testGetTxContacts")+1,STRING);
+				LogPrint("testGetTxContacts error",sizeof("testGetTxContacts error")+1,STRING);
 				test_exit();
 			}
 			if(!testGetAccounts(hash))
 			{
-				LogPrint("testGetAccounts",sizeof("testGetAccounts")+1,STRING);
+				LogPrint("testGetAccounts error",sizeof("testGetAccounts error")+1,STRING);
 				test_exit();
 			}
 			if(!testGetAccountPublickey(hash))
 			{
-				LogPrint("testGetAccountPublickey",sizeof("testGetAccountPublickey")+1,STRING);
+				LogPrint("testGetAccountPublickey error",sizeof("testGetAccountPublickey error")+1,STRING);
 				test_exit();
 			}
 			if(!testQueryAccountBalance(hash))
 			{
-				LogPrint("testQueryAccountBalance",sizeof("testQueryAccountBalance")+1,STRING);
+				LogPrint("testQueryAccountBalance error",sizeof("testQueryAccountBalance error")+1,STRING);
 				test_exit();
 			}
 			if(!testGetTxConFirmHeight(hash))
 			{
-				LogPrint("testGetTxConFirmHeight",sizeof("testGetTxConFirmHeight")+1,STRING);
+				LogPrint("testGetTxConFirmHeight error",sizeof("testGetTxConFirmHeight error")+1,STRING);
 				test_exit();
 			}
-			if(!testIsAuthorited(hash))
-			{
-				LogPrint("testIsAuthorited",sizeof("testIsAuthorited")+1,STRING);
-				test_exit();
-			}
+//			if(!testIsAuthorited(hash))
+//			{
+//				LogPrint("testIsAuthorited",sizeof("testIsAuthorited")+1,STRING);
+//				test_exit();
+//			}
 			LogPrint("2:test ok",sizeof("2:test ok")+1,STRING);
 			break;
 		}
@@ -636,52 +629,52 @@ int main()
 		{
 			if(!testWriteDataDB())
 			{
-				LogPrint("testWriteDataDB",sizeof("testWriteDataDB")+1,STRING);
+				LogPrint("testWriteDataDB error",sizeof("testWriteDataDB error")+1,STRING);
 				test_exit();
 			}
 			if(!testDeleteDataDB())
 			{
-				LogPrint("testDeleteDataDB",sizeof("testDeleteDataDB")+1,STRING);
+				LogPrint("testDeleteDataDB error",sizeof("testDeleteDataDB error")+1,STRING);
 				test_exit();
 			}
 			if(!testReadDataValueDB())
 			{
-				LogPrint("testReadDataValueDB",sizeof("testReadDataValueDB")+1,STRING);
+				LogPrint("testReadDataValueDB error",sizeof("testReadDataValueDB error")+1,STRING);
 				test_exit();
 			}
 
 			if(!testModifyDataDB())
 			{
-				LogPrint("testModifyDataDB",sizeof("testModifyDataDB")+1,STRING);
+				LogPrint("testModifyDataDB error",sizeof("testModifyDataDB error")+1,STRING);
 				test_exit();
 			}
 
 			if(!testGetDBSize())
 			{
-				LogPrint("testGetDBSize",sizeof("testGetDBSize")+1,STRING);
+				LogPrint("testGetDBSize error",sizeof("testGetDBSize error")+1,STRING);
 				test_exit();
 			}
 
 			if(!testGetDBValue())
 			{
-				LogPrint("testGetDBValue",sizeof("testGetDBValue")+1,STRING);
+				LogPrint("testGetDBValue error",sizeof("testGetDBValue error")+1,STRING);
 				test_exit();
 			}
 
 			if(!testReadDataDBTime())
 			{
-				LogPrint("testReadDataDBTime",sizeof("testReadDataDBTime")+1,STRING);
+				LogPrint("testReadDataDBTime error",sizeof("testReadDataDBTime error")+1,STRING);
 				test_exit();
 			}
 
 			if(!testModifyDataDBTime())
 			{
-				LogPrint("testModifyDataDBTime",sizeof("testModifyDataDBTime")+1,STRING);
+				LogPrint("testModifyDataDBTime error",sizeof("testModifyDataDBTime error")+1,STRING);
 				test_exit();
 			}
 			if(!testModifyDataDBVavle())
 			{
-				LogPrint("testModifyDataDBVavle",sizeof("testModifyDataDBVavle")+1,STRING);
+				LogPrint("testModifyDataDBVavle error",sizeof("testModifyDataDBVavle error")+1,STRING);
 				test_exit();
 			}
 			LogPrint("3:test ok",sizeof("3:test ok")+1,STRING);
@@ -691,7 +684,7 @@ int main()
 		{
 			if(!testseconddb())
 			{
-				LogPrint("testseconddb",sizeof("testseconddb")+1,STRING);
+				LogPrint("testseconddb error",sizeof("testseconddb error")+1,STRING);
 				test_exit();
 			}
 			LogPrint("4:test ok",sizeof("4:test ok")+1,STRING);
@@ -704,7 +697,7 @@ int main()
 			memcpy(&hash,&pcontact[1],32);
 			if(testIsAuthorited1(hash))
 			{
-				LogPrint("testIsAuthorited1",sizeof("testIsAuthorited1")+1,STRING);
+				LogPrint("testIsAuthorited1 error",sizeof("testIsAuthorited1 error")+1,STRING);
 				test_exit();
 			}
 			LogPrint("5:test ok",sizeof("5:test ok")+1,STRING);
