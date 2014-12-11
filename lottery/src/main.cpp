@@ -4,9 +4,10 @@
  *  Created on: Nov 15, 2014
  *      Author: spark.huang
  */
+
 #include <string.h>
 #include<stdlib.h>
-#include"VmSdk.h"
+#include <stdio.h>
 #include"lottery.h"
 
 /**
@@ -16,6 +17,12 @@ enum OPERATETYPE {
 	REG,  //!< REG
 	ORDER,//!< ORDER
 	OPEN  //!< OPEN
+};
+
+enum LOTTOSTATUS {
+	LOTTONONE,
+	LOTTOUNOPEN,
+	LOTTOOPEN
 };
 
 /**
@@ -33,6 +40,7 @@ typedef struct {
 typedef struct {
 	OPERATETYPE type;
 	uchar num[15];
+	uchar numlen;
 	Int64 money;
 }ORDER_DATA;
 
@@ -46,8 +54,11 @@ typedef struct {
 typedef struct {
 	uchar txhash[32];//current tx hash
 	uchar accid[6];//current account id
+	uchar scriptid[6];//current script id
 }LOTTO_CTX;
 
+//注册彩票需保存的数据
+//key:SysRegLotto
 typedef struct {
 	uchar accid[6];
 	Int64 amount;
@@ -55,8 +66,43 @@ typedef struct {
 	u32 closehight;
 }REG_SAVE_DATA;
 
+//订购彩票需要保存的数据
+//key:u32 term + u32 order
+//data:tx hash
+typedef struct {
+	uchar accid[6];
+	Int64 amount;
+	uchar num[15];
+	uchar numlen;
+	u32 orderhight;
+}ORDER_INFO;
+
+//用一个关键字记录所有记录期数的状态，便于查找是否有开奖期数
+//只保存5期的记录
+//key:SysStatus
+typedef struct {
+	LOTTOSTATUS status[5];//0-no record;1-unopen;2-opened
+	u32 term[5];//期数
+	u32 openhight[5];//对应该期的开奖高度
+	u32 totalorders[5];//对应总注数
+}SYSLOTTO_STATUS;
+
+//用另一个关键字记录当前期的投注状态
+//key:CurretStatus
+typedef struct {
+	u32 term;//第几期
+	Int64 amount;//奖池余额
+	u32 totalorders;//当前投注量
+	u32 openhight;//开奖高度
+}CURRENT_STATUS;
+
+#define CURRENT "CurretStatus"
+#define SYSTERM "SysStatus"
+
 __xdata __no_init static uchar gContractData[256];
 __xdata __no_init static REG_SAVE_DATA gRegSaveData;
+
+
 
 /**
  * @brief get contract data
@@ -67,11 +113,13 @@ static bool GetContractData(const LOTTO_CTX *pctxdata)
 {
 	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!GetTxContacts(pctxdata->txhash, gContractData, sizeof(gContractData)))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -89,6 +137,7 @@ static bool CheckMinimumAmount(const Int64 *pdata)
 
 	if(pdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -96,6 +145,7 @@ static bool CheckMinimumAmount(const Int64 *pdata)
 
 	if(Int64Compare(pdata, &minamount) != COMP_LARGER)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -111,11 +161,13 @@ static bool CheckRegHight(const u32 *phight)
 {
 	if(phight == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(*phight <= GetCurRunEnvHeight())
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -132,32 +184,35 @@ static bool CheckRegHight(const u32 *phight)
 static bool RegDataCheck(const LOTTO_CTX *pctxdata)
 {
 	REG_DATA *pregdata = (REG_DATA *)gContractData;
-	Int64 balance, amount;
+	Int64 balance;
 
 	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!QueryAccountBalance(pctxdata->accid, ACOUNT_ID, &balance))
 	{
-		printf("get account balance err, QueryAccountBalance return false!\r\n");
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(Int64Compare(&balance, &pregdata->money) != COMP_LARGER)
 	{
-		printf("account balance  <  reg amount!\r\n");
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!CheckMinimumAmount(&pregdata->money))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!CheckRegHight(&pregdata->hight))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -167,19 +222,25 @@ static bool RegDataCheck(const LOTTO_CTX *pctxdata)
 static bool RegOperateAccount(const LOTTO_CTX *pbetctx)
 {
 	REG_DATA *pregdata = (REG_DATA *)gContractData;
-	VM_OPERATE operate;
+	VM_OPERATE operate[2];
 
 	if(pbetctx == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	operate.accountid = pbetctx->accid;
-	operate.money = pregdata->money;
-	operate.opeatortype = MINUS_FREE;
-	operate.outheight = pregdata->hight;
+	memcpy(operate[0].accountid, pbetctx->accid, sizeof(pbetctx->accid));
+	memcpy(&operate[0].money, &pregdata->money, sizeof(pregdata->money));
+	operate[0].opeatortype = MINUS_FREE;
+	operate[0].outheight = pregdata->hight;
 
-    return WriteOutput(&operate, 1);
+	memcpy(operate[1].accountid, pbetctx->scriptid, sizeof(pbetctx->scriptid));
+	memcpy(&operate[1].money, &pregdata->money, sizeof(pregdata->money));
+	operate[1].opeatortype = ADD_FREE;
+	operate[1].outheight = pregdata->hight;
+
+    return WriteOutput(operate, 2);
 }
 
 /**
@@ -191,21 +252,47 @@ static bool RecordRegLottoStatus(const LOTTO_CTX *pctxdata)
 {
 	REG_DATA *pregdata = (REG_DATA *)gContractData;
 	REG_SAVE_DATA savedata;
+	CURRENT_STATUS current;
+	SYSLOTTO_STATUS sys;
 	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	memset(&savedata, 0, sizeof(REG_SAVE_DATA));
-	savedata.accid = pctxdata->accid;
-	savedata.amount = pregdata->money;
+	memcpy(savedata.accid ,pctxdata->accid, sizeof(pctxdata->accid));
+	memcpy(&savedata.amount, &pregdata->money, sizeof(pregdata->money));
 	savedata.reghight = GetCurRunEnvHeight();
 	savedata.closehight = pregdata->hight;
-
-	if(WriteDataDB("reglotto", sizeof("reglotto"), &savedata, sizeof(REG_SAVE_DATA), 12345))
+	if(WriteDataDB("SysRegLotto", sizeof("SysRegLotto"), &savedata, sizeof(REG_SAVE_DATA), 12345))
 	{
+		ErrorCheck(0);
 		return false;
 	}
+
+	memset(&current, 0, sizeof(CURRENT_STATUS));
+	memcpy(&current.amount, &pregdata->money, sizeof(pregdata->money));
+	current.term = 1;
+	current.openhight = current.term + 10;
+	current.totalorders = 0;
+	if(WriteDataDB("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS), 12345))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	memset(&sys, 0, sizeof(SYSLOTTO_STATUS));
+	sys.status[0] = LOTTOUNOPEN;
+	sys.term[0] = current.term;
+	sys.openhight[0] = current.openhight;
+	sys.totalorders[0] = 0;
+	if(WriteDataDB("SysStatus", sizeof("SysStatus"), &sys, sizeof(SYSLOTTO_STATUS), 12345))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
 	return true;
 }
 
@@ -221,21 +308,25 @@ static bool RegLottery(const LOTTO_CTX *pctxdata)
 {
 	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!RegDataCheck(pctxdata))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!RegOperateAccount(pctxdata))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!RecordRegLottoStatus(pctxdata))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -244,9 +335,11 @@ static bool RegLottery(const LOTTO_CTX *pctxdata)
 
 static bool CheckOrderNum(const uchar *pdata, uchar datalen)
 {
+	uchar temp[15] = {0};
 	uchar ii = 0;
 	if(pdata == NULL || datalen == 0 || datalen > 15)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -256,10 +349,45 @@ static bool CheckOrderNum(const uchar *pdata, uchar datalen)
 		{
 			break;
 		}
+		temp[pdata[ii]]++;
+		if(temp[pdata[ii]] > 1)
+		{
+			break;
+		}
+		ii++;
 	}
 	while(ii < datalen);
+
+	return (ii == datalen)?(true):(false);
 }
 
+static bool CheckOrderAmount(const Int64 *pamount, uchar totalnum)
+{
+	Int64 apert, total64, min;
+	u32 total = 0;
+	if(pamount == NULL || totalnum < 6 || totalnum > 15)
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	total = MselectN(15, totalnum);
+	memset(&total64, 0, sizeof(Int64));
+	memcpy(&total64, &total, sizeof(total));
+	if(!Int64Div(pamount, &total64, &apert))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+	Int64Inital(&min,"\x00\x00\x00\x00\x00\x01\x00\x00",8);
+	if(Int64Compare(&apert, &min) != COMP_LARGER)
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	return true;
+}
 
 /**
  * @brief check order num and order amount
@@ -270,7 +398,17 @@ static bool CheckOrderNumAndAmount(void)
 {
 	ORDER_DATA *porderdata = (ORDER_DATA *)gContractData;
 
+	if(!CheckOrderNum(porderdata->num, porderdata->numlen))
+	{
+		ErrorCheck(0);
+		return false;
+	}
 
+	if(!CheckOrderAmount(&porderdata->money, porderdata->numlen))
+	{
+		ErrorCheck(0);
+		return false;
+	}
 
 	return true;
 }
@@ -284,6 +422,7 @@ static bool CheckOrderHight(void)
 {
 	if(GetCurRunEnvHeight() > gRegSaveData.closehight)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -301,36 +440,63 @@ static bool CheckOrderHight(void)
 static bool OrderDataCheck(const LOTTO_CTX *pctxdata)
 {
 	ORDER_DATA *porderdata = (ORDER_DATA *)gContractData;
-	Int64 balance, amount;
+	Int64 balance;
 
 	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!QueryAccountBalance(pctxdata->accid, ACOUNT_ID, &balance))
 	{
-		printf("get account balance err, QueryAccountBalance return false!\r\n");
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(Int64Compare(&balance, &porderdata->money) != COMP_LARGER)
 	{
-		printf("account balance  <  order amount!\r\n");
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!CheckOrderNumAndAmount())
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!CheckOrderHight())
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	return true;
+}
+
+static bool OrderOperateAccount(const LOTTO_CTX *pbetctx)
+{
+	ORDER_DATA *pregdata = (ORDER_DATA *)gContractData;
+	VM_OPERATE operate[2];
+
+	if(pbetctx == NULL)
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	memcpy(operate[0].accountid, pbetctx->accid, sizeof(pbetctx->accid));
+	memcpy(&operate[0].money, &pregdata->money, sizeof(pregdata->money));
+	operate[0].opeatortype = MINUS_FREE;
+	operate[0].outheight = 0;//???
+
+	memcpy(operate[1].accountid, pbetctx->scriptid, sizeof(pbetctx->scriptid));
+	memcpy(&operate[1].money, &pregdata->money, sizeof(pregdata->money));
+	operate[1].opeatortype = ADD_FREE;
+	operate[1].outheight = 0;//???
+
+    return WriteOutput(operate, 2);
 }
 
 /**
@@ -338,12 +504,38 @@ static bool OrderDataCheck(const LOTTO_CTX *pctxdata)
  * @param pdata:order data hanlde
  * @return
  */
-static bool RecordAccountOrderStatus(const void *pdata)
+static bool RecordOrderLottoStatus(const LOTTO_CTX *pctxdata)
 {
-	if(pdata == NULL)
+	CURRENT_STATUS current;
+	uchar key[8] = {0};
+	ORDER_DATA *pregdata = (ORDER_DATA *)gContractData;
+	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
+
+	if(ReadDataValueDB("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+	current.totalorders++;
+
+	memcpy(key, &current.term, sizeof(u32));
+	memcpy(&key[4], &current.totalorders, sizeof(u32));
+	if(WriteDataDB(key, sizeof(key), pctxdata->txhash, sizeof(pctxdata->txhash), 12345))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	if(ModifyDataDBVavle("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
 	return true;
 }
 
@@ -359,21 +551,25 @@ static bool OrderLottery(const LOTTO_CTX *pctxdata)
 {
 	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!OrderDataCheck(pctxdata))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(!OperateAccount(pdata))
+	if(!OrderOperateAccount(pctxdata))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(!RecordAccountOrderStatus(pdata))
+	if(!RecordOrderLottoStatus(pctxdata))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -389,30 +585,42 @@ static unsigned long GetOpenLotteryHight(void)
 	return 0;
 }
 
-/**
- * @brief check whether the current block hight is higher than open lottery hight
- * @return
- */
-static bool CheckOpenHight(void)
+static bool IsHaveOpenTerm(void)
 {
-	unsigned long hight = GetCurRunEnvHeight();
+	SYSLOTTO_STATUS sys;
+	u32 term = 0x7fffffff;
+	bool flag = false;
+	uchar kk = 0;
+	u32 hight = GetCurRunEnvHeight();
 
-	unsigned long openhight = GetOpenLotteryHight();
-	return true;
-}
-
-/**
- * @brief get open lottery status from the script database
- * @param pdata:open data handle
- * @return
- */
-static bool GetOpenLotteryStatus(const void *pdata)
-{
-	if(pdata == NULL)
+	if(ReadDataValueDB("SysStatus", sizeof("SysStatus"), &sys, sizeof(SYSLOTTO_STATUS)))
 	{
+		ErrorCheck(0);
 		return false;
 	}
-	return true;
+
+	for(uchar ii = 0; ii < 5; ii++)
+	{
+		if(sys.status[ii] == LOTTOUNOPEN)
+		{
+			if(term > sys.term[ii])
+			{
+				term = sys.term[ii];
+				flag = true;
+				kk = ii;
+			}
+		}
+	}
+
+	if(flag)
+	{
+		if(hight >= sys.openhight[kk])
+		{
+			return true;
+		}
+	}
+
+	return flag;
 }
 
 /**
@@ -423,22 +631,17 @@ static bool GetOpenLotteryStatus(const void *pdata)
  * @param pdata:open data handle
  * @return
  */
-static bool OpenDataCheck(const void *pdata)
+static bool OpenDataCheck(const LOTTO_CTX *pctxdata)
 {
-	OPEN_DATA *popendata = (OPEN_DATA *)pdata;
-
-	if(pdata == NULL)
+	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(!CheckOpenHight())
+	if(!IsHaveOpenTerm())
 	{
-		return false;
-	}
-
-	if(!GetOpenLotteryStatus(pdata))
-	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -450,11 +653,104 @@ static bool OpenDataCheck(const void *pdata)
  * @param pdata:open data handle
  * @return
  */
-static bool RecordOpenStatus(const void *pdata)
+static bool RecordOpenStatus(const LOTTO_CTX *pctxdata)
 {
-	if(pdata == NULL)
+	SYSLOTTO_STATUS sys;
+	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
+	}
+
+	if(ReadDataValueDB("SysStatus", sizeof("SysStatus"), &sys, sizeof(SYSLOTTO_STATUS)))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	sys.status[0] = LOTTOOPEN;
+
+	if(ModifyDataDBVavle("SysStatus", sizeof("SysStatus"), &sys, sizeof(SYSLOTTO_STATUS)))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	return true;
+}
+
+static bool OpenOperateAccount(const LOTTO_CTX *pbetctx)
+{
+	VM_OPERATE operate[2];
+	SYSLOTTO_STATUS sys;
+	uchar key[8] = {0};
+	uchar txhash[32] = {0}, openhash[32] = {0};
+	uchar accid[6] = {0};
+	ORDER_INFO info;
+
+	if(pbetctx == NULL)
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	if(ReadDataValueDB("SysStatus", sizeof("SysStatus"), &sys, sizeof(SYSLOTTO_STATUS)))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	for(u32 ii = 0; ii < sys.totalorders[0]; ii++)
+	{
+		memcpy(key, &sys.term[0], sizeof(u32));
+		memcpy(&key[4], &ii, sizeof(u32));
+		if(ReadDataValueDB(key, sizeof(key), &txhash, sizeof(txhash)))
+		{
+			ErrorCheck(0);
+			return false;
+		}
+
+		//get info from tx hash
+		GetAccounts(txhash, accid, sizeof(accid));
+		if(!GetTxContacts(txhash, gContractData, sizeof(gContractData)))
+		{
+			ErrorCheck(0);
+			return false;
+		}
+
+		if(!GetBlockHash(sys.openhight[0], openhash))
+		{
+			ErrorCheck(0);
+			return false;
+		}
+
+		ORDER_DATA *pregdata = (ORDER_DATA *)gContractData;
+
+		memcpy(info.accid, accid, sizeof(accid));
+		memcpy(&info.amount, &pregdata->money, sizeof(pregdata->money));
+		memcpy(info.num, pregdata->num, sizeof(pregdata->num));
+		info.numlen = pregdata->numlen;
+
+		REWARD_RESULT rslt = DrawLottery(openhash, info.num, info.numlen, &info.amount);
+
+		{
+			memcpy(operate[0].accountid, pbetctx->accid, sizeof(pbetctx->accid));
+			u32 temp = rslt.top1 + rslt.top2 + rslt.top3;
+			memcpy(&operate[0].money, &temp, sizeof(temp));
+			operate[0].opeatortype = ADD_FREE;
+			operate[0].outheight = 0;//???
+
+			memcpy(operate[1].accountid, pbetctx->scriptid, sizeof(pbetctx->scriptid));
+			memcpy(&operate[1].money, &temp, sizeof(temp));
+			operate[1].opeatortype = MINUS_FREE;
+			operate[1].outheight = 0;//???
+
+			if(!WriteOutput(operate, 2))
+			{
+				ErrorCheck(0);
+				return false;
+			}
+		}
 	}
 	return true;
 }
@@ -467,25 +763,29 @@ static bool RecordOpenStatus(const void *pdata)
  * @param pdata
  * @return
  */
-static bool OpenLottery(const void *pdata)
+static bool OpenLottery(const LOTTO_CTX *pctxdata)
 {
-	if(pdata == NULL)
+	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(!OpenDataCheck(pdata))
+	if(!OpenDataCheck(pctxdata))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(!OperateAccount(pdata))
+	if(!OpenOperateAccount(pctxdata))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(!RecordOpenStatus(pdata))
+	if(!RecordOpenStatus(pctxdata))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -504,6 +804,7 @@ static bool RunContractData(const LOTTO_CTX *pctxdata)
 
 	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -518,10 +819,11 @@ static bool RunContractData(const LOTTO_CTX *pctxdata)
 		break;
 
 	case OPEN:
-		ret = OpenLottery(pdata);
+		ret = OpenLottery(pctxdata);
 		break;
 
 	default:
+		ErrorCheck(0);
 		ret = false;
 		break;
 	}
@@ -533,20 +835,29 @@ static bool InitCtxData(LOTTO_CTX const *pctxdata)
 {
 	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!GetCurTxHash((void *)pctxdata->txhash))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(GetAccounts(pctxdata->txhash, (void *)pctxdata->accid, sizeof(pctxdata->accid)) > 0)
+	if(GetAccounts(pctxdata->txhash, (void *)pctxdata->accid, sizeof(pctxdata->accid)) == 0)
 	{
-		return true;
+		ErrorCheck(0);
+		return false;
 	}
 
-	return false;
+	if(!GetCurScritpAccount((void *)pctxdata->scriptid))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	return true;
 }
 
 int main()
@@ -555,18 +866,19 @@ int main()
 
 	if(!InitCtxData(&LottoCtx))
 	{
+		ErrorCheck(0);
 		return 0;
 	}
 
 	if(GetContractData(&LottoCtx))
 	{
-		printf("get contract err, GetContractData return false!\r\n");
+		ErrorCheck(0);
 		return 0;
 	}
 
 	if(RunContractData(&LottoCtx))
 	{
-		printf("run contract data err, RunContractData return false!\r\n");
+		ErrorCheck(0);
 		return 0;
 	}
 

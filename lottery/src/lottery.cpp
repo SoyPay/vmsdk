@@ -39,7 +39,7 @@ static u32 factorial(u32 n) {
 		return n * factorial(n - 1);
 }
 
-static u32 MselectN(u32 m, u32 n) {
+u32 MselectN(u32 m, u32 n) {
 #if 0
 	if (n == 0)
 		return 1;
@@ -57,18 +57,20 @@ static u32 GetTotalTicket(uchar selectsize)
 {
 	if(selectsize < LUCKYNUMSIZE || selectsize > TOTALNUMSIZE)
 	{
+		ErrorCheck(0);
 		return 0;
 	}
 	return MselectN(selectsize, LUCKYNUMSIZE);
 }
 
-static u32 GetPricePerTick(uchar selectsize, u32 amount)
+static u32 GetPricePerTick(uchar selectsize, const Int64 *pamount)
 {
-	if(selectsize < LUCKYNUMSIZE || selectsize > TOTALNUMSIZE || amount == 0)
+	if(selectsize < LUCKYNUMSIZE || selectsize > TOTALNUMSIZE || pamount == 0)
 	{
+		ErrorCheck(0);
 		return 0;
 	}
-	return (amount/GetTotalTicket(selectsize));
+//	return (amount/GetTotalTicket(selectsize));
 }
 
 static REWARD_RESULT GetRewardTicket(const uchar *pdata, uchar datalen, const uchar luckynum[LUCKYNUMSIZE])
@@ -82,6 +84,7 @@ static REWARD_RESULT GetRewardTicket(const uchar *pdata, uchar datalen, const uc
 
 	if(pdata == NULL || datalen < LUCKYNUMSIZE || datalen > TOTALNUMSIZE || luckynum == NULL)
 	{
+		ErrorCheck(0);
 		return result;
 	}
 
@@ -104,19 +107,20 @@ static REWARD_RESULT GetRewardTicket(const uchar *pdata, uchar datalen, const uc
 }
 
 
-static REWARD_RESULT GetRewardResult(const uchar *pdata, uchar datalen, const uchar luckynum[LUCKYNUMSIZE], u32 amount)
+static REWARD_RESULT GetRewardResult(const uchar *pdata, uchar datalen, const uchar luckynum[LUCKYNUMSIZE], const Int64 *pamount)
 {
 	REWARD_RESULT result;
 	result.top1 = 0;
 	result.top2 = 0;
 	result.top3 = 0;
 
-	if(pdata == NULL || datalen < LUCKYNUMSIZE || datalen > TOTALNUMSIZE  || luckynum == NULL || amount == 0)
+	if(pdata == NULL || datalen < LUCKYNUMSIZE || datalen > TOTALNUMSIZE  || luckynum == NULL || pamount == NULL)
 	{
+		ErrorCheck(0);
 		return result;
 	}
 
-	u32 pptick = GetPricePerTick(datalen, amount);
+	u32 pptick = GetPricePerTick(datalen, pamount);
 
 	result = GetRewardTicket(pdata, datalen, luckynum);
 
@@ -133,6 +137,7 @@ static bool IsDataIn(uchar data, const uchar *pbuf, uchar buflen)
 
 	if(pbuf == NULL || buflen == 0)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -155,6 +160,7 @@ static bool GetLuckyNum(const uchar *phash, uchar luckynum[LUCKYNUMSIZE])
 
 	if(phash == NULL || luckynum == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -182,6 +188,7 @@ static bool GetLuckyNum(const uchar *phash, uchar luckynum[LUCKYNUMSIZE])
 #if 0
 			if(!SHA256(hash, HASHSIZE, hash))
 			{
+				ErrorCheck(0);
 				return false;
 			}
 #else
@@ -193,7 +200,7 @@ static bool GetLuckyNum(const uchar *phash, uchar luckynum[LUCKYNUMSIZE])
 	return true;
 }
 
-REWARD_RESULT DrawLottery(const uchar *phash, const uchar *pdata, uchar datalen, u32 amount)
+REWARD_RESULT DrawLottery(const uchar *phash, const uchar *pdata, uchar datalen, const Int64 *pamount)
 {
 	REWARD_RESULT result;
 	uchar luckynum[LUCKYNUMSIZE] = {0};
@@ -201,23 +208,25 @@ REWARD_RESULT DrawLottery(const uchar *phash, const uchar *pdata, uchar datalen,
 	result.top2 = 0;
 	result.top3 = 0;
 
-	if(phash == NULL || pdata == NULL || datalen < LUCKYNUMSIZE || datalen > TOTALNUMSIZE || amount == 0)
+	if(phash == NULL || pdata == NULL || datalen < LUCKYNUMSIZE || datalen > TOTALNUMSIZE || pamount == NULL)
 	{
+		ErrorCheck(0);
 		return result;
 	}
 
 	if(!GetLuckyNum(phash, luckynum))
 	{
+		ErrorCheck(0);
 		return result;
 	}
 
-	result = GetRewardResult(pdata, datalen, luckynum, amount);
+	result = GetRewardResult(pdata, datalen, luckynum, pamount);
 
 	return result;
 }
 
 //just for self test code
-#if 1
+#if 0
 static void errortest_GetTotalTicket(void)
 {
 	assert(GetTotalTicket(0) == 0);

@@ -8,7 +8,7 @@
 #ifndef LOTTERY_H_
 #define LOTTERY_H_
 
-//#include"VmSdk.h"
+#include"VmSdk.h"
 
 typedef unsigned char uchar;
 typedef unsigned long u32;
@@ -18,6 +18,8 @@ typedef unsigned long u32;
 #define LUCKYNUMSIZE (6)
 #define HASHSIZE (32)
 
+#define ErrorCheck(a) {if(!(a)) {PrintfFileAndLine(__LINE__, __FILE__);}}
+
 typedef struct
 {
 	u32 top1;
@@ -25,6 +27,8 @@ typedef struct
 	u32 top3;
 }REWARD_RESULT;
 
-REWARD_RESULT DrawLottery(const uchar *phash, const uchar *pdata, uchar datalen, u32 amount);
+u32 MselectN(u32 m, u32 n);
+
+REWARD_RESULT DrawLottery(const uchar *phash, const uchar *pdata, uchar datalen, const Int64 *pamount);
 
 #endif /* LOTTERY_H_ */
