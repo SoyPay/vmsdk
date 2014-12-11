@@ -6,11 +6,14 @@
  */
 #include <string.h>
 #include<stdlib.h>
+#include <stdio.h>
 #include"VmSdk.h"
 
 typedef unsigned char uchar;
 typedef unsigned int u16;
 typedef unsigned long u32;
+
+#define ErrorCheck(a) {if(!(a)) {PrintfFileAndLine(__LINE__, __FILE__);}}
 
 /**
  * p2pBet Operate Type
@@ -28,7 +31,7 @@ typedef struct {
 	OPERATETYPE type;
 	Int64 money;
 	u32 hight;
-	uchar dhash[33];//32 + one byte checksum
+	uchar dhash[32];//32 + one byte checksum
 }SEND_DATA;
 
 /**
@@ -37,7 +40,8 @@ typedef struct {
 typedef struct {
 	OPERATETYPE type;
 	Int64 money;
-	uchar dhash[33];//32 + one byte checksum
+	uchar targetkey[32];//发起对赌的哈希，也是对赌数据的关键字
+	uchar dhash[32];//32 + one byte checksum
 }ACCEPT_DATA;
 
 /**
@@ -45,6 +49,7 @@ typedef struct {
  */
 typedef struct {
 	OPERATETYPE type;
+	uchar targetkey[32];//发起对赌的哈希，也是对赌数据的关键字
 	uchar dhash[5];
 }OPEN_DATA;
 
@@ -58,14 +63,15 @@ enum BETSTATUS {
 /**
  * the data struct saved in database
  */
+//关键字暂时定为accid + current hight
 typedef struct {
 	BETSTATUS status;
 	uchar sendid[6];//send bet account id
 	uchar acceptid[6];//accept bet account id
 	Int64 money;//bet amount
-	u32 hight;//hight
-	uchar shash[33];//send data hash
-	uchar ahash[33];//accept data hash
+	u32 hight;//解冻高度
+	uchar shash[32];//send data hash
+	uchar ahash[32];//accept data hash
 	uchar sdata[5];//send data
 	uchar adata[5];//accept data
 }SAVE_DATA;
@@ -78,6 +84,8 @@ typedef struct {
 __xdata __no_init static uchar gContractData[256];
 __xdata __no_init static SAVE_DATA gSaveData;
 
+
+
 /**
  * @brief get contract data
  * @param pdata:out data point
@@ -87,13 +95,17 @@ static bool GetContractData(const BET_CTX *pctxdata)
 {
 	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!GetTxContacts(pctxdata->txhash, gContractData, sizeof(gContractData)))
 	{
+		ErrorCheck(0);
 		return false;
 	}
+
+	LogPrint(gContractData, sizeof(gContractData), HEX);
 
 	return true;
 }
@@ -109,6 +121,7 @@ static bool CheckMinimumAmount(const Int64 *pdata)
 
 	if(pdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -116,6 +129,7 @@ static bool CheckMinimumAmount(const Int64 *pdata)
 
 	if(Int64Compare(pdata, &minamount) != COMP_LARGER)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -131,11 +145,13 @@ static bool CheckSendBetHight(const u32 *phight)
 {
 	if(phight == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(*phight <= GetCurRunEnvHeight())
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -147,26 +163,26 @@ static bool CheckSendBetHight(const u32 *phight)
  * @param pdata:the input data
  * @return
  */
-static bool CheckDataHash(const void *pdata)
-{
-	uchar checksum = 0;
-	if(pdata == NULL)
-	{
-		return false;
-	}
-
-	for(uchar ii = 0; ii < 32; ii++)
-	{
-		checksum += pdata[ii];
-	}
-
-	if(checksum != pdata[32])
-	{
-		return false;
-	}
-
-	return true;
-}
+//static bool CheckDataHash(const void *pdata)
+//{
+//	uchar checksum = 0;
+//	if(pdata == NULL)
+//	{
+//		return false;
+//	}
+//
+//	for(uchar ii = 0; ii < 32; ii++)
+//	{
+//		checksum += pdata[ii];
+//	}
+//
+//	if(checksum != pdata[32])
+//	{
+//		return false;
+//	}
+//
+//	return true;
+//}
 
 /**
  * @brief send bet data check
@@ -177,39 +193,41 @@ static bool SendDataCheck(const BET_CTX *pbetctx)
 {
 	SEND_DATA *psdata = (SEND_DATA *)gContractData;
 	Int64 balance;
-	uchar txhash[32] = {0}, accid[6] = {0};
 
 	if(pbetctx == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!CheckMinimumAmount(&psdata->money))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!QueryAccountBalance(pbetctx->accid, ACOUNT_ID, &balance))
 	{
-		printf("get account balance err, QueryAccountBalance return false!\r\n");
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(Int64Compare(&balance, &psdata->money) != COMP_LARGER)
 	{
-		printf("account balance  <  reg amount!\r\n");
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!CheckSendBetHight(&psdata->hight))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(!CheckDataHash(psdata->dhash))
-	{
-		return false;
-	}
+//	if(!CheckDataHash(psdata->dhash))
+//	{
+//		return false;
+//	}
 
 	return true;
 }
@@ -221,16 +239,17 @@ static bool SendOperateAccount(const BET_CTX *pbetctx)
 
 	if(pbetctx == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	operate[0].accountid = pbetctx->accid;
-	operate[0].money = psdata->money;
+	memcpy(operate[0].accountid, pbetctx->accid, sizeof(pbetctx->accid));
+	memcpy(&operate[0].money, &psdata->money, sizeof(psdata->money));
 	operate[0].opeatortype = MINUS_FREE;
 	operate[0].outheight = psdata->hight;
 
-	operate[1].accountid = pbetctx->accid;
-	operate[1].money = psdata->money;
+	memcpy(operate[1].accountid, pbetctx->accid, sizeof(pbetctx->accid));
+	memcpy(&operate[1].money, &psdata->money, sizeof(psdata->money));
 	operate[1].opeatortype = ADD_FREEZD;
 	operate[1].outheight = psdata->hight;
 
@@ -244,16 +263,17 @@ static bool AcceptOperateAccount(const BET_CTX *pbetctx)
 
 	if(pbetctx == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	operate[0].accountid = pbetctx->accid;
-	operate[0].money = psdata->money;
+	memcpy(operate[0].accountid, pbetctx->accid, sizeof(pbetctx->accid));
+	memcpy(&operate[0].money, &psdata->money, sizeof(psdata->money));
 	operate[0].opeatortype = MINUS_FREE;
 	operate[0].outheight = gSaveData.hight;
 
-	operate[1].accountid = pbetctx->accid;
-	operate[1].money = psdata->money;
+	memcpy(operate[1].accountid, pbetctx->accid, sizeof(pbetctx->accid));
+	memcpy(&operate[1].money, &psdata->money, sizeof(psdata->money));
 	operate[1].opeatortype = ADD_FREEZD;
 	operate[1].outheight = gSaveData.hight;
 
@@ -267,12 +287,12 @@ static bool OpenOperateAccount(const BET_CTX *pbetctx)
 
 	if(gSaveData.status == BETACCEPT)//fisrt open
 	{
-		operate[0].accountid = gSaveData.acceptid;
-		operate[0].money = gSaveData.money;
+		memcpy(operate[0].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
+		memcpy(&operate[0].money, &gSaveData.money, sizeof(gSaveData.money));
 		operate[0].outheight = gSaveData.hight;
 
-		operate[1].accountid = gSaveData.sendid;
-		operate[1].money = gSaveData.money;
+		memcpy(&operate[1].accountid, &gSaveData.sendid, sizeof(gSaveData.sendid));
+		memcpy(&operate[1].money, &gSaveData.money, sizeof(gSaveData.money));
 		operate[1].outheight = gSaveData.hight;
 		if(memcmp(pbetctx->accid, gSaveData.acceptid, sizeof(pbetctx->accid)) == 0)
 		{
@@ -286,6 +306,7 @@ static bool OpenOperateAccount(const BET_CTX *pbetctx)
 		}
 		else
 		{
+			ErrorCheck(0);
 			return false;
 		}
 	}
@@ -313,15 +334,16 @@ static bool OpenOperateAccount(const BET_CTX *pbetctx)
 		}
 		else
 		{
+			ErrorCheck(0);
 			return false;
 		}
 
-		operate[0].accountid = gSaveData.acceptid;
-		operate[0].money = gSaveData.money + gSaveData.money;
+		memcpy(operate[0].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
+		Int64Add(&gSaveData.money, &gSaveData.money, &operate[0].money);
 		operate[0].outheight = gSaveData.hight;
 
-		operate[1].accountid = gSaveData.sendid;
-		operate[1].money = gSaveData.money + gSaveData.money;
+		memcpy(operate[1].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
+		Int64Add(&gSaveData.money, &gSaveData.money, &operate[1].money);
 		operate[1].outheight = gSaveData.hight;
 		if(rslt%2)//juge result,send bet win
 		{
@@ -337,6 +359,7 @@ static bool OpenOperateAccount(const BET_CTX *pbetctx)
 	}
 	else//error status
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -355,18 +378,20 @@ static bool RecordSendBetStatus(const BET_CTX *pbetctx)
 
 	if(pbetctx == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	memset(&savedata, 0, sizeof(SAVE_DATA));
 	savedata.status = BETSEND;
-	savedata.money = psdata->money;
-	savedata.shash = psdata->dhash;
+	memcpy(&savedata.money, &psdata->money, sizeof(psdata->money));
+	memcpy(&savedata.shash, &psdata->dhash, sizeof(psdata->dhash));
 	savedata.hight = psdata->hight;
-	savedata.sendid = pbetctx->accid;
+	memcpy(savedata.sendid, pbetctx->accid, sizeof(pbetctx->accid));
 
-	if(WriteDataDB("test", sizeof("test"), &savedata, sizeof(SAVE_DATA), 12345))
+	if(WriteDataDB(pbetctx->txhash, sizeof(pbetctx->txhash), &savedata, sizeof(SAVE_DATA), 12345))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -382,21 +407,25 @@ static bool SendP2PBet(const BET_CTX *pbetctx)
 {
 	if(pbetctx == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!SendDataCheck(pbetctx))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!SendOperateAccount(pbetctx))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!RecordSendBetStatus(pbetctx))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -407,8 +436,18 @@ static bool SendP2PBet(const BET_CTX *pbetctx)
  * @brief check if the database have someone send a bet
  * @return
  */
-static bool IsHaveSendBet(void)
+static bool IsHaveSendBet(const void * phash)
 {
+	if(phash == NULL)
+	{
+		ErrorCheck(0);
+		return false;
+	}
+	if(ReadDataValueDB(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
+	{
+		ErrorCheck(0);
+		return false;
+	}
 	return (gSaveData.status == BETSEND)?(true):(false);
 }
 
@@ -416,11 +455,13 @@ static bool IsEqualSendAmount(const Int64 *pdata)
 {
 	if(pdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(Int64Compare(pdata, &gSaveData.money) != COMP_LARGER)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -434,40 +475,43 @@ static bool IsEqualSendAmount(const Int64 *pdata)
  */
 static bool AcceptDataCheck(const BET_CTX *pbetctx)
 {
-	SEND_DATA *psdata = (SEND_DATA *)gContractData;
+	ACCEPT_DATA *psdata = (ACCEPT_DATA *)gContractData;
 	Int64 balance;
 
 	if(pbetctx == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(!IsHaveSendBet())
+	if(!IsHaveSendBet(psdata->targetkey))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!IsEqualSendAmount(&psdata->money))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!QueryAccountBalance(pbetctx->accid, ACOUNT_ID, &balance))
 	{
-		printf("get account balance err, QueryAccountBalance return false!\r\n");
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(Int64Compare(&balance, &psdata->money) != COMP_LARGER)
 	{
-		printf("account balance  <  reg amount!\r\n");
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(!CheckDataHash(psdata->dhash))
-	{
-		return false;
-	}
+//	if(!CheckDataHash(psdata->dhash))
+//	{
+//		return false;
+//	}
 
 	return true;
 }
@@ -482,16 +526,17 @@ static bool RecordAcceptBetStatus(const BET_CTX *pbetctx)
 	ACCEPT_DATA *psdata = (ACCEPT_DATA *)gContractData;
 	if(pbetctx == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	gSaveData.status = ACCEPT;
-	gSaveData.ahash = psdata->dhash;
-	gSaveData.acceptid = pbetctx->accid;
+	gSaveData.status = BETACCEPT;
+	memcpy(gSaveData.ahash, psdata->dhash, sizeof(psdata->dhash));
+	memcpy(gSaveData.acceptid, pbetctx->accid, sizeof(pbetctx->accid));
 
-
-	if(ModifyDataDBVavle("test", sizeof("test"), &gSaveData, sizeof(SAVE_DATA)))
+	if(ModifyDataDBVavle(psdata->targetkey, sizeof(psdata->targetkey), &gSaveData, sizeof(SAVE_DATA)))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -507,26 +552,25 @@ static bool AcceptP2PBet(const BET_CTX *pbetctx)
 {
 	if(pbetctx == NULL)
 	{
-		return false;
-	}
-
-	if(ReadDataValueDB("test", sizeof("test"), &gSaveData, sizeof(SAVE_DATA)))
-	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!AcceptDataCheck(pbetctx))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!AcceptOperateAccount(pbetctx))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!RecordAcceptBetStatus(pbetctx))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -537,10 +581,23 @@ static bool AcceptP2PBet(const BET_CTX *pbetctx)
  * @brief check if the database have a full bet
  * @return
  */
-static bool IsHaveP2PBet(void)
+static bool IsHaveP2PBet(const void * phash)
 {
+	if(phash == NULL)
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	if(ReadDataValueDB(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
 	if(gSaveData.status != BETACCEPT || gSaveData.status != BETOPEN1)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -555,25 +612,27 @@ static bool IsHaveP2PBet(void)
  */
 static bool IsDataVaild(const BET_CTX *pbetctx)
 {
-	uchar checkhash[33] = {0};
+	uchar checkhash[32] = {0};
 	OPEN_DATA *podata = (OPEN_DATA *)gContractData;
 
 	if(pbetctx == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	SHA256(podata->dhash, sizeof(podata->dhash), checkhash);
 
-	for(uchar ii = 0; ii < 32; ii++)
-	{
-		checkhash[32] += checkhash[ii];
-	}
+//	for(uchar ii = 0; ii < 32; ii++)
+//	{
+//		checkhash[32] += checkhash[ii];
+//	}
 
 	if(memcmp(pbetctx->accid, gSaveData.acceptid, sizeof(pbetctx->accid)) == 0)
 	{
 		if(memcmp(checkhash, gSaveData.ahash, sizeof(checkhash)) != 0)
 		{
+			ErrorCheck(0);
 			return false;
 		}
 	}
@@ -581,11 +640,13 @@ static bool IsDataVaild(const BET_CTX *pbetctx)
 	{
 		if(memcmp(checkhash, gSaveData.shash, sizeof(checkhash)) != 0)
 		{
+			ErrorCheck(0);
 			return false;
 		}
 	}
 	else
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -599,18 +660,23 @@ static bool IsDataVaild(const BET_CTX *pbetctx)
  */
 static bool OpenDataCheck(const BET_CTX *pbetctx)
 {
+	OPEN_DATA *podata = (OPEN_DATA *)gContractData;
+
 	if(pbetctx == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(!IsHaveP2PBet())
+	if(!IsHaveP2PBet(podata->targetkey))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!IsDataVaild(pbetctx))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -624,15 +690,18 @@ static bool OpenDataCheck(const BET_CTX *pbetctx)
  */
 static bool RecordOpenBetStatus(const BET_CTX *pdata)
 {
+	OPEN_DATA *podata = (OPEN_DATA *)gContractData;
 	if(pdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	gSaveData.status = OPEN;
+	gSaveData.status = BETOPEN;
 
-	if(ModifyDataDBVavle("test", sizeof("test"), &gSaveData, sizeof(SAVE_DATA)))
+	if(ModifyDataDBVavle(podata->targetkey, sizeof(podata->targetkey), &gSaveData, sizeof(SAVE_DATA)))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -648,26 +717,25 @@ static bool OpenP2PBet(const BET_CTX *pbetctx)
 {
 	if(pbetctx == NULL)
 	{
-		return false;
-	}
-
-	if(ReadDataValueDB("test", sizeof("test"), &gSaveData, sizeof(SAVE_DATA)))
-	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!OpenDataCheck(pbetctx))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!OpenOperateAccount(pbetctx))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!RecordOpenBetStatus(pbetctx))
 	{
+		ErrorCheck(0);
 		return true;
 	}
 
@@ -686,6 +754,7 @@ static bool RunContractData(const BET_CTX *pbetctx)
 
 	if(pbetctx == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
@@ -704,6 +773,7 @@ static bool RunContractData(const BET_CTX *pbetctx)
 		break;
 
 	default:
+		ErrorCheck(0);
 		ret = false;
 		break;
 	}
@@ -715,20 +785,26 @@ static bool InitCtxData(BET_CTX const *pctxdata)
 {
 	if(pctxdata == NULL)
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
 	if(!GetCurTxHash((void *)pctxdata->txhash))
 	{
+		ErrorCheck(0);
 		return false;
 	}
 
-	if(GetAccounts(pctxdata->txhash, (void *)pctxdata->accid, sizeof(pctxdata->accid)) > 0)
+	if(GetAccounts(pctxdata->txhash, (void *)pctxdata->accid, sizeof(pctxdata->accid)) == 0)
 	{
+		ErrorCheck(0);
 		return true;
 	}
 
-	return false;
+	LogPrint(pctxdata->txhash, sizeof(pctxdata->txhash), HEX);
+	LogPrint(pctxdata->accid, sizeof(pctxdata->accid), HEX);
+
+	return true;
 }
 
 int main()
@@ -737,18 +813,19 @@ int main()
 
 	if(!InitCtxData(&BetCtx))
 	{
+		ErrorCheck(0);
 		return 0;
 	}
 
 	if(!GetContractData(&BetCtx))
 	{
-		printf("get contract err, GetContractData return false!\r\n");
+		ErrorCheck(0);
 		return 0;
 	}
 
 	if(RunContractData(&BetCtx))
 	{
-		printf("run contract data err, RunContractData return false!\r\n");
+		ErrorCheck(0);
 		return 0;
 	}
 
