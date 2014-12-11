@@ -1,3 +1,10 @@
+#include <string.h>
+#include<stdlib.h>
+#include <stdio.h>
+
+#ifndef VMSDK_H_
+#define VMSDK_H_
+
 #define MAX_LEN 21
 #define MAX_PUK_LEN 65
 #define MAX_ACCOUNT_LEN 6
@@ -399,5 +406,13 @@ void inline PrintfLine(unsigned short sort)
 	sprintf(bffer,"line:%d ",sort);
 	LogPrint(bffer,strlen(bffer),STRING);
 }
+void inline PrintfFileAndLine(unsigned short line, const char *pfile)
+{
+	char bffer[256]={0};
+	sprintf(bffer,"func:%sline:%d ",pfile, line);
+	LogPrint(bffer,strlen(bffer),STRING);
+}
 #define PrintLog(a,b,c) {if(!(a)) { PrintfLine(__LINE__),LogPrint(a,b,c);}}
+
+#endif /* VMSDK_H_ */
 
