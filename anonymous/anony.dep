@@ -12,14 +12,14 @@
       <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
       <file>$PROJ_DIR$\Debug\Exe\anony.d51</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.r51</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
       <file>$TOOLKIT_DIR$\lib\dlib\dl8051Normal.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
@@ -27,6 +27,10 @@
       <file>$TOOLKIT_DIR$\lib\dlib\dl-pli-nlxd-1e16x01n.r51</file>
       <file>$PROJ_DIR$\Debug\Obj\anonymain.r51</file>
       <file>$PROJ_DIR$\Debug\Exe\anony.bin</file>
+      <file>$PROJ_DIR$\Debug\Obj\anonymain.pbi</file>
+      <file>$PROJ_DIR$\..\sendsriptid\src\script.cpp</file>
+      <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\anony.pbd</file>
     </outputs>
     <file>
       <name>[ROOT_NODE]</name>
@@ -44,11 +48,19 @@
           <name>ICC8051</name>
           <file> 5</file>
         </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 23</file>
+        </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 11 10 3 13 12 9 6 8 7 14 15 16 0</file>
+          <file> 13 10 3 12 11 9 7 6 8 14 15 16 0</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 13 10 3 12 11 9 7 6 8 14 15 16 0</file>
         </tool>
       </inputs>
     </file>
@@ -59,11 +71,15 @@
           <name>ICC8051</name>
           <file> 19</file>
         </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 21</file>
+        </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 11 10 3 13 12 9 6 8 7 14 15 16 0</file>
+          <file> 13 10 3 12 11 9 7 6 8 14 15 16 0</file>
         </tool>
       </inputs>
     </file>

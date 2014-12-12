@@ -5,7 +5,7 @@
     
     
     
-  <CurrentConfigs><Project>anony/Debug</Project><Project>Bet/Debug</Project><Project>darksecure/Debug</Project><Project>sdk/Debug</Project><Project>scripttest/Debug</Project><Project>SecuredTrade/Debug</Project><Project>soypay_test/Debug</Project><Project>test/Debug</Project><Project>TestAPI/Debug</Project></CurrentConfigs><CurrentProj>anony</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
+  <CurrentConfigs><Project>anony/Debug</Project><Project>Bet/Debug</Project><Project>lottery/Debug</Project><Project>SecuredTrade/Debug</Project><Project>soypay_test/Debug</Project><Project>test/Debug</Project><Project>TestAPI/Debug</Project><Project>p2pbet/Debug</Project><Project>sdk/Debug</Project></CurrentConfigs><CurrentProj>anony</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
   <Desktop>
     <Static>
       <Workspace>
@@ -61,7 +61,7 @@
       
       
       
-    <Top><Row0><Sizes><Toolbar-025a3110><key>iaridepm.enu1</key></Toolbar-025a3110></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>344</Bottom><Right>423</Right><x>-2</x><y>-2</y><xscreen>627</xscreen><yscreen>215</yscreen><sizeHorzCX>459004</sizeHorzCX><sizeHorzCY>313411</sizeHorzCY><sizeVertCX>311127</sizeVertCX><sizeVertCY>504373</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>297</Bottom><Right>1368</Right><x>-2</x><y>-2</y><xscreen>1370</xscreen><yscreen>299</yscreen><sizeHorzCX>1002928</sizeHorzCX><sizeHorzCY>435860</sizeHorzCY><sizeVertCX>459004</sizeVertCX><sizeVertCY>313411</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-00d53110><key>iaridepm.enu1</key></Toolbar-00d53110></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>344</Bottom><Right>423</Right><x>-2</x><y>-2</y><xscreen>627</xscreen><yscreen>215</yscreen><sizeHorzCX>459004</sizeHorzCX><sizeHorzCY>313411</sizeHorzCY><sizeVertCX>311127</sizeVertCX><sizeVertCY>504373</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>297</Bottom><Right>1368</Right><x>-2</x><y>-2</y><xscreen>1370</xscreen><yscreen>299</yscreen><sizeHorzCX>1002928</sizeHorzCX><sizeHorzCY>435860</sizeHorzCY><sizeVertCX>459004</sizeVertCX><sizeVertCY>313411</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 
