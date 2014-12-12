@@ -99,7 +99,7 @@ static bool GetContractData(const BET_CTX *pctxdata)
 		return false;
 	}
 
-	if(!GetTxContacts(pctxdata->txhash, gContractData, sizeof(gContractData)))
+	if(!GetCurTxContact(gContractData, sizeof(gContractData)))
 	{
 		ErrorCheck(0);
 		return false;
@@ -798,7 +798,7 @@ static bool InitCtxData(BET_CTX const *pctxdata)
 	if(GetAccounts(pctxdata->txhash, (void *)pctxdata->accid, sizeof(pctxdata->accid)) == 0)
 	{
 		ErrorCheck(0);
-		return true;
+		return false;
 	}
 
 	LogPrint(pctxdata->txhash, sizeof(pctxdata->txhash), HEX);
@@ -814,21 +814,22 @@ int main()
 	if(!InitCtxData(&BetCtx))
 	{
 		ErrorCheck(0);
-		return 0;
+		__exit(RUN_SCRIPT_DATA_ERR);
 	}
 
 	if(!GetContractData(&BetCtx))
 	{
 		ErrorCheck(0);
-		return 0;
+		__exit(RUN_SCRIPT_DATA_ERR);
 	}
 
 	if(RunContractData(&BetCtx))
 	{
 		ErrorCheck(0);
-		return 0;
+		__exit(RUN_SCRIPT_DATA_ERR);
 	}
 
+	__exit(RUN_SCRIPT_OK);
 	return 1;
 }
 
