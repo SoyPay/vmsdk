@@ -166,10 +166,10 @@ bool Int64Div(const Int64* const pM1, const Int64* const pM2, Int64* const pOutM
 bool SHA256(void const* pfrist, const unsigned short len, void * const pout) {
 	ClearParaSpace()
 	;
-	if(len <= 0)
-	{
-		return false;
-	}
+//	if(len <= 0)
+//	{
+//		return false;
+//	}
 	InsertOutData(pfrist, len);
 	__CallApi(SHA256_FUNC);
 
@@ -186,10 +186,10 @@ bool SignatureVerify(void const* data, unsigned short datalen, void const* key, 
 		void const* phash, unsigned short hashlen) {
 	ClearParaSpace()
 	;
-	if(datalen <=0 || keylen <=0)
-	{
-		return false;
-	}
+//	if(datalen <=0 || keylen <=0)
+//	{
+//		return false;
+//	}
 	InsertOutData(data, datalen);
 	InsertOutData(key, keylen);
 	InsertOutData(phash, hashlen);
@@ -206,10 +206,10 @@ bool SignatureVerify(void const* data, unsigned short datalen, void const* key, 
 unsigned short Des(void const* pdata, unsigned short len, void const* pkey, unsigned short keylen, bool IsEn, void * const pOut,unsigned short poutlen) {
 	ClearParaSpace()
 	;
-	if(len <= 0 || keylen <= 0)
-	{
-		return false;
-	}
+//	if(len <= 0 || keylen <= 0)
+//	{
+//		return false;
+//	}
 	InsertOutData(pdata, len);
 	InsertOutData(pkey, keylen);
 	InsertOutData(&IsEn, sizeof(IsEn));
@@ -334,10 +334,10 @@ unsigned long GetTxConFirmHeight(const void * const txhash) {
 }
 bool WriteDataDB(const void* const key,const unsigned char keylen,const void * const value,const unsigned short valuelen,const unsigned long time) {
 	ClearParaSpace();
-	if(keylen <=0 || valuelen<=0)
-	{
-		return false;
-	}
+//	if(keylen <=0 || valuelen<=0)
+//	{
+//		return false;
+//	}
 	InsertOutData(key, keylen);
 	InsertOutData(value, valuelen);
 	InsertOutData(&time, 4);
@@ -354,8 +354,8 @@ bool WriteDataDB(const void* const key,const unsigned char keylen,const void * c
 }
 bool DeleteDataDB(const void* const key,const unsigned char keylen) {
 	ClearParaSpace();
-	if(keylen <= 0)
-		return false;
+//	if(keylen <= 0)
+//		return false;
 	InsertOutData(key, keylen);
 
 	__CallApi(DELETEDB_FUNC);
@@ -376,8 +376,8 @@ bool DeleteDataDB(const void* const key,const unsigned char keylen) {
 
 unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen, void* const value,unsigned short const maxbuffer) {
 	ClearParaSpace();
-	if(keylen <= 0 || maxbuffer <= 0)
-		return 0;
+//	if(keylen <= 0 || maxbuffer <= 0)
+//		return 0;
 	InsertOutData(key, keylen);
 	__CallApi(READDB_FUNC);
 
@@ -394,8 +394,8 @@ unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen,
 }
 bool ModifyDataDB(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen,const unsigned long ptime) {
 	ClearParaSpace();
-	if(keylen <= 0 || valuelen <= 0)
-		return false;
+//	if(keylen <= 0 || valuelen <= 0)
+//		return false;
 	InsertOutData(key, keylen);
 	InsertOutData(pvalue, valuelen);
 	InsertOutData(&ptime, sizeof(ptime));
@@ -424,10 +424,10 @@ bool GetDBValue(const unsigned long index,void* const key,unsigned char * const 
  {
 
 	ClearParaSpace();
-	if(*keylen <=0 || *maxbuffer <=0)
-	{
-		return false;
-	}
+//	if(*keylen <=0 || *maxbuffer <=0)
+//	{
+//		return false;
+//	}
 	InsertOutData(&index, sizeof(index));
 	if(index == 1)
 	{
@@ -511,10 +511,10 @@ bool IsAuthorited(const void* const account,const Int64* const pmoney) {
 }
 bool ReadDataDBTime(const void* const key,const unsigned char keylen, unsigned long * const ptime) {
 	ClearParaSpace();
-	if(keylen <= 0)
-	{
-		return false;
-	}
+//	if(keylen <= 0)
+//	{
+//		return false;
+//	}
 	InsertOutData(key, keylen);
 	__CallApi(READDBTIME_FUNC);
 	FUN_RET_DATA *retdata = GetInterflowP();
@@ -526,10 +526,10 @@ bool ReadDataDBTime(const void* const key,const unsigned char keylen, unsigned l
 }
 bool ModifyDataDBTime(const void* const key,const unsigned char keylen, const unsigned long ptime) {
 	ClearParaSpace();
-	if(keylen <= 0)
-	{
-		return false;
-	}
+//	if(keylen <= 0)
+//	{
+//		return false;
+//	}
 	InsertOutData(key, keylen);
 	InsertOutData(&ptime, 4);
 	__CallApi(MODIFYDBTIME_FUNC);
@@ -544,10 +544,10 @@ bool ModifyDataDBTime(const void* const key,const unsigned char keylen, const un
 
 bool ModifyDataDBVavle(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen) {
 	ClearParaSpace();
-	if(keylen <= 0 || valuelen<= 0)
-	{
-		return false;
-	}
+//	if(keylen <= 0 || valuelen<= 0)
+//	{
+//		return false;
+//	}
 	InsertOutData(key, keylen);
 	InsertOutData(pvalue, valuelen);
 	__CallApi(MODIFYDBVALUE_FUNC);
@@ -598,10 +598,10 @@ unsigned short GetAuthUserDefine(const void* const account,void *const pout,cons
 bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* const pvalve,short maxlen)
 {
 	ClearParaSpace();
-	if(scriptID == NULL ||pkey == NULL || len <= 0)
-	{
-		return false;
-	}
+//	if(scriptID == NULL ||pkey == NULL || len <= 0)
+//	{
+//		return false;
+//	}
 	InsertOutData(scriptID, 6);
 	InsertOutData(pkey, len);
 	__CallApi(GETSCRIPTDATA_FUNC);
@@ -632,10 +632,10 @@ bool GetCurScritpAccount(void* const account)
 unsigned short GetCurTxAccount(void * const account,unsigned short maxlen)
 {
 		ClearParaSpace();
-		if(account == NULL || maxlen <= 0)
-		{
-			return false;
-		}
+//		if(account == NULL || maxlen <= 0)
+//		{
+//			return false;
+//		}
 		__CallApi(GETCURTXACCOUNT_FUNC);
 
 		FUN_RET_DATA *retdata = GetInterflowP();
@@ -648,14 +648,14 @@ unsigned short GetCurTxAccount(void * const account,unsigned short maxlen)
 unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen)
 {
 	ClearParaSpace();
-	if(pContact == NULL || maxlen <= 0)
-	{
-		return false;
-	}
+//	if(pContact == NULL || maxlen <= 0)
+//	{
+//		return false;
+//	}
 	__CallApi(GETCURTXCONTACT_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len < 6) {
+	if (retdata->len <= 0) {
 		return 0;
 	}
 	memcpy(pContact, retdata->buffer, retdata->len);

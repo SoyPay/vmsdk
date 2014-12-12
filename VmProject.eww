@@ -20,10 +20,13 @@
     <path>$WS_DIR$\SecuredTrade\SecuredTrade.ewp</path>
   </project>
   <project>
-    <path>$WS_DIR$\APItest\TestAPI.ewp</path>
+    <path>$WS_DIR$\Soypay_test\soypay_test.ewp</path>
   </project>
   <project>
-    <path>$WS_DIR$\testrollbackDB\testrollback.ewp</path>
+    <path>$WS_DIR$\testUint\test.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\APItest\TestAPI.ewp</path>
   </project>
   <batchBuild/>
 </workspace>
