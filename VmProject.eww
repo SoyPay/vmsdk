@@ -8,6 +8,9 @@
     <path>$WS_DIR$\bet\Bet.ewp</path>
   </project>
   <project>
+    <path>$WS_DIR$\darksecure\darksecure.ewp</path>
+  </project>
+  <project>
     <path>$WS_DIR$\lottery\lottery.ewp</path>
   </project>
   <project>
