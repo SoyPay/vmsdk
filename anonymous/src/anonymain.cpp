@@ -44,6 +44,7 @@ bool CheckContact(const CONTRACT* const pContract)
 {
 	if(!IsRegID(&pContract->Sender))
 	{
+		LogPrint("not regid",sizeof("not regid"),STRING);
 		return false;
 	}
 //	if(!IsAuthorited(&pContract->Sender,&pContract->nPayMoney))
@@ -55,6 +56,7 @@ bool CheckContact(const CONTRACT* const pContract)
 
 	unsigned short len = pContract->len;
 	if(len%sizeof(ACCOUNT_INFO) != 0){
+		LogPrint("contact error",sizeof("contact error"),STRING);
 		return false;
 	}
 
@@ -64,6 +66,7 @@ bool CheckContact(const CONTRACT* const pContract)
 		ACCOUNT_INFO accountinfo;
 		memcpy(&accountinfo,pContract->buffer,sizeof(ACCOUNT_INFO));
 		if(!IsRegID(&accountinfo.account)){
+			LogPrint("recive not regid",sizeof("recive not regid"),STRING);
 			return false;
 		}
 		Int64Add(&RecAmount,&accountinfo.nReciMoney,&RecAmount);
@@ -72,6 +75,7 @@ bool CheckContact(const CONTRACT* const pContract)
 
 	unsigned char ret =Int64Compare(&RecAmount,&pContract->nPayMoney);
 	if(COMP_EQU != ret){
+		LogPrint("recive and send not equeal",sizeof("recive and send not equeal"),STRING);
 		return false;
 	}
 	return true;
@@ -81,13 +85,13 @@ bool ReadContactAndWrite(char *hash)
 	__xdata static  char txcontac[512];
 	if (!GetTxContacts((const unsigned char * const )hash, (void* const ) &txcontac, 512))
 	{
-		LogPrint("1",sizeof("1"),STRING);
+		LogPrint("GetTxContacts error",sizeof("GetTxContacts error"),STRING);
 		return false;
 	}
 
 	if(!DeleteDataDB((const unsigned char * const )hash,32))
 	{
-		LogPrint("2",sizeof("2"),STRING);
+		LogPrint("DeleteDataDB error",sizeof("DeleteDataDB error"),STRING);
 		return false;
 	}
 
@@ -159,7 +163,8 @@ void WriteOperate(const CONTRACT* const pContract)
 	}
 	if(!ReadContactAndWrite(hash))
 	{
-		return ;
+		LogPrint(hash,32,HEX);
+		LogPrint("THE TX NOE IN BLOCK",sizeof("THE TX NOE IN BLOCK"),HEX);
 	}
 	count -=1;
 	while(count--)
@@ -171,7 +176,8 @@ void WriteOperate(const CONTRACT* const pContract)
 		}
 		if(!ReadContactAndWrite(hash))
 		{
-			return ;
+			LogPrint(hash,32,HEX);
+			LogPrint("THE TX NOE IN BLOCK",sizeof("THE TX NOE IN BLOCK"),HEX);
 		}
 	}
 
