@@ -19,7 +19,7 @@ typedef unsigned long u32;
  * p2pBet Operate Type
  */
 enum OPERATETYPE {
-	SEND,  //!< SEND
+	SEND = 1,  //!< SEND
 	ACCEPT,//!< ACCEPT
 	OPEN   //!< OPEN
 };
@@ -99,13 +99,11 @@ static bool GetContractData(const BET_CTX *pctxdata)
 		return false;
 	}
 
-	if(!GetCurTxContact(gContractData, sizeof(gContractData)))
+	if(GetCurTxContact(gContractData, sizeof(gContractData)) == 0)
 	{
 		ErrorCheck(0);
 		return false;
 	}
-
-	LogPrint(gContractData, sizeof(gContractData), HEX);
 
 	return true;
 }
@@ -287,22 +285,23 @@ static bool OpenOperateAccount(const BET_CTX *pbetctx)
 
 	if(gSaveData.status == BETACCEPT)//fisrt open
 	{
-		memcpy(operate[0].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
+		memcpy(operate[0].accountid, gSaveData.sendid, sizeof(gSaveData.sendid));
 		memcpy(&operate[0].money, &gSaveData.money, sizeof(gSaveData.money));
 		operate[0].outheight = gSaveData.hight;
 
-		memcpy(&operate[1].accountid, &gSaveData.sendid, sizeof(gSaveData.sendid));
+		memcpy(&operate[1].accountid, &gSaveData.acceptid, sizeof(gSaveData.acceptid));
 		memcpy(&operate[1].money, &gSaveData.money, sizeof(gSaveData.money));
 		operate[1].outheight = gSaveData.hight;
-		if(memcmp(pbetctx->accid, gSaveData.acceptid, sizeof(pbetctx->accid)) == 0)
-		{
-			operate[0].opeatortype = MINUS_FREEZD;
-			operate[1].opeatortype = ADD_FREEZD;
-		}
-		else if(memcmp(pbetctx->accid, gSaveData.sendid, sizeof(pbetctx->accid)) == 0)
+
+		if(memcmp(pbetctx->accid, gSaveData.sendid, sizeof(pbetctx->accid)) == 0)//send first
 		{
 			operate[0].opeatortype = ADD_FREEZD;
 			operate[1].opeatortype = MINUS_FREEZD;
+		}
+		else if(memcmp(pbetctx->accid, gSaveData.acceptid, sizeof(pbetctx->accid)) == 0)//accept first
+		{
+			operate[0].opeatortype = MINUS_FREEZD;
+			operate[1].opeatortype = ADD_FREEZD;
 		}
 		else
 		{
@@ -315,6 +314,7 @@ static bool OpenOperateAccount(const BET_CTX *pbetctx)
 		uchar rslt = 0;
 		for(uchar ii = 0; ii < 5; ii++)
 		{
+			LogPrint(&psdata->dhash[ii], sizeof(uchar), HEX);
 			rslt += psdata->dhash[ii];
 		}
 
@@ -322,14 +322,16 @@ static bool OpenOperateAccount(const BET_CTX *pbetctx)
 		{
 			for(uchar kk = 0; kk < 5; kk++)
 			{
-				rslt += gSaveData.adata[kk];
+				LogPrint(&gSaveData.sdata[kk], sizeof(uchar), HEX);
+				rslt += gSaveData.sdata[kk];
 			}
 		}
 		else if(memcmp(pbetctx->accid, gSaveData.sendid, sizeof(pbetctx->accid)) == 0)
 		{
 			for(uchar kk = 0; kk < 5; kk++)
 			{
-				rslt += gSaveData.sdata[kk];
+				LogPrint(&gSaveData.adata[kk], sizeof(uchar), HEX);
+				rslt += gSaveData.adata[kk];
 			}
 		}
 		else
@@ -337,23 +339,54 @@ static bool OpenOperateAccount(const BET_CTX *pbetctx)
 			ErrorCheck(0);
 			return false;
 		}
-
-		memcpy(operate[0].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
+		LogPrint(&rslt, sizeof(uchar), HEX);
+		memcpy(operate[0].accountid, gSaveData.sendid, sizeof(gSaveData.sendid));
 		Int64Add(&gSaveData.money, &gSaveData.money, &operate[0].money);
 		operate[0].outheight = gSaveData.hight;
 
 		memcpy(operate[1].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
-		Int64Add(&gSaveData.money, &gSaveData.money, &operate[1].money);
+//		Int64Add(&gSaveData.money, &gSaveData.money, &operate[1].money);
+		memcpy(&operate[1].money, &operate[0].money, sizeof(operate[0].money));
 		operate[1].outheight = gSaveData.hight;
-		if(rslt%2)//juge result,send bet win
+		if(rslt%2)//juge result,send win
 		{
-			operate[0].opeatortype = MINUS_FREEZD;
-			operate[1].opeatortype = ADD_FREE;
+			LogPrint("A WIN", sizeof("A WIN"), STRING);
+			if(memcmp(pbetctx->accid, gSaveData.sendid, sizeof(pbetctx->accid)) == 0)//accept first
+			{
+				operate[0].opeatortype = ADD_FREE;
+				operate[1].opeatortype = MINUS_FREEZD;
+			}
+			else if(memcmp(pbetctx->accid, gSaveData.acceptid, sizeof(pbetctx->accid)) == 0)//send first
+			{
+				operate[0].opeatortype = ADD_FREE;
+				operate[1].opeatortype = MINUS_FREEZD;
+				memcpy(operate[1].accountid, gSaveData.sendid, sizeof(gSaveData.sendid));
+			}
+			else
+			{
+				ErrorCheck(0);
+				return false;
+			}
 		}
-		else//accept bet win
+		else//accept win
 		{
-			operate[0].opeatortype = ADD_FREE;
-			operate[1].opeatortype = MINUS_FREEZD;
+			LogPrint("B WIN", sizeof("B WIN"), STRING);
+			if(memcmp(pbetctx->accid, gSaveData.sendid, sizeof(pbetctx->accid)) == 0)//accept first
+			{
+				operate[0].opeatortype = MINUS_FREEZD;
+				operate[1].opeatortype = ADD_FREE;
+				memcpy(operate[0].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
+			}
+			else if(memcmp(pbetctx->accid, gSaveData.acceptid, sizeof(pbetctx->accid)) == 0)//send first
+			{
+				operate[0].opeatortype = MINUS_FREEZD;
+				operate[1].opeatortype = ADD_FREE;
+			}
+			else
+			{
+				ErrorCheck(0);
+				return false;
+			}
 		}
 
 	}
@@ -389,7 +422,7 @@ static bool RecordSendBetStatus(const BET_CTX *pbetctx)
 	savedata.hight = psdata->hight;
 	memcpy(savedata.sendid, pbetctx->accid, sizeof(pbetctx->accid));
 
-	if(WriteDataDB(pbetctx->txhash, sizeof(pbetctx->txhash), &savedata, sizeof(SAVE_DATA), 12345))
+	if(!WriteDataDB(pbetctx->txhash, sizeof(pbetctx->txhash), &savedata, sizeof(SAVE_DATA), 12345))
 	{
 		ErrorCheck(0);
 		return false;
@@ -443,7 +476,7 @@ static bool IsHaveSendBet(const void * phash)
 		ErrorCheck(0);
 		return false;
 	}
-	if(ReadDataValueDB(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
+	if(!ReadDataValueDB(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
 	{
 		ErrorCheck(0);
 		return false;
@@ -459,7 +492,7 @@ static bool IsEqualSendAmount(const Int64 *pdata)
 		return false;
 	}
 
-	if(Int64Compare(pdata, &gSaveData.money) != COMP_LARGER)
+	if(Int64Compare(pdata, &gSaveData.money) != COMP_EQU)
 	{
 		ErrorCheck(0);
 		return false;
@@ -534,7 +567,7 @@ static bool RecordAcceptBetStatus(const BET_CTX *pbetctx)
 	memcpy(gSaveData.ahash, psdata->dhash, sizeof(psdata->dhash));
 	memcpy(gSaveData.acceptid, pbetctx->accid, sizeof(pbetctx->accid));
 
-	if(ModifyDataDBVavle(psdata->targetkey, sizeof(psdata->targetkey), &gSaveData, sizeof(SAVE_DATA)))
+	if(!ModifyDataDBVavle(psdata->targetkey, sizeof(psdata->targetkey), &gSaveData, sizeof(SAVE_DATA)))
 	{
 		ErrorCheck(0);
 		return false;
@@ -589,13 +622,15 @@ static bool IsHaveP2PBet(const void * phash)
 		return false;
 	}
 
-	if(ReadDataValueDB(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
+	if(!ReadDataValueDB(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
 	{
 		ErrorCheck(0);
 		return false;
 	}
 
-	if(gSaveData.status != BETACCEPT || gSaveData.status != BETOPEN1)
+//	LogPrint(&gSaveData.status, sizeof(gSaveData.status), HEX);
+
+	if(gSaveData.status != BETACCEPT && gSaveData.status != BETOPEN1)
 	{
 		ErrorCheck(0);
 		return false;
@@ -697,9 +732,23 @@ static bool RecordOpenBetStatus(const BET_CTX *pdata)
 		return false;
 	}
 
-	gSaveData.status = BETOPEN;
+	gSaveData.status = (gSaveData.status == BETACCEPT)?(BETOPEN1):(BETOPEN);
 
-	if(ModifyDataDBVavle(podata->targetkey, sizeof(podata->targetkey), &gSaveData, sizeof(SAVE_DATA)))
+	if(memcmp(pdata->accid, gSaveData.sendid, sizeof(pdata->accid)) == 0)
+	{
+		memcpy(gSaveData.sdata, podata->dhash, sizeof(podata->dhash));
+	}
+	else if(memcmp(pdata->accid, gSaveData.acceptid, sizeof(pdata->accid)) == 0)
+	{
+		memcpy(gSaveData.adata, podata->dhash, sizeof(podata->dhash));
+	}
+	else
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	if(!ModifyDataDBVavle(podata->targetkey, sizeof(podata->targetkey), &gSaveData, sizeof(SAVE_DATA)))
 	{
 		ErrorCheck(0);
 		return false;
@@ -795,14 +844,11 @@ static bool InitCtxData(BET_CTX const *pctxdata)
 		return false;
 	}
 
-	if(GetAccounts(pctxdata->txhash, (void *)pctxdata->accid, sizeof(pctxdata->accid)) == 0)
+	if(GetCurTxAccount((void *)pctxdata->accid, sizeof(pctxdata->accid)) == 0)
 	{
 		ErrorCheck(0);
 		return false;
 	}
-
-	LogPrint(pctxdata->txhash, sizeof(pctxdata->txhash), HEX);
-	LogPrint(pctxdata->accid, sizeof(pctxdata->accid), HEX);
 
 	return true;
 }
@@ -822,8 +868,32 @@ int main()
 		ErrorCheck(0);
 		__exit(RUN_SCRIPT_DATA_ERR);
 	}
+#if 0
+	{
+		LogPrint(BetCtx.txhash, sizeof(BetCtx.txhash), HEX);
+		LogPrint(BetCtx.accid, sizeof(BetCtx.accid), HEX);
+		LogPrint(gContractData, sizeof(gContractData), HEX);
 
-	if(RunContractData(&BetCtx))
+		SEND_DATA *phandle1 = (SEND_DATA *)gContractData;
+		LogPrint(&phandle1->type, sizeof(phandle1->type), HEX);
+		LogPrint(&phandle1->money, sizeof(phandle1->money), HEX);
+		LogPrint(&phandle1->hight, sizeof(phandle1->hight), HEX);
+		LogPrint(phandle1->dhash, sizeof(phandle1->dhash), HEX);
+
+		ACCEPT_DATA *phandle2 = (ACCEPT_DATA *)gContractData;
+		LogPrint(&phandle2->type, sizeof(phandle2->type), HEX);
+		LogPrint(&phandle2->money, sizeof(phandle2->money), HEX);
+		LogPrint(&phandle2->targetkey, sizeof(phandle2->targetkey), HEX);
+		LogPrint(&phandle2->dhash, sizeof(phandle2->dhash), HEX);
+
+		OPEN_DATA *phandle3 = (OPEN_DATA *)gContractData;
+		LogPrint(&phandle3->type, sizeof(phandle3->type), HEX);
+		LogPrint(&phandle3->targetkey, sizeof(phandle3->targetkey), HEX);
+		LogPrint(&phandle3->dhash, sizeof(phandle3->dhash), HEX);
+	}
+#endif
+
+	if(!RunContractData(&BetCtx))
 	{
 		ErrorCheck(0);
 		__exit(RUN_SCRIPT_DATA_ERR);
