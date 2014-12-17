@@ -130,7 +130,7 @@ COMP_RET Int64Compare(const Int64* const pM1, const Int64* const pM2) {
 	if (retdata->len == 1) {
 		return (COMP_RET) retdata->buffer[0];
 	}
-	__exit(RUN_SCRIPT_DATA_ERR);
+//	__exit(RUN_SCRIPT_DATA_ERR);
 	 return COMP_ERR;
 }
 
@@ -146,7 +146,7 @@ static bool CALC_64(const Int64* pM1, const Int64* pM2, Int64* pOutM, CALL_API_F
 		memcpy(pOutM, retdata->buffer, retdata->len);
 		return true;
 	}
-	__exit(RUN_SCRIPT_DATA_ERR);
+	//__exit(RUN_SCRIPT_DATA_ERR);
 	 return false;
 }
 
@@ -199,8 +199,8 @@ bool SignatureVerify(void const* data, unsigned short datalen, void const* key, 
 	if (retdata->len == 1) {
 		return retdata->buffer[0];
 	}
-	__exit(RUN_SCRIPT_DATA_ERR);
-	 return true;
+//	__exit(RUN_SCRIPT_DATA_ERR);
+	 return false;
 }
 
 unsigned short Des(void const* pdata, unsigned short len, void const* pkey, unsigned short keylen, bool IsEn, void * const pOut,unsigned short poutlen) {
@@ -220,7 +220,7 @@ unsigned short Des(void const* pdata, unsigned short len, void const* pkey, unsi
 		memcpy(pOut, retdata->buffer, retdata->len);
 		return retdata->len;
 	}
-	LogPrint("Des error",sizeof("Des error")+1,STRING);
+//	LogPrint("Des error",sizeof("Des error")+1,STRING);
 //	__exit(RUN_SCRIPT_DATA_ERR);
 	 return 0;
 }
