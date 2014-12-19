@@ -6,3 +6,4 @@
 int ProcessSdk(char*pcontact);
 int ProcessRollBack(char*pcontact);
 bool ProcessScript(char*pcontact);
+bool ProcessTestDB(char*pcontact);

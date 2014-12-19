@@ -361,7 +361,7 @@ bool testWriteDataDB()
 {
 	char* key =NULL;
 	char *value = "hello";
-	unsigned long time = 2;
+	unsigned long time = 40;
 	TestCheck(WriteDataDB(key,0,value,6,time) == false);
 	TestCheck(WriteDataDB(key,9,value,0,time) == false);
 	key = "key";
@@ -407,7 +407,7 @@ bool testModifyDataDB()
 	TestCheck(ModifyDataDB(key,4,value,0,ptime) == false);
 	key = "key1";
 	value= "LUO";
-	ptime = 5;
+	ptime = 50;
 	TestCheck(ModifyDataDB(key,5,value,4,ptime) == true);
 	return true;
 }
@@ -434,7 +434,7 @@ bool testGetDBValue()
 
 	char *wkey = "bit";
 	char *wvalue = "shit";
-	ptime = 7;
+	ptime = 70;
 	TestCheck(WriteDataDB(wkey,4,wvalue,5,ptime) == true);
 
 	valen = 15;
@@ -443,14 +443,14 @@ bool testGetDBValue()
 	TestCheck(GetDBValue(0,key,&kenlen,15,value,&valen,&ptime)== true);
 	TestCheck(strcmp(key,"bit")== 0);
 	TestCheck(strcmp(value,wvalue)== 0);
-	TestCheck(ptime == 7);
+	TestCheck(ptime == 70);
 
 	valen = 4;
 	ptime = 0;
 	TestCheck(GetDBValue(1,key,&kenlen,15,value,&valen,&ptime)== true);
 	TestCheck(strcmp(key,"key1")== 0);
 	TestCheck(strcmp(value,"LUO")== 0);
-	TestCheck(ptime == 5);
+	TestCheck(ptime == 50);
 
 	TestCheck(GetDBValue(1,key,&kenlen,15,value,&valen,&ptime)== false);
 	return true;
@@ -465,7 +465,7 @@ bool testReadDataDBTime()
 	TestCheck(ReadDataDBTime(key,5,&ptime) == false);
 	key = "key1";
 	TestCheck(ReadDataDBTime(key,5,&ptime) == true);
-	TestCheck(ptime == 5);
+	TestCheck(ptime == 50);
 	return true;
 }
 bool testModifyDataDBTime()
@@ -476,7 +476,7 @@ bool testModifyDataDBTime()
 	key = "serf";
 	TestCheck(ModifyDataDBTime(key,0,ptime) == false);
 	key = "key1";
-	ptime = 7;
+	ptime = 70;
 	TestCheck(ModifyDataDBTime(key,5,ptime) == true);
 	return true;
 }
@@ -496,7 +496,7 @@ bool testModifyDataDBVavle()
 	TestCheck(ReadDataValueDB(key,5,valen,5) > 0);
 	TestCheck(strcmp(valen,"funk")== 0);
 	TestCheck(ReadDataDBTime(key,5,&ptime) == true);
-	TestCheck(ptime == 7);
+	TestCheck(ptime == 70);
         return true;
 }
 bool testseconddb()
@@ -701,6 +701,7 @@ int ProcessSdk(char*pcontact)
 		}
 		default:
 				{
+					LogPrint("ERROR",sizeof("ERROR"),STRING);
 					__exit(RUN_SCRIPT_DATA_ERR);
 					break;
 				}

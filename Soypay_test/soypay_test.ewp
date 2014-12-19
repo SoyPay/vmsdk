@@ -2130,6 +2130,9 @@
     <name>$PROJ_DIR$\src\soypayd_test.cpp</name>
   </file>
   <file>
+    <name>$PROJ_DIR$\src\testdb.cpp</name>
+  </file>
+  <file>
     <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>
   </file>
   <file>

@@ -6,6 +6,11 @@
   <configuration>
     <name>Debug</name>
     <outputs>
+      <file>$PROJ_DIR$\src\main.cpp</file>
+      <file>$PROJ_DIR$\src\lottery.h</file>
+      <file>$PROJ_DIR$\src\lottery.cpp</file>
+      <file>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</file>
+      <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
       <file>$PROJ_DIR$\main.cpp</file>
       <file>$TOOLKIT_DIR$\lib\dlib\dl8051Normal.h</file>
       <file>$PROJ_DIR$\Debug\Obj\lottery.pbi</file>
@@ -29,61 +34,28 @@
       <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
       <file>$PROJ_DIR$\Debug\Obj\lottery.r51</file>
-      <file>$PROJ_DIR$\src\main.cpp</file>
-      <file>$PROJ_DIR$\src\lottery.h</file>
-      <file>$PROJ_DIR$\src\lottery.cpp</file>
-      <file>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</file>
-      <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
     </outputs>
-    <file>
-      <name>$PROJ_DIR$\main.cpp</name>
-      <outputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 16</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 20</file>
-        </tool>
-      </outputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\Debug\Exe\lottery.d51</name>
-      <outputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 13</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 14 11 22 16 15</file>
-        </tool>
-      </inputs>
-    </file>
     <file>
       <name>$PROJ_DIR$\src\main.cpp</name>
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 16</file>
+          <file> 21</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 20</file>
+          <file> 25</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 28 18 19 21 1 3 4 5 6 7 10 9 24 27</file>
+          <file> 28 23 24 26 6 8 9 10 11 12 15 14 1 4</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 28 18 19 21 1 3 4 5 6 7 10 9 27 24</file>
+          <file> 28 23 24 26 6 8 9 10 11 12 15 14 4 1</file>
         </tool>
       </inputs>
     </file>
@@ -92,21 +64,21 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 22</file>
+          <file> 27</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 2</file>
+          <file> 7</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 28 18 19 21 1 3 4 5 6 7 24 27 10 9 8</file>
+          <file> 28 23 24 26 6 8 9 10 11 12 1 4 15 14 13</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 28 18 19 21 1 3 4 5 6 7 24 8</file>
+          <file> 28 23 24 26 6 8 9 10 11 12 1 13</file>
         </tool>
       </inputs>
     </file>
@@ -115,21 +87,49 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 11</file>
+          <file> 16</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 12</file>
+          <file> 17</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 28 18 19 21 1 3 4 5 6 7 10 9 27</file>
+          <file> 28 23 24 26 6 8 9 10 11 12 15 14 4</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 28 18 19 21 1 3 4 5 6 7 10 9 27</file>
+          <file> 28 23 24 26 6 8 9 10 11 12 15 14 4</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 21</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 25</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\lottery.d51</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 18</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 19 16 27 21 20</file>
         </tool>
       </inputs>
     </file>
@@ -138,7 +138,7 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 13 17</file>
+          <file> 18 22</file>
         </tool>
       </outputs>
     </file>

@@ -110,6 +110,7 @@ bool ReadContactAndWrite(char *hash)
 		ret.opeatortype = MINUS_FREE;
 		memcpy(ret.accountid,&accountid,sizeof(ret.accountid));
 		memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
+		LogPrint(&accountid,32,HEX);
 		WriteOutput(&ret,1);
 	}
 
@@ -123,6 +124,7 @@ bool ReadContactAndWrite(char *hash)
 		memcpy(&ret.money,&accountinfo.nReciMoney,sizeof(Int64));
 		ret.opeatortype = ADD_FREE;
 		len -= sizeof(ACCOUNT_INFO);
+//		LogPrint(&accountinfo.account,32,HEX);
 		WriteOutput(&ret,1);
 		strContace = strContace +sizeof(ACCOUNT_INFO);
 
@@ -131,20 +133,21 @@ bool ReadContactAndWrite(char *hash)
 }
 void WriteOperate(const CONTRACT* const pContract)
 {
-	//// 当前合约的钱打到脚本账户中
-	VM_OPERATE ret;
-	ret.outheight = GetCurRunEnvHeight() + pContract->nHeight;
-	ret.opeatortype = MINUS_FREE;
-	memcpy(ret.accountid,&pContract->Sender,sizeof(ret.accountid));
-	memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
-	WriteOutput(&ret,1);
-
 	char accountid[6] = {0};
 	if(GetCurScritpAccount(&accountid))
 	{
+		//// 当前合约的钱打到脚本账户中
+		VM_OPERATE ret;
+		ret.outheight = GetCurRunEnvHeight() + pContract->nHeight;
+		ret.opeatortype = MINUS_FREE;
+		memcpy(ret.accountid,&pContract->Sender,sizeof(ret.accountid));
+		memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
+		WriteOutput(&ret,1);
+
 		ret.opeatortype = ADD_FREE;
 		memcpy(ret.accountid,&accountid,sizeof(ret.accountid));
 		memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
+//		LogPrint(&accountid,32,HEX);
 		WriteOutput(&ret,1);
 	}
 
@@ -160,24 +163,31 @@ void WriteOperate(const CONTRACT* const pContract)
 	if(GetDBValue(0,hash,(unsigned char*)&kenlen,kenlen,flag,&valen,&ptime)== false)
 	{
 		LogPrint("read db failed",sizeof("read db failed"),STRING);
+			return;
 	}
 	if(!ReadContactAndWrite(hash))
 	{
+		LogPrint("THE TX NOE IN BLOCK",sizeof("THE TX NOE IN BLOCK"),STRING);
 		LogPrint(hash,32,HEX);
-		LogPrint("THE TX NOE IN BLOCK",sizeof("THE TX NOE IN BLOCK"),HEX);
+
 	}
 	count -=1;
+	LogPrint(hash,32,HEX);
+	LogPrint(&count,4,HEX);
 	while(count--)
 	{
 
-		if(GetDBValue(0,hash,(unsigned char*)&kenlen,kenlen,flag,&valen,&ptime)== false)
+		if(GetDBValue(1,hash,(unsigned char*)&kenlen,kenlen,flag,&valen,&ptime)== false)
 		{
 			LogPrint("read db failed",sizeof("read db failed"),STRING);
+			return;
 		}
+		LogPrint(hash,32,HEX);
+
 		if(!ReadContactAndWrite(hash))
 		{
 			LogPrint(hash,32,HEX);
-			LogPrint("THE TX NOE IN BLOCK",sizeof("THE TX NOE IN BLOCK"),HEX);
+			LogPrint("THE TX NOE IN BLOCK",sizeof("THE TX NOE IN BLOCK"),STRING);
 		}
 	}
 
@@ -199,7 +209,8 @@ bool ProcessContract(const CONTRACT* const pContract)
 	if(!GetCurTxHash(&hash))
 		return false;
 	unsigned long outheight = GetCurRunEnvHeight() + pContract->nHeight;
-	WriteDataDB(&hash,32,&flag,1,outheight);
+	if(!WriteDataDB(&hash,32,&flag,1,outheight))
+		return false;
 
 }
 int main()
