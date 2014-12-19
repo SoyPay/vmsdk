@@ -44,6 +44,7 @@ bool CheckContact(const CONTRACT* const pContract)
 {
 	if(!IsRegID(&pContract->Sender))
 	{
+		LogPrint("not regid",sizeof("not regid"),STRING);
 		return false;
 	}
 //	if(!IsAuthorited(&pContract->Sender,&pContract->nPayMoney))
@@ -55,6 +56,7 @@ bool CheckContact(const CONTRACT* const pContract)
 
 	unsigned short len = pContract->len;
 	if(len%sizeof(ACCOUNT_INFO) != 0){
+		LogPrint("contact error",sizeof("contact error"),STRING);
 		return false;
 	}
 
@@ -64,6 +66,7 @@ bool CheckContact(const CONTRACT* const pContract)
 		ACCOUNT_INFO accountinfo;
 		memcpy(&accountinfo,pContract->buffer,sizeof(ACCOUNT_INFO));
 		if(!IsRegID(&accountinfo.account)){
+			LogPrint("recive not regid",sizeof("recive not regid"),STRING);
 			return false;
 		}
 		Int64Add(&RecAmount,&accountinfo.nReciMoney,&RecAmount);
@@ -72,6 +75,7 @@ bool CheckContact(const CONTRACT* const pContract)
 
 	unsigned char ret =Int64Compare(&RecAmount,&pContract->nPayMoney);
 	if(COMP_EQU != ret){
+		LogPrint("recive and send not equeal",sizeof("recive and send not equeal"),STRING);
 		return false;
 	}
 	return true;
@@ -81,13 +85,13 @@ bool ReadContactAndWrite(char *hash)
 	__xdata static  char txcontac[512];
 	if (!GetTxContacts((const unsigned char * const )hash, (void* const ) &txcontac, 512))
 	{
-		LogPrint("1",sizeof("1"),STRING);
+		LogPrint("GetTxContacts error",sizeof("GetTxContacts error"),STRING);
 		return false;
 	}
 
 	if(!DeleteDataDB((const unsigned char * const )hash,32))
 	{
-		LogPrint("2",sizeof("2"),STRING);
+		LogPrint("DeleteDataDB error",sizeof("DeleteDataDB error"),STRING);
 		return false;
 	}
 
@@ -106,6 +110,7 @@ bool ReadContactAndWrite(char *hash)
 		ret.opeatortype = MINUS_FREE;
 		memcpy(ret.accountid,&accountid,sizeof(ret.accountid));
 		memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
+		LogPrint(&accountid,32,HEX);
 		WriteOutput(&ret,1);
 	}
 
@@ -119,6 +124,7 @@ bool ReadContactAndWrite(char *hash)
 		memcpy(&ret.money,&accountinfo.nReciMoney,sizeof(Int64));
 		ret.opeatortype = ADD_FREE;
 		len -= sizeof(ACCOUNT_INFO);
+//		LogPrint(&accountinfo.account,32,HEX);
 		WriteOutput(&ret,1);
 		strContace = strContace +sizeof(ACCOUNT_INFO);
 
@@ -127,20 +133,21 @@ bool ReadContactAndWrite(char *hash)
 }
 void WriteOperate(const CONTRACT* const pContract)
 {
-	//// 当前合约的钱打到脚本账户中
-	VM_OPERATE ret;
-	ret.outheight = GetCurRunEnvHeight() + pContract->nHeight;
-	ret.opeatortype = MINUS_FREE;
-	memcpy(ret.accountid,&pContract->Sender,sizeof(ret.accountid));
-	memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
-	WriteOutput(&ret,1);
-
 	char accountid[6] = {0};
 	if(GetCurScritpAccount(&accountid))
 	{
+		//// 当前合约的钱打到脚本账户中
+		VM_OPERATE ret;
+		ret.outheight = GetCurRunEnvHeight() + pContract->nHeight;
+		ret.opeatortype = MINUS_FREE;
+		memcpy(ret.accountid,&pContract->Sender,sizeof(ret.accountid));
+		memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
+		WriteOutput(&ret,1);
+
 		ret.opeatortype = ADD_FREE;
 		memcpy(ret.accountid,&accountid,sizeof(ret.accountid));
 		memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
+//		LogPrint(&accountid,32,HEX);
 		WriteOutput(&ret,1);
 	}
 
@@ -156,22 +163,31 @@ void WriteOperate(const CONTRACT* const pContract)
 	if(GetDBValue(0,hash,(unsigned char*)&kenlen,kenlen,flag,&valen,&ptime)== false)
 	{
 		LogPrint("read db failed",sizeof("read db failed"),STRING);
+			return;
 	}
 	if(!ReadContactAndWrite(hash))
 	{
-		return ;
+		LogPrint("THE TX NOE IN BLOCK",sizeof("THE TX NOE IN BLOCK"),STRING);
+		LogPrint(hash,32,HEX);
+
 	}
 	count -=1;
+	LogPrint(hash,32,HEX);
+	LogPrint(&count,4,HEX);
 	while(count--)
 	{
 
-		if(GetDBValue(0,hash,(unsigned char*)&kenlen,kenlen,flag,&valen,&ptime)== false)
+		if(GetDBValue(1,hash,(unsigned char*)&kenlen,kenlen,flag,&valen,&ptime)== false)
 		{
 			LogPrint("read db failed",sizeof("read db failed"),STRING);
+			return;
 		}
+		LogPrint(hash,32,HEX);
+
 		if(!ReadContactAndWrite(hash))
 		{
-			return ;
+			LogPrint(hash,32,HEX);
+			LogPrint("THE TX NOE IN BLOCK",sizeof("THE TX NOE IN BLOCK"),STRING);
 		}
 	}
 
@@ -193,7 +209,8 @@ bool ProcessContract(const CONTRACT* const pContract)
 	if(!GetCurTxHash(&hash))
 		return false;
 	unsigned long outheight = GetCurRunEnvHeight() + pContract->nHeight;
-	WriteDataDB(&hash,32,&flag,1,outheight);
+	if(!WriteDataDB(&hash,32,&flag,1,outheight))
+		return false;
 
 }
 int main()

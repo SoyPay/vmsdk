@@ -165,16 +165,19 @@ bool CheckSecondContact(const NEXT_CONTRACT* const pContract)
 	char account[6] = {0};
 	if(!GetCurTxAccount(account,6))
 		{
+		LogPrint("can not get cur account",sizeof("can not get cur account"),STRING);
 		return false;
 
 		}
 	if(strcmp((char*)&contract.buyer,account) != 0)
 	{
+		LogPrint("not buyer account",sizeof("not buyer account"),STRING);
 		return false;
 	}
 	bool flag = false;
 	if(!ReadDataValueDB((const unsigned char * const ) pContract->hash,32,&flag,1))
 	{
+		LogPrint("read db failed",sizeof("read db failed"),STRING);
 		return false;
 	}
 	if(flag)
