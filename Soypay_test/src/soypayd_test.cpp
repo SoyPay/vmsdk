@@ -31,6 +31,14 @@ int main()
 					ProcessScript((char*)pcontact);
 					break;
 				}
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+				{
+					ProcessTestDB((char*)pcontact);
+					break;
+				}
 		default:
 				{
 					__exit(RUN_SCRIPT_DATA_ERR);
