@@ -478,11 +478,10 @@ bool GetBlockHash(const unsigned long height,void * const pblochHash) {
 	InsertOutData(&height, sizeof(height));
 	__CallApi(GETBLOCKHASH_FUNC);
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len > 32 || retdata->len <= 0) {
+	if (retdata->len != 32) {
 		return false;
 	}
-
-	memcpy(pblochHash, retdata->buffer, retdata->len);
+	memcpy(pblochHash, retdata->buffer,32);
 	return true;
 }
 bool GetCurTxHash(void * const poutHash) {
