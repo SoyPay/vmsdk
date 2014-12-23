@@ -8,7 +8,7 @@
     <path>$WS_DIR$\bet\Bet.ewp</path>
   </project>
   <project>
-    <path>$WS_DIR$\sendsriptid\scripttest.ewp</path>
+    <path>$WS_DIR$\RegScriptTest\RegScriptTest.ewp</path>
   </project>
   <project>
     <path>$WS_DIR$\sdk\sdk.ewp</path>
@@ -17,16 +17,10 @@
     <path>$WS_DIR$\SecuredTrade\SecuredTrade.ewp</path>
   </project>
   <project>
-    <path>$WS_DIR$\testUint\test.ewp</path>
-  </project>
-  <project>
     <path>$WS_DIR$\APItest\TestAPI.ewp</path>
   </project>
   <project>
     <path>$WS_DIR$\testrollbackDB\testrollback.ewp</path>
-  </project>
-  <project>
-    <path>$WS_DIR$\testscriptid\testscriptid.ewp</path>
   </project>
   <batchBuild/>
 </workspace>
