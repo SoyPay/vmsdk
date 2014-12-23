@@ -150,7 +150,7 @@
         </option>
         <option>
           <name>RTLibraryPath</name>
-          <state>$TOOLKIT_DIR$\LIB\DLIB\dl-pli-nlxd-1e16x01n.r51</state>
+          <state>$TOOLKIT_DIR$\LIB\DLIB\dl-pli-nlxd-1e16x01.r51</state>
         </option>
         <option>
           <name>Input variant</name>
@@ -722,7 +722,7 @@
         </option>
         <option>
           <name>OutputFile</name>
-          <state>testrollback.d51</state>
+          <state>darksecure.d51</state>
         </option>
         <option>
           <name>OutputFormat</name>
@@ -916,7 +916,7 @@
         </option>
         <option>
           <name>ExtraOutputFile</name>
-          <state>testrollback.sim</state>
+          <state>darksecure.sim</state>
         </option>
         <option>
           <name>ExtraOutputFormat</name>
@@ -2115,7 +2115,7 @@
     </settings>
   </configuration>
   <file>
-    <name>$PROJ_DIR$\src\testrollbackDBmain.cpp</name>
+    <name>$PROJ_DIR$\src\darksecuremain.cpp</name>
   </file>
   <file>
     <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>

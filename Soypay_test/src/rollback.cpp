@@ -1,9 +1,6 @@
-#include <string.h>
-#include<stdlib.h>
-#include <stdio.h>
-#include"VmSdk.h"
-#define TestCheck(a) {if(!(a)) { PrintfLine(__LINE__); return false;}}
-bool testWriteDataDB()
+
+#include"soypay.h"
+bool testWriteDataDB1()
 {
 	unsigned long time = 2;
 	char* key = "key";
@@ -14,7 +11,7 @@ bool testWriteDataDB()
 	TestCheck(WriteDataDB(key,5,value,7,time) == true);
 	return true;
 }
-bool testModifyDataDB()
+bool testModifyDataDB1()
 {
 	char*key = "key1";
 	char *value= "LUO";
@@ -22,7 +19,7 @@ bool testModifyDataDB()
 	TestCheck(ModifyDataDB(key,5,value,4,ptime) == true);
 	return true;
 }
-bool testDeleteDataDB()
+bool testDeleteDataDB1()
 {
 	char* key = "key";
 	bool flag = DeleteDataDB(key,4);
@@ -42,7 +39,6 @@ bool testCheckModifyRoolbackDB()
 	char* key = "key1";
 	char buffer[7] = {0};
 	TestCheck(ReadDataValueDB(key,5,buffer,7)> 0);
-	LogPrint(buffer,7,STRING);
 	TestCheck(strcmp(buffer,"hellow")== 0);
 	return true;
 }
@@ -58,45 +54,39 @@ bool testCheckWriteRoolbackDB()
 	return true;
 }
 
-int main()
+int ProcessRollBack(char*pcontact)
 {
-	__xdata static  char pcontact[2];
- 	GetMemeroyData(pcontact,2);
 	switch(pcontact[0])
 	{
-		case 0x01:
+		case 0x06:
 				{
-					LogPrint("testWriteDataDB",sizeof("testWriteDataDB"),STRING);
-					if(!testWriteDataDB())
+					if(!testWriteDataDB1())
 					{
 						LogPrint("testWriteDataDB error",sizeof("testWriteDataDB error"),STRING);
 						__exit(RUN_SCRIPT_DATA_ERR);
 					}
 					break;
 				}
-		case 0x02:
+		case 0x07:
 				{
-					LogPrint("testModifyDataDB",sizeof("testModifyDataDB"),STRING);
-					if(!testModifyDataDB())
+					if(!testModifyDataDB1())
 					{
 						LogPrint("testModifyDataDB error",sizeof("testModifyDataDB error"),STRING);
 						__exit(RUN_SCRIPT_DATA_ERR);
 					}
 					break;
 				}
-		case 0x03:
+		case 0x08:
 				{
-					LogPrint("testDeleteDataDB",sizeof("testDeleteDataDB"),STRING);
-					if(!testDeleteDataDB())
+					if(!testDeleteDataDB1())
 					{
 						LogPrint("testDeleteDataDB error",sizeof("testDeleteDataDB error"),STRING);
 						__exit(RUN_SCRIPT_DATA_ERR);
 					}
 					break;
 				}
-		case 0x04:
+		case 0x09:
 				{
-					LogPrint("testCheckDeleteRoolbackDB",sizeof("testCheckDeleteRoolbackDB"),STRING);
 					if(!testCheckDeleteRoolbackDB())
 					{
 						LogPrint("testCheckDeleteRoolbackDB error",sizeof("testCheckDeleteRoolbackDB error"),STRING);
@@ -104,9 +94,8 @@ int main()
 					}
 					break;
 				}
-		case 0x05:
+		case 0x0a:
 				{
-					LogPrint("testCheckModifyRoolbackDB",sizeof("testCheckModifyRoolbackDB"),STRING);
 					if(!testCheckModifyRoolbackDB())
 					{
 						LogPrint("testCheckModifyRoolbackDB error",sizeof("testCheckModifyRoolbackDB error"),STRING);
@@ -114,7 +103,7 @@ int main()
 					}
 					break;
 				}
-		case 0x06:
+		case 0x0b:
 				{
 					if(!testCheckWriteRoolbackDB())
 					{
