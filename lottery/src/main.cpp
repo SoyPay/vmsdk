@@ -37,7 +37,7 @@ typedef struct {
  *reg lottery data struct
  */
 typedef struct {
-	OPERATETYPE type;
+	uchar type;
 	Int64 money;
 	u32 hight;
 }REG_DATA;
@@ -46,17 +46,17 @@ typedef struct {
  * order lottery data struct
  */
 typedef struct {
-	OPERATETYPE type;
+	uchar type;
 	uchar num[15];
 	uchar numlen;
-	Int64 money;
+	Int64 money;//单注价格
 }ORDER_DATA;
 
 /**
  * open lottery data struct
  */
 typedef struct {
-	OPERATETYPE type;
+	uchar type;
 }OPEN_DATA;
 
 typedef struct {
@@ -79,7 +79,7 @@ typedef struct {
 //data:tx hash
 typedef struct {
 	uchar accid[6];
-	Int64 amount;
+	Int64 amount;//单注价格
 	uchar num[15];
 	uchar numlen;
 	u32 orderhight;
@@ -108,10 +108,29 @@ typedef struct {
 #define CURRENT "CurretStatus"
 #define SYSTERM "SysStatus"
 
+#define REWARD_NO1 3000
+#define REWARD_NO2 17
+#define REWARD_NO3 2
+//5000 000 000->0x01 2A 05 F2 00<-->对应C51中数据->0x00 f2 05 2a 01 00 00 00
+
+#define ORDER_PRICE    ("\xA0\x86\x01\x00\x00\x00\x00\x00")//100000
+#define REG_MIN_AMOUNT ("\x00\xf2\x05\x2a\x01\x00\x00\x00")//50 00 000 000
+
 __xdata __no_init static uchar gContractData[256];
 __xdata __no_init static REG_SAVE_DATA gRegSaveData;
+__xdata __no_init static CURRENT_STATUS gCurrentStatus;
 
+static bool Uint64ToU32(const Int64 * p64, u32 * p32)
+{
+	memcpy(p32, p64, sizeof(u32));
+	return true;
+}
 
+static bool U32ToUint64(const u32 * p32, Int64 * p64)
+{
+	memcpy(p64, p32, sizeof(u32));
+	return true;
+}
 
 /**
  * @brief get contract data
@@ -150,9 +169,10 @@ static bool CheckMinimumAmount(const Int64 *pdata)
 		return false;
 	}
 
-	Int64Inital(&minamount,"\x00\x00\x00\x00\x00\x01\x00\x00",8);
+//	Int64Inital(&minamount, REG_MIN_AMOUNT, sizeof(REG_MIN_AMOUNT));
+	memcpy(&minamount, REG_MIN_AMOUNT, sizeof(minamount));
 
-	if(Int64Compare(pdata, &minamount) != COMP_LARGER)
+	if(Int64Compare(pdata, &minamount) == COMP_LESS)
 	{
 		ErrorCheck(0);
 		return false;
@@ -173,6 +193,9 @@ static bool CheckRegHight(const u32 *phight)
 		ErrorCheck(0);
 		return false;
 	}
+	u32 xx = GetCurRunEnvHeight();
+	LogPrint(phight, sizeof(u32), HEX);
+	LogPrint(&xx, sizeof(xx), HEX);
 
 	if(*phight <= GetCurRunEnvHeight())
 	{
@@ -192,8 +215,16 @@ static bool CheckRegHight(const u32 *phight)
  */
 static bool RegDataCheck(const LOTTO_CTX *pctxdata)
 {
-	REG_DATA *pregdata = (REG_DATA *)gContractData;
 	Int64 balance;
+	REG_DATA *pregdata = (REG_DATA *)gContractData;
+//	{
+//		LogPrint("hello", sizeof("hello"), STRING);
+//		LogPrint(&pregdata->type, sizeof(pregdata->type), HEX);
+//		LogPrint(&pregdata->money, sizeof(pregdata->money), HEX);
+//		short offset = (short)((&((REG_DATA *)0)->hight));
+//		LogPrint(&offset, sizeof(offset), HEX);
+//		LogPrint(&pregdata->hight, sizeof(pregdata->hight), HEX);
+//	}
 
 	if(pctxdata == NULL)
 	{
@@ -215,13 +246,22 @@ static bool RegDataCheck(const LOTTO_CTX *pctxdata)
 		ErrorCheck(0);
 		return false;
 	}
-
+//	LogPrint(pregdata, sizeof(gContractData), HEX);
+//	LogPrint("helloSHIT", sizeof("helloSHIT"), STRING);
+//	LogPrint(&pregdata->money, sizeof(pregdata->money), HEX);
 	if(!CheckMinimumAmount(&pregdata->money))
 	{
 		ErrorCheck(0);
 		return false;
 	}
 
+//	pregdata->hight = 100;
+//	LogPrint(pregdata, sizeof(gContractData), HEX);
+//	LogPrint(&pregdata->hight, sizeof(u32), HEX);
+//	short offset = (char)(&((REG_DATA *)0)->hight);
+//	LogPrint(&offset, sizeof(offset), HEX);
+//	LogPrint(&offset, sizeof(offset), HEX);
+//	LogPrint(&pregdata->hight, sizeof(pregdata->hight), HEX);
 	if(!CheckRegHight(&pregdata->hight))
 	{
 		ErrorCheck(0);
@@ -265,7 +305,7 @@ static bool RecordRegLottoStatus(const LOTTO_CTX *pctxdata)
 	REG_DATA *pregdata = (REG_DATA *)gContractData;
 	REG_SAVE_DATA savedata;
 	CURRENT_STATUS current;
-//	SYSLOTTO_STATUS sys;
+
 	if(pctxdata == NULL)
 	{
 		ErrorCheck(0);
@@ -277,7 +317,7 @@ static bool RecordRegLottoStatus(const LOTTO_CTX *pctxdata)
 	memcpy(&savedata.amount, &pregdata->money, sizeof(pregdata->money));
 	savedata.reghight = GetCurRunEnvHeight();
 	savedata.closehight = pregdata->hight;
-	if(!WriteDataDB("SysRegLotto", sizeof("SysRegLotto"), &savedata, sizeof(REG_SAVE_DATA), 12345))
+	if(!WriteDataDB(SYSTERM, sizeof(SYSTERM), &savedata, sizeof(REG_SAVE_DATA), 12345))
 	{
 		ErrorCheck(0);
 		return false;
@@ -289,22 +329,11 @@ static bool RecordRegLottoStatus(const LOTTO_CTX *pctxdata)
 	current.openhight = savedata.reghight + current.term*10;//注册后10个高度开之前的奖
 	current.totalorders = 0;
 	current.status = LOTTOUNOPEN;
-	if(!WriteDataDB("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS), 12345))
+	if(!WriteDataDB(CURRENT, sizeof(CURRENT), &current, sizeof(CURRENT_STATUS), 12345))
 	{
 		ErrorCheck(0);
 		return false;
 	}
-
-//	memset(&sys, 0, sizeof(SYSLOTTO_STATUS));
-//	sys.status[0] = LOTTOUNOPEN;
-//	sys.term[0] = current.term;
-//	sys.openhight[0] = current.openhight;
-//	sys.totalorders[0] = 0;
-//	if(!WriteDataDB("SysStatus", sizeof("SysStatus"), &sys, sizeof(SYSLOTTO_STATUS), 12345))
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
 
 	return true;
 }
@@ -374,34 +403,39 @@ static bool CheckOrderNum(const uchar *pdata, uchar datalen)
 	return (ii == datalen)?(true):(false);
 }
 
-static bool CheckOrderAmount(const Int64 *pamount, uchar totalnum)
+static bool CheckOrderAmount(const Int64 *pamount)
 {
-	Int64 apert, total64, min;
+	Int64 min;
 	u32 total = 0;
-	if(pamount == NULL || totalnum < 6 || totalnum > 15)
-	{
-		ErrorCheck(0);
-		return false;
-	}
-	total = MselectN(totalnum, 6);
-	memset(&total64, 0, sizeof(Int64));
-	memcpy(&total64, &total, sizeof(total));
-	if(!Int64Div(pamount, &total64, &apert))
+	if(pamount == NULL)
 	{
 		ErrorCheck(0);
 		return false;
 	}
 
-//	LogPrint(pamount, sizeof(total64), HEX);
-//	LogPrint(&total64, sizeof(total64), HEX);
-//	LogPrint(&apert, sizeof(apert), HEX);
-//
-//	Int64Inital(&min,"\x01\x00\x00\x00\x00\x00\x00\x00",8);
-//	if(Int64Compare(&apert, &min) != COMP_LARGER)
+
+
+//	total = MselectN(totalnum, 6);
+//	memset(&total64, 0, sizeof(Int64));
+//	memcpy(&total64, &total, sizeof(total));
+//	if(!Int64Div(pamount, &total64, &apert))
 //	{
 //		ErrorCheck(0);
 //		return false;
 //	}
+
+//	LogPrint(pamount, sizeof(total64), HEX);
+//	LogPrint(&total64, sizeof(total64), HEX);
+//	LogPrint(&apert, sizeof(apert), HEX);
+
+//	Int64Inital(&min, ORDER_PRICE, sizeof(ORDER_PRICE));
+	memcpy(&min, ORDER_PRICE, sizeof(min));
+
+	if(Int64Compare(pamount, &min) != COMP_EQU)
+	{
+		ErrorCheck(0);
+		return false;
+	}
 
 	return true;
 }
@@ -421,7 +455,7 @@ static bool CheckOrderNumAndAmount(void)
 		return false;
 	}
 //	LogPrint("CheckOrderAmount", sizeof("CheckOrderAmount"), STRING);
-	if(!CheckOrderAmount(&porderdata->money, porderdata->numlen))
+	if(!CheckOrderAmount(&porderdata->money))
 	{
 		ErrorCheck(0);
 		return false;
@@ -437,16 +471,16 @@ static bool CheckOrderNumAndAmount(void)
  */
 static bool CheckOrderHight(void)
 {
-	CURRENT_STATUS current;
-
-	if(!ReadDataValueDB("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
-	{
-		ErrorCheck(0);
-		return false;
-	}
+//	CURRENT_STATUS current;
+//
+//	if(!ReadDataValueDB("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
+//	{
+//		ErrorCheck(0);
+//		return false;
+//	}
 
 	//判断是否到期，如果到期没人开奖，则投注失败。直到有人开奖才可以投注
-	if(current.openhight < GetCurRunEnvHeight())
+	if(gCurrentStatus.openhight < GetCurRunEnvHeight())
 	{
 		ErrorCheck(0);
 		return false;
@@ -454,6 +488,12 @@ static bool CheckOrderHight(void)
 
 
 	if(GetCurRunEnvHeight() > gRegSaveData.closehight)
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	if(gCurrentStatus.openhight > gRegSaveData.closehight)//最后一期的彩票开奖前就解冻，则拒绝投注该期
 	{
 		ErrorCheck(0);
 		return false;
@@ -473,9 +513,15 @@ static bool CheckOrderHight(void)
 static bool OrderDataCheck(const LOTTO_CTX *pctxdata)
 {
 	ORDER_DATA *porderdata = (ORDER_DATA *)gContractData;
-	Int64 balance;
+	Int64 balance, orderamount;
 
 	if(pctxdata == NULL)
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	if(!CheckOrderNumAndAmount())
 	{
 		ErrorCheck(0);
 		return false;
@@ -487,13 +533,19 @@ static bool OrderDataCheck(const LOTTO_CTX *pctxdata)
 		return false;
 	}
 
-	if(Int64Compare(&balance, &porderdata->money) != COMP_LARGER)
 	{
-		ErrorCheck(0);
-		return false;
+		Int64 total64;
+		u32 total = MselectN(porderdata->numlen, 6);
+		memset(&total64, 0, sizeof(total64));
+		memcpy(&total64, &total, sizeof(total));
+		if(!Int64Mul(&porderdata->money, &total64, &orderamount))
+		{
+			ErrorCheck(0);
+			return false;
+		}
 	}
 
-	if(!CheckOrderNumAndAmount())
+	if(Int64Compare(&balance, &orderamount) != COMP_LARGER)
 	{
 		ErrorCheck(0);
 		return false;
@@ -512,6 +564,7 @@ static bool OrderOperateAccount(const LOTTO_CTX *pbetctx)
 {
 	ORDER_DATA *pregdata = (ORDER_DATA *)gContractData;
 	VM_OPERATE operate[2];
+	Int64 amount;
 
 	if(pbetctx == NULL)
 	{
@@ -519,15 +572,32 @@ static bool OrderOperateAccount(const LOTTO_CTX *pbetctx)
 		return false;
 	}
 
+	{
+		Int64 tmp64;
+		u32 total = MselectN(pregdata->numlen, 6);
+		memset(&tmp64, 0, sizeof(tmp64));
+		memcpy(&tmp64, &total, sizeof(total));
+		if(!Int64Mul(&pregdata->money, &tmp64, &amount))
+		{
+			ErrorCheck(0);
+			return false;
+		}
+//		LogPrint(&pregdata->numlen, sizeof(pregdata->numlen), HEX);
+//		LogPrint(&total, sizeof(total), HEX);
+//		LogPrint(&tmp64, sizeof(tmp64), HEX);
+//		LogPrint(&pregdata->money, sizeof(pregdata->money), HEX);
+//		LogPrint(&amount, sizeof(amount), HEX);
+	}
+
 	memcpy(operate[0].accountid, pbetctx->accid, sizeof(pbetctx->accid));
-	memcpy(&operate[0].money, &pregdata->money, sizeof(pregdata->money));
+	memcpy(&operate[0].money, &amount, sizeof(amount));
 	operate[0].opeatortype = MINUS_FREE;
 	operate[0].outheight = 0x7fffffff;//???
 
 	memcpy(operate[1].accountid, gRegSaveData.accid, sizeof(gRegSaveData.accid));
-	memcpy(&operate[1].money, &pregdata->money, sizeof(pregdata->money));
+	memcpy(&operate[1].money, &amount, sizeof(amount));
 	operate[1].opeatortype = ADD_FREEZD;
-	operate[1].outheight = 0x7fffffff;//???
+	operate[1].outheight = gRegSaveData.closehight;//???
 
     return WriteOutput(operate, 2);
 }
@@ -539,7 +609,7 @@ static bool OrderOperateAccount(const LOTTO_CTX *pbetctx)
  */
 static bool RecordOrderLottoStatus(const LOTTO_CTX *pctxdata)
 {
-	CURRENT_STATUS current;
+//	CURRENT_STATUS current;
 	uchar key[8] = {0};
 	ORDER_DATA *pregdata = (ORDER_DATA *)gContractData;
 	if(pctxdata == NULL)
@@ -548,11 +618,11 @@ static bool RecordOrderLottoStatus(const LOTTO_CTX *pctxdata)
 		return false;
 	}
 
-	if(!ReadDataValueDB("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
-	{
-		ErrorCheck(0);
-		return false;
-	}
+//	if(!ReadDataValueDB("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
+//	{
+//		ErrorCheck(0);
+//		return false;
+//	}
 
 //	//判断是否到期，如果到期没人开奖，则投注失败。直到有人开奖才可以投注
 //	if(current.openhight > GetCurRunEnvHeight() && current.status == LOTTOUNOPEN)
@@ -562,22 +632,44 @@ static bool RecordOrderLottoStatus(const LOTTO_CTX *pctxdata)
 //	current.status = (current.status == LOTTONEW)?(LOTTOUNOPEN):();
 
 
-	memcpy(key, &current.term, sizeof(u32));
-	memcpy(&key[4], &current.totalorders, sizeof(u32));
+	memcpy(key, &gCurrentStatus.term, sizeof(u32));
+	memcpy(&key[4], &gCurrentStatus.totalorders, sizeof(u32));
 	if(!WriteDataDB(key, sizeof(key), pctxdata->txhash, sizeof(pctxdata->txhash), 12345))
 	{
 		ErrorCheck(0);
 		return false;
 	}
 
-	current.totalorders++;
-
-	if(!ModifyDataDBVavle("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
+	gCurrentStatus.totalorders++;
+	if(!Int64Add(&pregdata->money, &gCurrentStatus.amount, &gCurrentStatus.amount))
 	{
 		ErrorCheck(0);
 		return false;
 	}
 
+	if(!ModifyDataDBVavle(CURRENT, sizeof(CURRENT), &gCurrentStatus, sizeof(CURRENT_STATUS)))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+
+	return true;
+}
+
+static bool ReadGlobalPara(void)
+{
+	if(!ReadDataValueDB(CURRENT, sizeof(CURRENT), &gCurrentStatus, sizeof(CURRENT_STATUS)))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	if(!ReadDataValueDB(SYSTERM, sizeof(SYSTERM), &gRegSaveData, sizeof(REG_SAVE_DATA)))
+	{
+		ErrorCheck(0);
+		return false;
+	}
 
 	return true;
 }
@@ -598,7 +690,7 @@ static bool OrderLottery(const LOTTO_CTX *pctxdata)
 		return false;
 	}
 
-	if (!ReadDataValueDB("SysRegLotto", sizeof("SysRegLotto"), &gRegSaveData, sizeof(REG_SAVE_DATA))) {
+	if (!ReadGlobalPara()) {
 		ErrorCheck(0);
 		return false;
 	}
@@ -640,16 +732,16 @@ static bool IsHaveOpenTerm(void)
 //	bool flag = false;
 //	uchar kk = 0;
 //	u32 hight = GetCurRunEnvHeight();
-	CURRENT_STATUS current;
-
-	if(!ReadDataValueDB("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
-	{
-		ErrorCheck(0);
-		return false;
-	}
+//	CURRENT_STATUS current;
+//
+//	if(!ReadDataValueDB("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
+//	{
+//		ErrorCheck(0);
+//		return false;
+//	}
 
 	//判断是否到期，如果到期没人开奖，则投注失败。直到有人开奖才可以投注
-	if(current.openhight > GetCurRunEnvHeight())
+	if(gCurrentStatus.openhight > GetCurRunEnvHeight())
 	{
 		ErrorCheck(0);
 		return false;
@@ -743,6 +835,13 @@ static bool RecordOpenStatus(const LOTTO_CTX *pctxdata)
 	return true;
 }
 
+static Int64 GetRewardForOpen(void)
+{
+	Int64 reward;
+	memset(&reward, 0, sizeof(reward));
+	return reward;
+}
+
 static bool OpenOperateAccount(const LOTTO_CTX *pbetctx)
 {
 	VM_OPERATE operate[2];
@@ -751,6 +850,10 @@ static bool OpenOperateAccount(const LOTTO_CTX *pbetctx)
 	uchar txhash[32] = {0}, openhash[32] = {0};
 	uchar accid[6] = {0};
 	ORDER_INFO info;
+	uchar luckynum[LUCKYNUMSIZE] = {0};
+	Int64 treward, orderprice, top1_80;
+
+	u32 nttop1 = 0, nttop2 = 0, nttop3 = 0, utop1_80 = 0;
 
 	if(pbetctx == NULL)
 	{
@@ -758,24 +861,180 @@ static bool OpenOperateAccount(const LOTTO_CTX *pbetctx)
 		return false;
 	}
 
-	CURRENT_STATUS current;
+//	Int64Inital(&orderprice, ORDER_PRICE, sizeof(ORDER_PRICE));
+	memcpy(&orderprice, ORDER_PRICE, sizeof(orderprice));
 
-	if(!ReadDataValueDB("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
-	{
-		ErrorCheck(0);
-		return false;
-	}
-
-//	if (!ReadDataValueDB("SysStatus", sizeof("SysStatus"), &sys, sizeof(SYSLOTTO_STATUS)))
+//	CURRENT_STATUS current;
+//
+//	if(!ReadDataValueDB("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
 //	{
 //		ErrorCheck(0);
 //		return false;
 //	}
 
-#if 1
-	for(u32 ii = 0; ii < current.totalorders; ii++)
+	if(!GetBlockHash(gCurrentStatus.openhight, openhash))
 	{
-		memcpy(key, &current.term, sizeof(u32));
+		ErrorCheck(0);
+		return false;
+	}
+
+	if(!GetLuckyNum(openhash, luckynum))
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	{
+		for (u32 ii = 0; ii < gCurrentStatus.totalorders; ii++) {
+			memcpy(key, &gCurrentStatus.term, sizeof(u32));
+			memcpy(&key[4], &ii, sizeof(u32));
+			if (!ReadDataValueDB(key, sizeof(key), &txhash, sizeof(txhash))) {
+				ErrorCheck(0);
+				return false;
+			}
+
+			if (GetAccounts(txhash, accid, sizeof(accid)) == 0) {
+				ErrorCheck(0);
+				return false;
+			}
+
+			if (!GetTxContacts(txhash, gContractData, sizeof(gContractData))) {
+				ErrorCheck(0);
+				return false;
+			}
+
+			ORDER_DATA *pregdata = (ORDER_DATA *) gContractData;
+
+			memcpy(info.accid, accid, sizeof(accid));
+			memcpy(&info.amount, &pregdata->money, sizeof(pregdata->money));
+			memcpy(info.num, pregdata->num, sizeof(pregdata->num));
+			info.numlen = pregdata->numlen;
+
+			REWARD_RESULT rslt = DrawLottery(luckynum, info.num, info.numlen);
+			{
+				LogPrint(info.accid, sizeof(info.accid), HEX);
+				LogPrint(&rslt.top1, sizeof(u32), HEX);
+				LogPrint(&rslt.top2, sizeof(u32), HEX);
+				LogPrint(&rslt.top3, sizeof(u32), HEX);
+			}
+
+			if (rslt.top1 == 0 && rslt.top2 == 0 && rslt.top3 == 0) {
+				continue;
+			} else {
+				nttop1 += rslt.top1;
+				nttop2 += rslt.top2;
+				nttop3 += rslt.top3;
+			}
+
+//			{
+//				Int64 tt64, price;
+//				u32 total = MselectN(info.numlen, 6);
+//				memset(&tt64, 0, sizeof(Int64));
+//				memcpy(&tt64, &total, sizeof(total));
+//				if (!Int64Div(&info.amount, &tt64, &price)) {
+//					ErrorCheck(0);
+//					return false;
+//				}
+//				{
+//					LogPrint(&total, sizeof(u32), HEX);
+//					LogPrint(&price, sizeof(price), HEX);
+//				}
+//
+//				if (!Int64Mul(&ntop1, &price, &tamount)) {
+//					ErrorCheck(0);
+//					return false;
+//				}
+//				{
+//					LogPrint(&tamount, sizeof(tamount), HEX);
+//				}
+//
+//				if(!Int64Add(&tamount, &treward, &treward))
+//				{
+//					ErrorCheck(0);
+//					return false;
+//				}
+		}
+	}
+
+	{
+		Int64 tmpreward, tmpamount, xreward, xamount, tmp64;
+		u32 tmp = nttop1*REWARD_NO1 + nttop2*REWARD_NO2 + nttop3*REWARD_NO3;
+		memset(&tmp64, 0, sizeof(tmp64));
+		memcpy(&tmp64, &tmp, sizeof(u32));
+
+		if(!Int64Mul(&tmp64, &orderprice, &treward))
+		{
+			ErrorCheck(0);
+			return false;
+		}
+
+//		Int64Inital(&xreward,"\x0a", 1);
+//		Int64Inital(&xamount,"\x08", 1);
+		memcpy(&xreward,"\x0a\x00\x00\x00\x00\x00\x00\x00", 8);
+		memcpy(&xamount,"\x08\x00\x00\x00\x00\x00\x00\x00", 8);
+
+		if(!Int64Mul(&gCurrentStatus.amount, &xamount, &tmpamount))
+		{
+			ErrorCheck(0);
+			return false;
+		}
+
+		if(!Int64Mul(&treward, &xreward, &tmpreward))
+		{
+			ErrorCheck(0);
+			return false;
+		}
+
+		if(Int64Compare(&tmpamount, &tmpreward) != COMP_LARGER)//是否开奖金额大于奖池余额：分发80%奖池金额
+		{
+			Int64 actreward, tmp23, amount23, amount1, top1_64;
+			u32 utmp23;
+			if(!Int64Div(&tmpamount, &xreward, &actreward))//得到80%的奖池金额
+			{
+				ErrorCheck(0);
+				return false;
+			}
+
+			utmp23 = nttop2*REWARD_NO2 + nttop3*REWARD_NO3;
+
+			memset(&tmp23, 0, sizeof(tmp23));
+			memcpy(&tmp23, &utmp23, sizeof(u32));
+
+			if(!Int64Mul(&tmp23, &orderprice, &amount23))
+			{
+				ErrorCheck(0);
+				return false;
+			}
+
+			if(!Int64Sub(&actreward, &amount23, &amount1))
+			{
+				ErrorCheck(0);
+				return false;
+			}
+
+			memset(&top1_64, 0, sizeof(top1_64));
+			memcpy(&top1_64, &nttop1, sizeof(nttop1));
+
+			if(!Int64Div(&amount1, &top1_64, &top1_80))//得到一等奖的倍数
+			{
+				ErrorCheck(0);
+				return false;
+			}
+
+			memcpy(&utop1_80, &top1_80, sizeof(u32));
+
+			if(utop1_80 > REWARD_NO1)//校验得到的结果
+			{
+				ErrorCheck(0);
+				return false;
+			}
+		}
+	}
+
+#if 1
+	for(u32 ii = 0; ii < gCurrentStatus.totalorders; ii++)
+	{
+		memcpy(key, &gCurrentStatus.term, sizeof(u32));
 		memcpy(&key[4], &ii, sizeof(u32));
 //		LogPrint(key, sizeof(key), HEX);
 		if(!ReadDataValueDB(key, sizeof(key), &txhash, sizeof(txhash)))
@@ -793,11 +1052,11 @@ static bool OpenOperateAccount(const LOTTO_CTX *pbetctx)
 			return false;
 		}
 //		LogPrint(&current.openhight, sizeof(current.openhight), HEX);
-		if(!GetBlockHash(current.openhight, openhash))
-		{
-			ErrorCheck(0);
-			return false;
-		}
+//		if(!GetBlockHash(gCurrentStatus.openhight, openhash))
+//		{
+//			ErrorCheck(0);
+//			return false;
+//		}
 
 		ORDER_DATA *pregdata = (ORDER_DATA *)gContractData;
 
@@ -806,7 +1065,7 @@ static bool OpenOperateAccount(const LOTTO_CTX *pbetctx)
 		memcpy(info.num, pregdata->num, sizeof(pregdata->num));
 		info.numlen = pregdata->numlen;
 
-		REWARD_RESULT rslt = DrawLottery(openhash, info.num, info.numlen);
+		REWARD_RESULT rslt = DrawLottery(luckynum, info.num, info.numlen);
 		{
 			LogPrint(info.accid, sizeof(info.accid), HEX);
 			LogPrint(&rslt.top1, sizeof(u32), HEX);
@@ -822,28 +1081,26 @@ static bool OpenOperateAccount(const LOTTO_CTX *pbetctx)
 		}
 		else
 		{
-//			memcpy(&ntop1, &rslt.top1, sizeof(rslt.top1));
-//			memcpy(&ntop2, &rslt.top2, sizeof(rslt.top2));
-//			memcpy(&ntop3, &rslt.top3, sizeof(rslt.top3));
-			u32 ttop = rslt.top1 + rslt.top2 + rslt.top3;
+			u32 ttop = rslt.top1*((utop1_80 != 0)?(utop1_80):(REWARD_NO1)) + rslt.top2*REWARD_NO2 + rslt.top3*REWARD_NO3;
+			memset(&ntop1, 0, sizeof(ntop1));
 			memcpy(&ntop1, &ttop, sizeof(ttop));
 		}
 
 		{
-			Int64 tt64, price;
-		 	u32 total = MselectN(info.numlen, 6);
-			memset(&tt64, 0, sizeof(Int64));
-			memcpy(&tt64, &total, sizeof(total));
-			if (!Int64Div(&info.amount, &tt64, &price)) {
-				ErrorCheck(0);
-				return false;
-			}
-			{
-				LogPrint(&total, sizeof(u32), HEX);
-				LogPrint(&price, sizeof(price), HEX);
-			}
+//			Int64 tt64, price;
+//		 	u32 total = MselectN(info.numlen, 6);
+//			memset(&tt64, 0, sizeof(Int64));
+//			memcpy(&tt64, &total, sizeof(total));
+//			if (!Int64Div(&info.amount, &tt64, &price)) {
+//				ErrorCheck(0);
+//				return false;
+//			}
+//			{
+//				LogPrint(&total, sizeof(u32), HEX);
+//				LogPrint(&price, sizeof(price), HEX);
+//			}
 
-			if (!Int64Mul(&ntop1, &price, &tamount)) {
+			if (!Int64Mul(&ntop1, &orderprice, &tamount)) {
 				ErrorCheck(0);
 				return false;
 			}
@@ -878,7 +1135,7 @@ static bool OpenOperateAccount(const LOTTO_CTX *pbetctx)
 				LogPrint(&tamount, sizeof(tamount), HEX);
 			}
 
-			memcpy(operate[0].accountid, info.accid, sizeof(pbetctx->accid));
+			memcpy(operate[0].accountid, info.accid, sizeof(info.accid));
 			memcpy(&operate[0].money, &tamount, sizeof(tamount));
 			operate[0].opeatortype = ADD_FREE;
 			operate[0].outheight = 0;//???
@@ -895,22 +1152,46 @@ static bool OpenOperateAccount(const LOTTO_CTX *pbetctx)
 			}
 		}
 	}
+	//增加对开奖账户的奖励金额，目前奖励金额为零
+	{
+		Int64 openreward = GetRewardForOpen();
+		memcpy(operate[0].accountid, pbetctx->accid, sizeof(pbetctx->accid));
+		memcpy(&operate[0].money, &openreward, sizeof(openreward));
+		operate[0].opeatortype = ADD_FREE;
+		operate[0].outheight = 0;//???
+
+		memcpy(operate[1].accountid, gRegSaveData.accid, sizeof(gRegSaveData.accid));
+		memcpy(&operate[1].money, &openreward, sizeof(openreward));
+		operate[1].opeatortype = MINUS_FREEZD;
+		operate[1].outheight = gRegSaveData.closehight;//???
+
+		if(!WriteOutput(operate, 2))
+		{
+			ErrorCheck(0);
+			return false;
+		}
+	}
 #endif
 
 	{
-		REG_SAVE_DATA savedata;
-		if(!ReadDataValueDB("SysRegLotto", sizeof("SysRegLotto"), &savedata, sizeof(REG_SAVE_DATA)))
+//		REG_SAVE_DATA savedata;
+//		if(!ReadDataValueDB("SysRegLotto", sizeof("SysRegLotto"), &savedata, sizeof(REG_SAVE_DATA)))
+//		{
+//			ErrorCheck(0);
+//			return false;
+//		}
+
+		gCurrentStatus.term++;
+		gCurrentStatus.openhight = gRegSaveData.reghight + gCurrentStatus.term*10;
+		gCurrentStatus.status = LOTTONEW;
+		gCurrentStatus.totalorders = 0;
+		if(!Int64Sub(&gCurrentStatus.amount, &treward, &gCurrentStatus.amount))
 		{
 			ErrorCheck(0);
 			return false;
 		}
 
-		current.term++;
-		current.openhight = savedata.reghight + current.term*10;
-		current.status = LOTTONEW;
-		current.totalorders = 0;
-
-		if(!ModifyDataDBVavle("CurretStatus", sizeof("CurretStatus"), &current, sizeof(CURRENT_STATUS)))
+		if(!ModifyDataDBVavle(CURRENT, sizeof(CURRENT), &gCurrentStatus, sizeof(CURRENT_STATUS)))
 		{
 			ErrorCheck(0);
 			return false;
@@ -936,7 +1217,11 @@ static bool OpenLottery(const LOTTO_CTX *pctxdata)
 		return false;
 	}
 
-	if (!ReadDataValueDB("SysRegLotto", sizeof("SysRegLotto"), &gRegSaveData, sizeof(REG_SAVE_DATA))) {
+//	if (!ReadDataValueDB("SysRegLotto", sizeof("SysRegLotto"), &gRegSaveData, sizeof(REG_SAVE_DATA))) {
+//		ErrorCheck(0);
+//		return false;
+//	}
+	if (!ReadGlobalPara()) {
 		ErrorCheck(0);
 		return false;
 	}
@@ -1057,26 +1342,26 @@ int main()
 	}
 
 #if 1
-//	{
-//		LogPrint(LottoCtx.txhash, sizeof(LottoCtx.txhash), HEX);
-//		LogPrint(LottoCtx.accid, sizeof(LottoCtx.accid), HEX);
-//		LogPrint(LottoCtx.scriptid, sizeof(LottoCtx.scriptid), HEX);
-//		LogPrint(gContractData, sizeof(gContractData), HEX);
-//
-//		REG_DATA *phandle1 = (REG_DATA *)gContractData;
-//		LogPrint(&phandle1->type, sizeof(phandle1->type), HEX);
-//		LogPrint(&phandle1->money, sizeof(phandle1->money), HEX);
-//		LogPrint(&phandle1->hight, sizeof(phandle1->hight), HEX);
-//
-//		ORDER_DATA *phandle2 = (ORDER_DATA *)gContractData;
-//		LogPrint(&phandle2->type, sizeof(phandle2->type), HEX);
-//		LogPrint(&phandle2->money, sizeof(phandle2->money), HEX);
-//		LogPrint(&phandle2->num, sizeof(phandle2->num), HEX);
-//		LogPrint(&phandle2->numlen, sizeof(phandle2->numlen), HEX);
-//
-//		OPEN_DATA *phandle3 = (OPEN_DATA *)gContractData;
-//		LogPrint(&phandle3->type, sizeof(phandle3->type), HEX);
-//	}
+	{
+		LogPrint(LottoCtx.txhash, sizeof(LottoCtx.txhash), HEX);
+		LogPrint(LottoCtx.accid, sizeof(LottoCtx.accid), HEX);
+		LogPrint(LottoCtx.scriptid, sizeof(LottoCtx.scriptid), HEX);
+		LogPrint(gContractData, sizeof(gContractData), HEX);
+
+		REG_DATA *phandle1 = (REG_DATA *)gContractData;
+		LogPrint(&phandle1->type, sizeof(phandle1->type), HEX);
+		LogPrint(&phandle1->money, sizeof(phandle1->money), HEX);
+		LogPrint(&phandle1->hight, sizeof(phandle1->hight), HEX);
+
+		ORDER_DATA *phandle2 = (ORDER_DATA *)gContractData;
+		LogPrint(&phandle2->type, sizeof(phandle2->type), HEX);
+		LogPrint(&phandle2->money, sizeof(phandle2->money), HEX);
+		LogPrint(&phandle2->num, sizeof(phandle2->num), HEX);
+		LogPrint(&phandle2->numlen, sizeof(phandle2->numlen), HEX);
+
+		OPEN_DATA *phandle3 = (OPEN_DATA *)gContractData;
+		LogPrint(&phandle3->type, sizeof(phandle3->type), HEX);
+	}
 #else
 
 //	{

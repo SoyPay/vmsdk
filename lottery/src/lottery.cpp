@@ -243,7 +243,7 @@ static bool IsDataIn(uchar data, const uchar *pbuf, uchar buflen)
 	return false;
 }
 
-static bool GetLuckyNum(const uchar *phash, uchar luckynum[LUCKYNUMSIZE])
+bool GetLuckyNum(const uchar *phash, uchar luckynum[LUCKYNUMSIZE])
 {
 	uchar luckysize = 0, ii = 0;
 	uchar hash[HASHSIZE] = {0};
@@ -291,28 +291,23 @@ static bool GetLuckyNum(const uchar *phash, uchar luckynum[LUCKYNUMSIZE])
 	return true;
 }
 
-REWARD_RESULT DrawLottery(const uchar *phash, const uchar *pdata, uchar datalen)
+
+
+REWARD_RESULT DrawLottery(const uchar luckynum[LUCKYNUMSIZE], const uchar *pdata, uchar datalen)
 {
 	REWARD_RESULT result;
-	uchar luckynum[LUCKYNUMSIZE] = {0};
+//	uchar luckynum[LUCKYNUMSIZE] = {0};
 	result.top1 = 0;
 	result.top2 = 0;
 	result.top3 = 0;
 
-	if(phash == NULL || pdata == NULL || datalen < LUCKYNUMSIZE || datalen > TOTALNUMSIZE)
+	if(luckynum == NULL || pdata == NULL || datalen < LUCKYNUMSIZE || datalen > TOTALNUMSIZE)
 	{
 		ErrorCheck(0);
 		return result;
 	}
 
 //	LogPrint(phash, 32, HEX);
-
-	if(!GetLuckyNum(phash, luckynum))
-	{
-		ErrorCheck(0);
-		return result;
-	}
-
 //	LogPrint(luckynum, sizeof(luckynum), HEX);
 
 	result = GetRewardTicket(pdata, datalen, luckynum);

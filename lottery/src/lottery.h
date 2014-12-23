@@ -29,6 +29,8 @@ typedef struct
 
 u32 MselectN(u32 m, u32 n);
 
-REWARD_RESULT DrawLottery(const uchar *phash, const uchar *pdata, uchar datalen);
+bool GetLuckyNum(const uchar *phash, uchar luckynum[LUCKYNUMSIZE]);
+
+REWARD_RESULT DrawLottery(const uchar luckynum[LUCKYNUMSIZE], const uchar *pdata, uchar datalen);
 
 #endif /* LOTTERY_H_ */
