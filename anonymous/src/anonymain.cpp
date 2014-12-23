@@ -24,7 +24,7 @@
  */
 typedef struct  {
 	ACCOUNT_ID 	Sender;						//!<转账人ID（采用6字节的账户ID）
-	unsigned long nHeight;							//!<超时绝对高度
+	int nHeight;							//!<超时绝对高度
 	Int64 nPayMoney;						//!<转账的人支付的金额
 	unsigned short len;                     //!<接受钱账户信息长度
 	char buffer[1];         				//!<接受钱账户信息
@@ -42,159 +42,15 @@ typedef struct  {
 */
 bool CheckContact(const CONTRACT* const pContract)
 {
-	if(!IsRegID(&pContract->Sender))
-	{
-		LogPrint("not regid",sizeof("not regid"),STRING);
-		return false;
-	}
-//	if(!IsAuthorited(&pContract->Sender,&pContract->nPayMoney))
-//	{
-//		return false;
-//	}
-	Int64 RecAmount;
-	Int64Inital(&RecAmount,"\x00",1);
-
-	unsigned short len = pContract->len;
-	if(len%sizeof(ACCOUNT_INFO) != 0){
-		LogPrint("contact error",sizeof("contact error"),STRING);
-		return false;
-	}
-
-	char *strContace = (char*)pContract->buffer;
-	while(len)
-	{
-		ACCOUNT_INFO accountinfo;
-		memcpy(&accountinfo,pContract->buffer,sizeof(ACCOUNT_INFO));
-		if(!IsRegID(&accountinfo.account)){
-			LogPrint("recive not regid",sizeof("recive not regid"),STRING);
-			return false;
-		}
-		Int64Add(&RecAmount,&accountinfo.nReciMoney,&RecAmount);
-		len -= sizeof(ACCOUNT_INFO);
-	}
-
-	unsigned char ret =Int64Compare(&RecAmount,&pContract->nPayMoney);
-	if(COMP_EQU != ret){
-		LogPrint("recive and send not equeal",sizeof("recive and send not equeal"),STRING);
-		return false;
-	}
 	return true;
 }
-bool ReadContactAndWrite(char *hash)
+void WriteOperate()
 {
-	__xdata static  char txcontac[512];
-	if (!GetTxContacts((const unsigned char * const )hash, (void* const ) &txcontac, 512))
-	{
-		LogPrint("GetTxContacts error",sizeof("GetTxContacts error"),STRING);
-		return false;
-	}
-
-	if(!DeleteDataDB((const unsigned char * const )hash,32))
-	{
-		LogPrint("DeleteDataDB error",sizeof("DeleteDataDB error"),STRING);
-		return false;
-	}
-
-	CONTRACT* pContract = (CONTRACT*)txcontac;
-	VM_OPERATE ret;
-	ret.outheight = GetCurRunEnvHeight() + pContract->nHeight;
-
-	char accountid[6] = {0};
-	if(GetCurScritpAccount(&accountid))
-	{
-//		if(!IsAuthorited(&accountid,&pContract.nPayMoney))
-//			{
-//				return false;
-//			}
-
-		ret.opeatortype = MINUS_FREE;
-		memcpy(ret.accountid,&accountid,sizeof(ret.accountid));
-		memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
-		LogPrint(&accountid,32,HEX);
-		WriteOutput(&ret,1);
-	}
-
-	char *strContace = pContract->buffer;
-	unsigned short len = pContract->len;
-	while(len)
-	{
-		ACCOUNT_INFO accountinfo;
-		memcpy(&accountinfo,strContace,sizeof(ACCOUNT_INFO));
-		memcpy(ret.accountid,&accountinfo.account,sizeof(ret.accountid));
-		memcpy(&ret.money,&accountinfo.nReciMoney,sizeof(Int64));
-		ret.opeatortype = ADD_FREE;
-		len -= sizeof(ACCOUNT_INFO);
-//		LogPrint(&accountinfo.account,32,HEX);
-		WriteOutput(&ret,1);
-		strContace = strContace +sizeof(ACCOUNT_INFO);
-
-	}
-	return true;
-}
-void WriteOperate(const CONTRACT* const pContract)
-{
-	char accountid[6] = {0};
-	if(GetCurScritpAccount(&accountid))
-	{
-		//// 当前合约的钱打到脚本账户中
-		VM_OPERATE ret;
-		ret.outheight = GetCurRunEnvHeight() + pContract->nHeight;
-		ret.opeatortype = MINUS_FREE;
-		memcpy(ret.accountid,&pContract->Sender,sizeof(ret.accountid));
-		memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
-		WriteOutput(&ret,1);
-
-		ret.opeatortype = ADD_FREE;
-		memcpy(ret.accountid,&accountid,sizeof(ret.accountid));
-		memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
-//		LogPrint(&accountid,32,HEX);
-		WriteOutput(&ret,1);
-	}
-
-
-	unsigned long count = GetDBSize();
-	if(count <2)
-		return ;
-	char hash[32] ={0};
-	char flag[1] = {0};
-	unsigned short valen = 1;
-	unsigned short kenlen = 32;
-	unsigned long ptime = 0;
-	if(GetDBValue(0,hash,(unsigned char*)&kenlen,kenlen,flag,&valen,&ptime)== false)
-	{
-		LogPrint("read db failed",sizeof("read db failed"),STRING);
-			return;
-	}
-	if(!ReadContactAndWrite(hash))
-	{
-		LogPrint("THE TX NOE IN BLOCK",sizeof("THE TX NOE IN BLOCK"),STRING);
-		LogPrint(hash,32,HEX);
-
-	}
-	count -=1;
-	LogPrint(hash,32,HEX);
-	LogPrint(&count,4,HEX);
-	while(count--)
-	{
-
-		if(GetDBValue(1,hash,(unsigned char*)&kenlen,kenlen,flag,&valen,&ptime)== false)
-		{
-			LogPrint("read db failed",sizeof("read db failed"),STRING);
-			return;
-		}
-		LogPrint(hash,32,HEX);
-
-		if(!ReadContactAndWrite(hash))
-		{
-			LogPrint(hash,32,HEX);
-			LogPrint("THE TX NOE IN BLOCK",sizeof("THE TX NOE IN BLOCK"),STRING);
-		}
-	}
 
 }
 /*
 * @brief 	step1:检查当前合约内容是否合法\n
-* 			step2:遍历数据库中是有否有大于2条的数据，并且数据是有效的，输出指令流\n
+* 			step2:遍历数据库中是有否有大于2条的数据，并且数据是有效的，输出指令流
 * 			step3:写入当前tx的hash到数据库\n
 */
 bool ProcessContract(const CONTRACT* const pContract)
@@ -203,15 +59,7 @@ bool ProcessContract(const CONTRACT* const pContract)
 	{
 		return false;
 	}
-	WriteOperate(pContract);
-	bool flag = false;
-	char hash[32]={0};
-	if(!GetCurTxHash(&hash))
-		return false;
-	unsigned long outheight = GetCurRunEnvHeight() + pContract->nHeight;
-	if(!WriteDataDB(&hash,32,&flag,1,outheight))
-		return false;
-
+	WriteOperate();
 }
 int main()
 {
