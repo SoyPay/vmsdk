@@ -5,7 +5,7 @@
     
     
     
-  <CurrentConfigs><Project>anony/Debug</Project><Project>Bet/Debug</Project><Project>darksecure/Debug</Project><Project>lottery/Debug</Project><Project>SecuredTrade/Debug</Project><Project>soypay_test/Debug</Project><Project>test/Debug</Project><Project>p2pbet/Debug</Project><Project>sdk/Debug</Project><Project>TestAPI/Debug</Project></CurrentConfigs><CurrentProj>soypay_test</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
+  <CurrentConfigs><Project>anony/Debug</Project><Project>Bet/Debug</Project><Project>scripttest/Debug</Project><Project>TestAPI/Debug</Project><Project>testrollback/Debug</Project><Project>testscriptid/Debug</Project><Project>SecuredTrade/Debug</Project><Project>sdk/Debug</Project><Project>test/Debug</Project></CurrentConfigs><CurrentProj>test</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
   <Desktop>
     <Static>
       <Workspace>
@@ -14,7 +14,7 @@
           
           
           
-        <Column0>541</Column0><Column1>0</Column1><Column2>27</Column2><Column3>0</Column3></ColumnWidths>
+        <Column0>209</Column0><Column1>0</Column1><Column2>27</Column2><Column3>0</Column3></ColumnWidths>
       </Workspace>
       <Build>
         
@@ -22,7 +22,7 @@
         
         
       <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1035</ColumnWidth1><ColumnWidth2>276</ColumnWidth2><ColumnWidth3>69</ColumnWidth3></Build>
-    <TerminalIO/></Static>
+    </Static>
     <Windows>
       
       
@@ -34,7 +34,7 @@
             <Factory>Workspace</Factory>
             <Session>
               
-            <NodeDict><ExpandedNode>&lt;ws&gt;</ExpandedNode><ExpandedNode>&lt;ws&gt;/anony</ExpandedNode><ExpandedNode>&lt;ws&gt;/soypay_test</ExpandedNode><ExpandedNode>Bet</ExpandedNode><ExpandedNode>SecuredTrade</ExpandedNode><ExpandedNode>TestAPI</ExpandedNode><ExpandedNode>anony</ExpandedNode><ExpandedNode>sdk</ExpandedNode></NodeDict></Session>
+            <NodeDict><ExpandedNode>&lt;ws&gt;</ExpandedNode><ExpandedNode>&lt;ws&gt;/test</ExpandedNode><ExpandedNode>Bet</ExpandedNode><ExpandedNode>SecuredTrade</ExpandedNode><ExpandedNode>TestAPI</ExpandedNode><ExpandedNode>anony</ExpandedNode><ExpandedNode>sdk</ExpandedNode><ExpandedNode>testrollback</ExpandedNode><ExpandedNode>testscriptid</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
         
@@ -54,14 +54,14 @@
       
       
       
-    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sdk\src\VmSdk.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>50</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\anonymous\src\anonymain.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>160</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\darksecure\src\darksecuremain.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>222</YPos2><SelStart2>5966</SelStart2><SelEnd2>5966</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sdk\src\Demo.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>147</YPos2><SelStart2>4405</SelStart2><SelEnd2>4405</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sendsriptid\src\script.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>14</YPos2><SelStart2>297</SelStart2><SelEnd2>297</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Soypay_test\src\soypayd_test.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Soypay_test\src\script_account.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>27</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\testUint\src\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>22</YPos2><SelStart2>1129</SelStart2><SelEnd2>1129</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Soypay_test\src\rollback.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Soypay_test\src\soypay.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Soypay_test\src\testdb.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>162</YPos2><SelStart2>3929</SelStart2><SelEnd2>3929</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\Soypay_test\src\sdk.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>506</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><ActiveTab>11</ActiveTab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\testrollbackDB\src\testrollbackDBmain.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>18</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\APItest\src\TestAPImain.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>153</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sdk\src\VmSdk.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sdk\src\VmSdk.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>42</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sendsriptid\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>33</SelStart2><SelEnd2>33</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\sendsriptid\src\script.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>20</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\testUint\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>33</SelStart2><SelEnd2>33</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\testUint\src\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>34</YPos2><SelStart2>1008</SelStart2><SelEnd2>1008</SelEnd2></Tab><ActiveTab>7</ActiveTab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
       
       
       
       
       
-    <Top><Row0><Sizes><Toolbar-011d3110><key>iaridepm.enu1</key></Toolbar-011d3110></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>259</Bottom><Right>605</Right><x>-2</x><y>-2</y><xscreen>2069</xscreen><yscreen>277</yscreen><sizeHorzCX>1514641</sizeHorzCX><sizeHorzCY>403790</sizeHorzCY><sizeVertCX>444363</sizeVertCX><sizeVertCY>380466</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>382</Bottom><Right>1368</Right><x>-2</x><y>-2</y><xscreen>1370</xscreen><yscreen>384</yscreen><sizeHorzCX>1002928</sizeHorzCX><sizeHorzCY>559767</sizeHorzCY><sizeVertCX>1514641</sizeVertCX><sizeVertCY>403790</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-02793110><key>iaridepm.enu1</key></Toolbar-02793110></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>344</Bottom><Right>256</Right><x>-2</x><y>-2</y><xscreen>190</xscreen><yscreen>168</yscreen><sizeHorzCX>139092</sizeHorzCX><sizeHorzCY>244898</sizeHorzCY><sizeVertCX>188873</sizeVertCX><sizeVertCY>504373</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>297</Bottom><Right>1368</Right><x>-2</x><y>-2</y><xscreen>1370</xscreen><yscreen>299</yscreen><sizeHorzCX>1002928</sizeHorzCX><sizeHorzCY>435860</sizeHorzCY><sizeVertCX>139092</sizeVertCX><sizeVertCY>244898</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 
