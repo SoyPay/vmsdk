@@ -17,7 +17,7 @@ void writedata()
 }
 bool CheckValue(int key,int Height,int outheight)
 {
-	return (Height+key/200 +1 == (outheight -5));
+	return ((Height+key/200) == (outheight -5));
 }
 void readdata(char*hash,unsigned long preHeight)
 {
@@ -33,7 +33,7 @@ void readdata(char*hash,unsigned long preHeight)
 	if(!GetDBValue(0,&key,(unsigned char*)&keylen,keylen,phash,&valen, &poutHeight))
 	{
 		LogPrint("GetDBValue 33",sizeof("GetDBValue 33"),STRING);
-		flag = false;
+		return ;
 	}
 
 	if(!ReadDataValueDB(&key,keylen,phash,valen))
@@ -41,31 +41,18 @@ void readdata(char*hash,unsigned long preHeight)
 		LogPrint("ReadDataValueDB 39",sizeof("ReadDataValueDB 39"),STRING);
 		flag = false;
 	}
-	if(!ReadDataDBTime(&key,keylen,&poutHeight))
-	{
-		LogPrint("ReadDataValueDB 39",sizeof("ReadDataValueDB 39"),STRING);
-		flag = false;
-	}
 	char * key1 = "2_error";
-	if(!flag || poutHeight < Height || !CheckValue(key,preHeight,poutHeight) || !strcmp(phash,hash))
+	if(!flag|| poutHeight < Height || !CheckValue(key,preHeight,poutHeight) || strcmp(phash,hash))
 	{
-		LogPrint("45",sizeof("45"),STRING);
-		LogPrint(&poutHeight,4,HEX);
-		LogPrint(&Height,4,HEX);
-		LogPrint(&preHeight,4,HEX);
-		LogPrint(&phash,33,HEX);
-		LogPrint(hash,33,HEX);
 		WriteDataDB(key1,strlen(key1) + 1,hash,32,Height+1);
 		return;
 	}
-
-	size -=1;
+	size -= 1;
 	while(size--)
 	{
 		if(!GetDBValue(1,&key,(unsigned char*)&keylen,keylen,phash,&valen, &poutHeight))
 		{
-			LogPrint("55",sizeof("55"),STRING);
-			flag = false;
+			break;
 		}
 
 		if(!ReadDataValueDB(&key,keylen,phash,valen))
@@ -74,12 +61,13 @@ void readdata(char*hash,unsigned long preHeight)
 			flag = false;
 		}
 
-		if(!flag || poutHeight < Height || !CheckValue(key,preHeight,poutHeight)|| !strcmp(phash,hash))
+		if(!flag || poutHeight < Height || !CheckValue(key,preHeight,poutHeight)|| strcmp(phash,hash))
 		{
 			LogPrint("67",sizeof("67"),STRING);
 			WriteDataDB(key1,strlen(key1) + 1,hash,32,Height+1);
 			return;
 		}
+                
 	}
 }
 
@@ -89,7 +77,7 @@ void ModifydataDB(unsigned long poutH)
 	char *hash = "hash";
 	char *error ="3_error";
 	unsigned long Height= GetCurRunEnvHeight();
-	for(;i<=600;i++)
+	for(;i<600;i++)
 	{
 		if(ModifyDataDBVavle(&i,4,hash,5))
 		{
@@ -97,7 +85,7 @@ void ModifydataDB(unsigned long poutH)
 			return;
 		}
 	}
-	for(i = 601;i<=800;i++)
+	for(i = 600;i<800;i++)
 	{
 		if(ModifyDataDBTime(&i,4,poutH))
 		{
@@ -106,7 +94,7 @@ void ModifydataDB(unsigned long poutH)
 		}
 	}
 
-	for(i = 801;i<=1000;i++)
+	for(i = 800;i<1000;i++)
 	{
 		if(DeleteDataDB(&i,4))
 		{
@@ -128,7 +116,7 @@ void Lastreaddata()
 	bool flag = true;
 	if(!GetDBValue(0,&key,(unsigned char*)&keylen,keylen,phash,&valen, &poutHeight))
 	{
-		flag = false;
+		return;
 	}
 	char * key1 = "4_error";
 	if(!flag || poutHeight < Height)
@@ -142,7 +130,7 @@ void Lastreaddata()
 	{
 		if(!GetDBValue(1,&key,(unsigned char*)&keylen,keylen,phash,&valen, &poutHeight))
 		{
-			flag = false;
+			break;
 		}
 		if(!flag || poutHeight < Height )
 		{

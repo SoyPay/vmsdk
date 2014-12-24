@@ -6,20 +6,20 @@
   <configuration>
     <name>Debug</name>
     <outputs>
-      <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
       <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
+      <file>$PROJ_DIR$\src\betmain.cpp</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
       <file>$PROJ_DIR$\main.cpp</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
       <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
       <file>$PROJ_DIR$\Debug\Obj\betmain.r51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
       <file>$PROJ_DIR$\src\main.cpp</file>
-      <file>$PROJ_DIR$\src\betmain.cpp</file>
       <file>$PROJ_DIR$\Debug\Exe\Bet.bin</file>
       <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
@@ -31,25 +31,17 @@
       <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
     </outputs>
     <file>
-      <name>$PROJ_DIR$\main.cpp</name>
+      <name>$PROJ_DIR$\src\betmain.cpp</name>
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 6</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 1</file>
+          <file> 9</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 16 20 22 5 19 2 7 18 8 4 0</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 16 20 22 5 19 2 7 18 8 4 0</file>
+          <file> 16 20 22 4 19 3 8 18 11 6 10 12 1</file>
         </tool>
       </inputs>
     </file>
@@ -63,40 +55,48 @@
       </outputs>
     </file>
     <file>
-      <name>$PROJ_DIR$\src\main.cpp</name>
+      <name>$PROJ_DIR$\main.cpp</name>
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 6</file>
+          <file> 7</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 1</file>
+          <file> 0</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 16 20 22 5 19 2 7 18 8 4 10 11 0</file>
+          <file> 16 20 22 4 19 3 8 18 11 6 1</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 16 20 22 5 19 2 7 18 8 4 0</file>
+          <file> 16 20 22 4 19 3 8 18 11 6 1</file>
         </tool>
       </inputs>
     </file>
     <file>
-      <name>$PROJ_DIR$\src\betmain.cpp</name>
+      <name>$PROJ_DIR$\src\main.cpp</name>
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 9</file>
+          <file> 7</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 0</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 16 20 22 5 19 2 7 18 8 4 10 11 0</file>
+          <file> 16 20 22 4 19 3 8 18 11 6 10 12 1</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 16 20 22 4 19 3 8 18 11 6 1</file>
         </tool>
       </inputs>
     </file>
