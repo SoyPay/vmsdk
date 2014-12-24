@@ -1,6 +1,13 @@
+#include <string.h>
+#include<stdlib.h>
+#include <stdio.h>
+
+#ifndef VMSDK_H_
+#define VMSDK_H_
+
 #define MAX_LEN 21
 #define MAX_PUK_LEN 65
-#define MAX_ACCOUNT_LEN 20
+#define MAX_ACCOUNT_LEN 6
 #define check(a) {if(!(a)) { __exit(RUN_SCRIPT_DATA_ERR);}}
 
 
@@ -316,8 +323,8 @@ bool ModifyDataDBTime(const void* const key,const unsigned char keylen, const un
 unsigned long GetDBSize();
 /**@brief
  *get the database data through index
- *@param index: get the database data through index
- *@param key: through index obtain the key save in key
+ *@param index: get the database data through index,第一次获取的时候,index = 0,接着后面遍历index = 1
+ *@param key: through index obtain the key save in key ,index = 0,key 值可以不用填,index = 1是，传进去的key的值为前一次获取key的值，获取到下一个key值赋值到key中去
  *@param keylen: the key's length
  *@param value: The corresponding value of key save in value
  *@param maxbuffer: the write data to value data's length less maxValueLen
@@ -368,13 +375,44 @@ bool IsRegID(const void* const account);
  *
  */
 unsigned short GetAuthUserDefine(const void* const account,void *const pout,const unsigned short maxlen);
-
+/**@brief
+ *@param scriptID: the scriplt id ,the account of length is 6
+ *@param pkey: the key value
+ *@param len： the pkey of length
+ *@param pvalve：obtain the value input the pvalue
+ *@param maxlen： the lenght of pvalve
+ *@return return true
+ *
+ */
 bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* const pvalve,short maxlen);
+/**@brief
+ *@param account: the scriplt account id ,the account of length is 6
+ *@param account: run the functoin the define char put into pout
+ *@return return true
+ *
+ */
+bool GetCurScritpAccount(void* const account);
+/**@brief
+ *@param account: obtain the currnet tx sign account
+ *@param maxlen: the account of length
+ *@return return true
+ *
+ */
+unsigned short GetCurTxAccount(void * const account,unsigned short maxlen);
+unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen);
 void inline PrintfLine(unsigned short sort)
 {
 	char bffer[20]={0};
 	sprintf(bffer,"line:%d ",sort);
 	LogPrint(bffer,strlen(bffer),STRING);
 }
+void inline PrintfFileAndLine(unsigned short line, const char *pfile)
+{
+	char bffer[256]={0};
+	sprintf(bffer,"func:%sline:%d ",pfile, line);
+	LogPrint(bffer,strlen(bffer),STRING);
+}
 #define PrintLog(a,b,c) {if(!(a)) { PrintfLine(__LINE__),LogPrint(a,b,c);}}
+
+#endif /* VMSDK_H_ */
 
