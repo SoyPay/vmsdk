@@ -304,10 +304,10 @@ unsigned short GetAccountPublickey(const void* const accounid,void * const pubke
 	memcpy(pubkey, retdata->buffer, retdata->len);
 	return retdata->len;
 }
-bool QueryAccountBalance(const unsigned char* const account,ACCOUNT_TYPE type,Int64* const pBalance){
+bool QueryAccountBalance(const unsigned char* const account,Int64* const pBalance){
 	ClearParaSpace()
 	;
-	InsertOutData(account, type == ACOUNT_ID ? 6 : 20);
+	InsertOutData(account,  6 );
 	__CallApi(QUEYACCBALANCE_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();

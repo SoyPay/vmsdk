@@ -12,11 +12,12 @@
 
 - \subpage VmSdk.h  "SDK"
 
-- \subpage Demo
+- \section Demo
     - \ref lottery "彩票"
-	 - \ref darksecure  “暗黑比交易”
-- \subpage TestCode
-	- \ref APItest "APItest"
-	- \ref  Demo  "DemoTest"
+	- \ref darksecure  "暗黑比交易"
+	- \ref anonymous  "匿名交易"
+	
+- \section TestDemo	
+	- \ref Soypay_test "测试代码"
 */
 

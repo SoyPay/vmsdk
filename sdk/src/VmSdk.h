@@ -24,7 +24,7 @@ enum PRINT_FORMAT {
 
 //// operate the account
 /***
- *
+ *操作账户支持的操作
  */
 enum OperType {
 	ADD_FREE = 1, //!< ADD_FREE
@@ -59,9 +59,8 @@ typedef struct tag_INT64 {
 
 /**
  * @brief 初始化 Int64 数据 Int64 在IAR for 8051 里不支持 \n
- * example 14556879465132 ->  D3D49A12AAC
  * @param p64
- * @param pdata 二进制数据
+ * @param pdata 二进制数据只支持这种格式"\x03\xff\xff\xfc\x04"
  * @param len  the max len is 8
  * @return  ture ok  false error
  */
@@ -73,16 +72,10 @@ typedef struct tagACCOUNT_ID
 }ACCOUNT_ID;
 
 
-
-
-enum ACCOUNT_TYPE {
-	ACOUNT_ID,			//
-	KEY_ID,
-};
 typedef struct tagVMOPERATE{
-	unsigned char accountid[6];
-	OperType opeatortype;
-	unsigned long outheight;
+	unsigned char accountid[6];      //!< account id
+	OperType opeatortype;           //!< operate the account
+	unsigned long outheight;       //!< out of the height
 	Int64 money;
 } VM_OPERATE;
 
@@ -163,6 +156,7 @@ bool SignatureVerify(void const* data, unsigned short datalen, void const* key, 
  *@param keylen: the length of pkey，8 bytes for Des,16 bytes for 3Des,others are invalid。
  *@param IsEn: if true encrypt false decrypt
  *@param pOut: result of encrypt or decrypt the return of length is The integral multiples of 8
+ *@param poutlen: the pOut of length
  *@return true run ok
  *
  */
@@ -204,10 +198,10 @@ bool WriteOutput( const VM_OPERATE* data, const unsigned short conter);
 unsigned long GetCurRunEnvHeight();
 /**@brief
  *get tx contact
- * @param txhash:
- * @param pcotact:
- * @param maxLen:
- * @return
+ * @param txhash: the tx hash
+ * @param pcotact: the tx's contact
+ * @param maxLen: the pcontac of max length
+ * @return:return true get contact sucess
  */
 bool GetTxContacts(const unsigned char * const txhash,void* const pcotact,const unsigned short maxLen);
 
@@ -216,7 +210,7 @@ bool GetTxContacts(const unsigned char * const txhash,void* const pcotact,const 
  *  get tx accounts
  * @param txhash:  the tx hash
  * @param paccoutn:   the signed account every account is six char
- * @param maxConter:   the max ram cache  prevent overflow
+ * @param maxlen:   the max ram cache  prevent overflow
  * @return the all of account's length
  */
 unsigned short GetAccounts(const unsigned char *txhash,void* const paccoutn,unsigned short maxlen) ;
@@ -240,7 +234,7 @@ unsigned short GetAccountPublickey(const void* const accounid,void * const pubke
  *@return void
  *
  */
-bool QueryAccountBalance(const unsigned char* const account,ACCOUNT_TYPE type,Int64* const pBalance);
+bool QueryAccountBalance(const unsigned char* const account,Int64* const pBalance);
 /**@brief
  *obtain the tx's  Confirmation block height
  *@return the  block's height keep int the height
@@ -326,6 +320,7 @@ unsigned long GetDBSize();
  *@param index: get the database data through index,第一次获取的时候,index = 0,接着后面遍历index = 1
  *@param key: through index obtain the key save in key ,index = 0,key 值可以不用填,index = 1是，传进去的key的值为前一次获取key的值，获取到下一个key值赋值到key中去
  *@param keylen: the key's length
+ *@param maxkeylen: the key recive char max length
  *@param value: The corresponding value of key save in value
  *@param maxbuffer: the write data to value data's length less maxValueLen
  *@param ptime: the time out
@@ -344,7 +339,6 @@ unsigned long GetTipHeight();
  *Access to the specified block height hash
  *@param height: the block heigh
  *@param pblochHash: get the block's height hash save in pblochHash
- *@param maxlen: write data in pblochHash max less maxlen
  *@return return current block height
  *
  */
@@ -352,7 +346,6 @@ bool GetBlockHash(const unsigned long height,void * const pblochHash);
 /**@brief
  *Get current tx's hash
  *@param poutHash: the tx hash
- *@param maxlen: maxlen = 32
  *@return return current block height
  */
 bool GetCurTxHash(void * const poutHash);
@@ -378,9 +371,9 @@ unsigned short GetAuthUserDefine(const void* const account,void *const pout,cons
 /**@brief
  *@param scriptID: the scriplt id ,the account of length is 6
  *@param pkey: the key value
- *@param len： the pkey of length
- *@param pvalve：obtain the value input the pvalue
- *@param maxlen： the lenght of pvalve
+ *@param len: the pkey of length
+ *@param pvalve: the value input the pvalue
+ *@param maxlen: the lenght of pvalve
  *@return return true
  *
  */

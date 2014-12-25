@@ -19,17 +19,82 @@ typedef struct
  u32 result;
 }MAP_M6;
 
-const static MAP_M6 ms6map[] = {
-		{6, 6, 1},
-		{7, 6, 7},
-		{8, 6, 28},
-		{9, 6, 84},
+__xdata static MAP_M6 ms6map[] = {
+		{6,  6, 1},
+		{7,  6, 7},
+		{8,  6, 28},
+		{9,  6, 84},
 		{10, 6, 210},
 		{11, 6, 462},
 		{12, 6, 924},
 		{13, 6, 1716},
 		{14, 6, 3003},
-		{15, 6, 5005}
+		{15, 6, 5005},
+		{5,  5, 1},
+		{6,  5, 6},
+		{7,  5, 21},
+		{8,  5, 56},
+		{9,  5, 126},
+		{10, 5, 252},
+		{11, 5, 462},
+		{12, 5, 792},
+		{13, 5, 1287},
+		{14, 5, 2002},
+		{15, 5, 3003},
+		{4,  4, 1},
+		{5,  4, 5},
+		{6,  4, 15},
+		{7,  4, 35},
+		{8,  4, 70},
+		{9,  4, 126},
+		{10, 4, 210},
+		{11, 4, 330},
+		{12, 4, 495},
+		{13, 4, 715},
+		{14, 4, 1001},
+		{15, 4, 1365},
+		{3,  3, 1},
+		{4,  3, 4},
+		{5,  3, 10},
+		{6,  3, 20},
+		{7,  3, 35},
+		{8,  3, 56},
+		{9,  3, 84},
+		{10, 3, 120},
+		{11, 3, 165},
+		{12, 3, 220},
+		{13, 3, 286},
+		{14, 3, 364},
+		{15, 3, 455},
+		{2,  2, 1},
+		{3,  2, 3},
+		{4,  2, 6},
+		{5,  2, 10},
+		{6,  2, 15},
+		{7,  2, 21},
+		{8,  2, 28},
+		{9,  2, 36},
+		{10, 2, 45},
+		{11, 2, 55},
+		{12, 2, 66},
+		{13, 2, 78},
+		{14, 2, 91},
+		{15, 2, 105},
+		{1,  1, 1},
+		{2,  1, 2},
+		{3,  1, 3},
+		{4,  1, 4},
+		{5,  1, 5},
+		{6,  1, 6},
+		{7,  1, 7},
+		{8,  1, 8},
+		{9,  1, 9},
+		{10, 1, 10},
+		{11, 1, 11},
+		{12, 1, 12},
+		{13, 1, 13},
+		{14, 1, 14},
+		{15, 1, 15},
 };
 
 static u32 factorial(u32 n) {
@@ -40,17 +105,23 @@ static u32 factorial(u32 n) {
 }
 
 u32 MselectN(u32 m, u32 n) {
-#if 0
-	if (n == 0)
-		return 1;
-	if (m < n)
+//	LogPrint(&m, sizeof(m), HEX);
+//	LogPrint(&n, sizeof(n), HEX);
+	if(m < n)
+	{
 		return 0;
-	if (m < 1 || m == n)
-		return 1;
-	return factorial(m) / (factorial(m - n) * factorial(n));
-#else
-	return ms6map[m - 6].result;
-#endif
+	}
+	int size = sizeof(ms6map)/sizeof(MAP_M6);
+//	LogPrint(&size, sizeof(size), HEX);
+	for(int ii = 0; ii < size; ii++)
+	{
+		if(ms6map[ii].m == m && ms6map[ii].n == n)
+		{
+			return ms6map[ii].result;
+		}
+	}
+
+	return 0;
 }
 
 static u32 GetTotalTicket(uchar selectsize)
@@ -63,15 +134,29 @@ static u32 GetTotalTicket(uchar selectsize)
 	return MselectN(selectsize, LUCKYNUMSIZE);
 }
 
-static u32 GetPricePerTick(uchar selectsize, const Int64 *pamount)
-{
-	if(selectsize < LUCKYNUMSIZE || selectsize > TOTALNUMSIZE || pamount == 0)
-	{
-		ErrorCheck(0);
-		return 0;
-	}
-//	return (amount/GetTotalTicket(selectsize));
-}
+//static Int64 GetPricePerTick(uchar selectsize, const Int64 *pamount)
+//{
+//	if(selectsize < LUCKYNUMSIZE || selectsize > TOTALNUMSIZE || pamount == 0)
+//	{
+//		ErrorCheck(0);
+//		return 0;
+//	}
+//
+//	u32 tt = GetTotalTicket(selectsize);
+//	Int64 price;
+//	Int64 total;
+//	memset(&price, 0, sizeof(price));
+//	memset(&total, 0, sizeof(total));
+//	memcpy(&total, &tt, sizeof(tt));
+//	if(!Int64Div(pamount, &total, &price))
+//	{
+//		Int64 tmp;
+//		memset(&tmp, 0, sizeof(tmp));
+//		ErrorCheck(0);
+//		return tmp;
+//	}
+//	return price;
+//}
 
 static REWARD_RESULT GetRewardTicket(const uchar *pdata, uchar datalen, const uchar luckynum[LUCKYNUMSIZE])
 {
@@ -107,37 +192,42 @@ static REWARD_RESULT GetRewardTicket(const uchar *pdata, uchar datalen, const uc
 }
 
 
-static REWARD_RESULT GetRewardResult(const uchar *pdata, uchar datalen, const uchar luckynum[LUCKYNUMSIZE], const Int64 *pamount)
-{
-	REWARD_RESULT result;
-	result.top1 = 0;
-	result.top2 = 0;
-	result.top3 = 0;
-
-	if(pdata == NULL || datalen < LUCKYNUMSIZE || datalen > TOTALNUMSIZE  || luckynum == NULL || pamount == NULL)
-	{
-		ErrorCheck(0);
-		return result;
-	}
-
-	u32 pptick = GetPricePerTick(datalen, pamount);
-
-	result = GetRewardTicket(pdata, datalen, luckynum);
-
-	result.top1 *= pptick;
-	result.top2 *= pptick;
-	result.top3 *= pptick;
-
-	return result;
-}
+//static REWARD_RESULT GetRewardResult(const uchar *pdata, uchar datalen, const uchar luckynum[LUCKYNUMSIZE])
+//{
+//	REWARD_RESULT result;
+//	result.top1 = 0;
+//	result.top2 = 0;
+//	result.top3 = 0;
+//
+//	if(pdata == NULL || datalen < LUCKYNUMSIZE || datalen > TOTALNUMSIZE  || luckynum == NULL)
+//	{
+//		ErrorCheck(0);
+//		return result;
+//	}
+//
+////	u32 pptick = GetPricePerTick(datalen, pamount);
+//
+//	result = GetRewardTicket(pdata, datalen, luckynum);
+//
+////	result.top1 *= pptick;
+////	result.top2 *= pptick;
+////	result.top3 *= pptick;
+//
+//	return result;
+//}
 
 static bool IsDataIn(uchar data, const uchar *pbuf, uchar buflen)
 {
 	uchar ii = 0;
 
-	if(pbuf == NULL || buflen == 0)
+	if(pbuf == NULL)
 	{
 		ErrorCheck(0);
+		return false;
+	}
+
+	if(buflen == 0)
+	{
 		return false;
 	}
 
@@ -153,7 +243,7 @@ static bool IsDataIn(uchar data, const uchar *pbuf, uchar buflen)
 	return false;
 }
 
-static bool GetLuckyNum(const uchar *phash, uchar luckynum[LUCKYNUMSIZE])
+bool GetLuckyNum(const uchar *phash, uchar luckynum[LUCKYNUMSIZE])
 {
 	uchar luckysize = 0, ii = 0;
 	uchar hash[HASHSIZE] = {0};
@@ -179,18 +269,19 @@ static bool GetLuckyNum(const uchar *phash, uchar luckynum[LUCKYNUMSIZE])
 			}
 			ii++;
 		}
-		while (luckysize < LUCKYNUMSIZE || ii < HASHSIZE);
+		while (luckysize < LUCKYNUMSIZE && ii < HASHSIZE);
 
 		if(ii >= HASHSIZE && luckysize < LUCKYNUMSIZE)
 		{
 			luckysize = 0;
 			ii = 0;
-#if 0
+#if 1
 			if(!SHA256(hash, HASHSIZE, hash))
 			{
 				ErrorCheck(0);
 				return false;
 			}
+//			LogPrint(hash, sizeof(hash), HEX);
 #else
 			memcpy(hash, "\x01\x02\x03\x04\x05\x06", 6);
 #endif
@@ -200,27 +291,26 @@ static bool GetLuckyNum(const uchar *phash, uchar luckynum[LUCKYNUMSIZE])
 	return true;
 }
 
-REWARD_RESULT DrawLottery(const uchar *phash, const uchar *pdata, uchar datalen, const Int64 *pamount)
+
+
+REWARD_RESULT DrawLottery(const uchar luckynum[LUCKYNUMSIZE], const uchar *pdata, uchar datalen)
 {
 	REWARD_RESULT result;
-	uchar luckynum[LUCKYNUMSIZE] = {0};
+//	uchar luckynum[LUCKYNUMSIZE] = {0};
 	result.top1 = 0;
 	result.top2 = 0;
 	result.top3 = 0;
 
-	if(phash == NULL || pdata == NULL || datalen < LUCKYNUMSIZE || datalen > TOTALNUMSIZE || pamount == NULL)
+	if(luckynum == NULL || pdata == NULL || datalen < LUCKYNUMSIZE || datalen > TOTALNUMSIZE)
 	{
 		ErrorCheck(0);
 		return result;
 	}
 
-	if(!GetLuckyNum(phash, luckynum))
-	{
-		ErrorCheck(0);
-		return result;
-	}
+//	LogPrint(phash, 32, HEX);
+//	LogPrint(luckynum, sizeof(luckynum), HEX);
 
-	result = GetRewardResult(pdata, datalen, luckynum, pamount);
+	result = GetRewardTicket(pdata, datalen, luckynum);
 
 	return result;
 }
