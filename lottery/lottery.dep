@@ -6,11 +6,21 @@
   <configuration>
     <name>Debug</name>
     <outputs>
+      <file>$PROJ_DIR$\src\main.cpp</file>
+      <file>$PROJ_DIR$\src\lottery.h</file>
+      <file>$PROJ_DIR$\src\lottery.cpp</file>
+      <file>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</file>
+      <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
       <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
       <file>$PROJ_DIR$\Debug\Obj\lottery.r51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
+      <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
+      <file>$TOOLKIT_DIR$\lib\dlib\dl-pli-nlxd-1e16x01n.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
+      <file>$PROJ_DIR$\Debug\Exe\lottery.d51</file>
       <file>$PROJ_DIR$\main.cpp</file>
       <file>$TOOLKIT_DIR$\lib\dlib\dl8051Normal.h</file>
       <file>$PROJ_DIR$\Debug\Obj\lottery.pbi</file>
@@ -24,74 +34,60 @@
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.r51</file>
-      <file>$PROJ_DIR$\src\lottery.cpp</file>
-      <file>$PROJ_DIR$\src\main.cpp</file>
-      <file>$PROJ_DIR$\src\lottery.h</file>
-      <file>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</file>
-      <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
       <file>$PROJ_DIR$\Debug\Exe\lottery.bin</file>
-      <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
-      <file>$TOOLKIT_DIR$\lib\dlib\dl-pli-nlxd-1e16x01n.r51</file>
-      <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
-      <file>$PROJ_DIR$\Debug\Exe\lottery.d51</file>
     </outputs>
     <file>
-      <name>$PROJ_DIR$\main.cpp</name>
+      <name>[ROOT_NODE]</name>
       <outputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 26</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 1</file>
+          <name>XLINK</name>
+          <file> 28 14</file>
         </tool>
       </outputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\src\lottery.cpp</name>
-      <outputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 3</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 7</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 4 27 0 2 6 8 9 10 11 12 20 22 15 14 13</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 4 27 0 2 6 8 9 10 11 12 20 13</file>
-        </tool>
-      </inputs>
     </file>
     <file>
       <name>$PROJ_DIR$\src\main.cpp</name>
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 26</file>
+          <file> 12</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 1</file>
+          <file> 6</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 4 27 0 2 6 8 9 10 11 12 15 14 20 22</file>
+          <file> 9 13 5 7 16 18 19 20 21 22 25 24 1 4</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 4 27 0 2 6 8 9 10 11 12 15 14 22 20</file>
+          <file> 9 13 5 7 16 18 19 20 21 22 25 24 4 1</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\src\lottery.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 8</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 17</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 9 13 5 7 16 18 19 20 21 22 1 4 25 24 23</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 9 13 5 7 16 18 19 20 21 22 1 23</file>
         </tool>
       </inputs>
     </file>
@@ -100,21 +96,21 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 17</file>
+          <file> 27</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 16</file>
+          <file> 26</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 4 27 0 2 6 8 9 10 11 12 15 14 22</file>
+          <file> 9 13 5 7 16 18 19 20 21 22 25 24 4</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 4 27 0 2 6 8 9 10 11 12 15 14 22</file>
+          <file> 9 13 5 7 16 18 19 20 21 22 25 24 4</file>
         </tool>
       </inputs>
     </file>
@@ -123,22 +119,26 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 23</file>
+          <file> 28</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 24 17 3 26 25</file>
+          <file> 10 27 8 12 11</file>
         </tool>
       </inputs>
     </file>
     <file>
-      <name>[ROOT_NODE]</name>
+      <name>$PROJ_DIR$\main.cpp</name>
       <outputs>
         <tool>
-          <name>XLINK</name>
-          <file> 28 23</file>
+          <name>ICC8051</name>
+          <file> 12</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 6</file>
         </tool>
       </outputs>
     </file>

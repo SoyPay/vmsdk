@@ -6,18 +6,18 @@
   <configuration>
     <name>Debug</name>
     <outputs>
-      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$PROJ_DIR$\src\betmain.cpp</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
-      <file>$PROJ_DIR$\main.cpp</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
-      <file>$PROJ_DIR$\src\main.cpp</file>
-      <file>$PROJ_DIR$\Debug\Exe\Bet.bin</file>
       <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
+      <file>$PROJ_DIR$\Debug\Exe\Bet.bin</file>
+      <file>$PROJ_DIR$\src\main.cpp</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
+      <file>$PROJ_DIR$\main.cpp</file>
       <file>$PROJ_DIR$\Debug\Obj\betmain.r51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
       <file>$TOOLKIT_DIR$\lib\dlib\dl-pli-nlxd-1e16x01n.r51</file>
@@ -41,7 +41,39 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 10 15 11 5 16 13 21 17 19 3 20 6 1</file>
+          <file> 6 15 5 10 16 13 21 17 19 3 20 9 0</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 7 18</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\src\main.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 22</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 1</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 6 15 5 10 16 13 21 17 19 3 20 9 0</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 6 15 5 10 16 13 21 17 19 3 0</file>
         </tool>
       </inputs>
     </file>
@@ -54,40 +86,17 @@
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 0</file>
+          <file> 1</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 10 15 11 5 16 13 21 17 19 3 1</file>
+          <file> 6 15 5 10 16 13 21 17 19 3 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 10 15 11 5 16 13 21 17 19 3 1</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\src\main.cpp</name>
-      <outputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 22</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 0</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 10 15 11 5 16 13 21 17 19 3 20 6 1</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 10 15 11 5 16 13 21 17 19 3 1</file>
+          <file> 6 15 5 10 16 13 21 17 19 3 0</file>
         </tool>
       </inputs>
     </file>
@@ -96,24 +105,15 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 8</file>
+          <file> 7</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 9 12 14</file>
+          <file> 4 12 14</file>
         </tool>
       </inputs>
-    </file>
-    <file>
-      <name>[ROOT_NODE]</name>
-      <outputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 18 8</file>
-        </tool>
-      </outputs>
     </file>
   </configuration>
   <configuration>

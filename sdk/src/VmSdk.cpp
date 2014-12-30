@@ -559,9 +559,7 @@ bool ModifyDataDBVavle(const void* const key,const unsigned char keylen, const v
 	memcpy(&flag, retdata->buffer, 1);
 	return flag;
 }
-unsigned char *GetMemeryData() {
-	return Communicate;
-}
+
 
 bool IsRegID(const void* const account)
 {
