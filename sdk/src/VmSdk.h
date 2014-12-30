@@ -1,6 +1,13 @@
+#include <string.h>
+#include<stdlib.h>
+#include <stdio.h>
+
+#ifndef VMSDK_H_
+#define VMSDK_H_
+
 #define MAX_LEN 21
 #define MAX_PUK_LEN 65
-#define MAX_ACCOUNT_LEN 20
+#define MAX_ACCOUNT_LEN 6
 #define check(a) {if(!(a)) { __exit(RUN_SCRIPT_DATA_ERR);}}
 
 
@@ -17,7 +24,7 @@ enum PRINT_FORMAT {
 
 //// operate the account
 /***
- *
+ *操作账户支持的操作
  */
 enum OperType {
 	ADD_FREE = 1, //!< ADD_FREE
@@ -52,9 +59,8 @@ typedef struct tag_INT64 {
 
 /**
  * @brief 初始化 Int64 数据 Int64 在IAR for 8051 里不支持 \n
- * example 14556879465132 ->  D3D49A12AAC
  * @param p64
- * @param pdata 二进制数据
+ * @param pdata 二进制数据只支持这种格式"\x03\xff\xff\xfc\x04"
  * @param len  the max len is 8
  * @return  ture ok  false error
  */
@@ -66,28 +72,13 @@ typedef struct tagACCOUNT_ID
 }ACCOUNT_ID;
 
 
-
-
-enum ACCOUNT_TYPE {
-	ACOUNT_ID,			//
-	KEY_ID,
-};
 typedef struct tagVMOPERATE{
-	unsigned char accountid[6];
-	OperType opeatortype;
-	unsigned long outheight;
+	unsigned char accountid[6];      //!< account id
+	OperType opeatortype;           //!< operate the account
+	unsigned long outheight;       //!< out of the height
 	Int64 money;
 } VM_OPERATE;
 
-/**
- *ACCOUNT_RET struct
- *
- */
-typedef struct tagACCOUNT
-{
-	ACCOUNT_TYPE type;      //!< the len of account  20 indicate that key Id less than 9 that accountID
-	unsigned char Data[20]; //!< ID
-}ACCOUNT_RET;
 /**
  *@brief Comparison of two digital uppercase
  *@param pM1:
@@ -156,6 +147,7 @@ bool SignatureVerify(void const* data, unsigned short datalen, void const* key, 
  *@param keylen: the length of pkey，8 bytes for Des,16 bytes for 3Des,others are invalid。
  *@param IsEn: if true encrypt false decrypt
  *@param pOut: result of encrypt or decrypt the return of length is The integral multiples of 8
+ *@param poutlen: the pOut of length
  *@return true run ok
  *
  */
@@ -165,13 +157,6 @@ unsigned short Des(void const* pdata, unsigned short len, void const* pkey, unsi
  *@return void
  */
 __noreturn __root void __exit(EXIT_CODE tep);
-/**@brief  insert data to The exchange of data memory
- *@param pfrist:
- *@param len: the pfrist of length
- *@return void
- *
- */
-void InsertCheckData(const void * pfrist, const unsigned short len);
 
 /**@brief  print data to screen or file
  *@param pdata: the pdata Display in the screen or be writed in the file
@@ -197,10 +182,10 @@ bool WriteOutput( const VM_OPERATE* data, const unsigned short conter);
 unsigned long GetCurRunEnvHeight();
 /**@brief
  *get tx contact
- * @param txhash:
- * @param pcotact:
- * @param maxLen:
- * @return
+ * @param txhash: the tx hash
+ * @param pcotact: the tx's contact
+ * @param maxLen: the pcontac of max length
+ * @return:return true get contact sucess
  */
 bool GetTxContacts(const unsigned char * const txhash,void* const pcotact,const unsigned short maxLen);
 
@@ -209,7 +194,7 @@ bool GetTxContacts(const unsigned char * const txhash,void* const pcotact,const 
  *  get tx accounts
  * @param txhash:  the tx hash
  * @param paccoutn:   the signed account every account is six char
- * @param maxConter:   the max ram cache  prevent overflow
+ * @param maxlen:   the max ram cache  prevent overflow
  * @return the all of account's length
  */
 unsigned short GetAccounts(const unsigned char *txhash,void* const paccoutn,unsigned short maxlen) ;
@@ -233,7 +218,7 @@ unsigned short GetAccountPublickey(const void* const accounid,void * const pubke
  *@return void
  *
  */
-bool QueryAccountBalance(const unsigned char* const account,ACCOUNT_TYPE type,Int64* const pBalance);
+bool QueryAccountBalance(const unsigned char* const account,Int64* const pBalance);
 /**@brief
  *obtain the tx's  Confirmation block height
  *@return the  block's height keep int the height
@@ -316,9 +301,10 @@ bool ModifyDataDBTime(const void* const key,const unsigned char keylen, const un
 unsigned long GetDBSize();
 /**@brief
  *get the database data through index
- *@param index: get the database data through index
- *@param key: through index obtain the key save in key
+ *@param index: get the database data through index,第一次获取的时候,index = 0,接着后面遍历index = 1
+ *@param key: through index obtain the key save in key ,index = 0,key 值可以不用填,index = 1是，传进去的key的值为前一次获取key的值，获取到下一个key值赋值到key中去
  *@param keylen: the key's length
+ *@param maxkeylen: the key recive char max length
  *@param value: The corresponding value of key save in value
  *@param maxbuffer: the write data to value data's length less maxValueLen
  *@param ptime: the time out
@@ -337,7 +323,6 @@ unsigned long GetTipHeight();
  *Access to the specified block height hash
  *@param height: the block heigh
  *@param pblochHash: get the block's height hash save in pblochHash
- *@param maxlen: write data in pblochHash max less maxlen
  *@return return current block height
  *
  */
@@ -345,11 +330,11 @@ bool GetBlockHash(const unsigned long height,void * const pblochHash);
 /**@brief
  *Get current tx's hash
  *@param poutHash: the tx hash
- *@param maxlen: maxlen = 32
  *@return return current block height
  */
 bool GetCurTxHash(void * const poutHash);
 /**
+ * bool IsAuthorited(const void* const account,const Int64* const pmoney)
  * @brief
  * the account the Authorited
  * @param account: the account's address
@@ -358,7 +343,6 @@ bool GetCurTxHash(void * const poutHash);
  */
 bool IsAuthorited(const void* const account,const Int64* const pmoney);
 
-unsigned long GetMemeroyData(void * const pfrist, unsigned long const len);
 bool IsRegID(const void* const account);
 /**@brief
  *@param account: the account id ,the account of length is 6
@@ -368,13 +352,44 @@ bool IsRegID(const void* const account);
  *
  */
 unsigned short GetAuthUserDefine(const void* const account,void *const pout,const unsigned short maxlen);
-
+/**@brief
+ *@param scriptID: the scriplt id ,the account of length is 6
+ *@param pkey: the key value
+ *@param len: the pkey of length
+ *@param pvalve: the value input the pvalue
+ *@param maxlen: the lenght of pvalve
+ *@return return true
+ *
+ */
 bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* const pvalve,short maxlen);
+/**@brief
+ *@param account: the scriplt account id ,the account of length is 6
+ *@param account: run the functoin the define char put into pout
+ *@return return true
+ *
+ */
+bool GetCurScritpAccount(void* const account);
+/**@brief
+ *@param account: obtain the currnet tx sign account
+ *@param maxlen: the account of length
+ *@return return true
+ *
+ */
+unsigned short GetCurTxAccount(void * const account,unsigned short maxlen);
+unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen);
 void inline PrintfLine(unsigned short sort)
 {
 	char bffer[20]={0};
 	sprintf(bffer,"line:%d ",sort);
 	LogPrint(bffer,strlen(bffer),STRING);
 }
+void inline PrintfFileAndLine(unsigned short line, const char *pfile)
+{
+	char bffer[256]={0};
+	sprintf(bffer,"func:%sline:%d ",pfile, line);
+	LogPrint(bffer,strlen(bffer),STRING);
+}
 #define PrintLog(a,b,c) {if(!(a)) { PrintfLine(__LINE__),LogPrint(a,b,c);}}
+
+#endif /* VMSDK_H_ */
 

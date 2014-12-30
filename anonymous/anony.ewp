@@ -1002,11 +1002,11 @@
         </option>
         <option>
           <name>Linker Extra Options Check</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>Linker Extra Options Edit</name>
-          <state></state>
+          <state>-Oraw-binary,(CODE)=.bin</state>
         </option>
         <option>
           <name>CrcAlign</name>

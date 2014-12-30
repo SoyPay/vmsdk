@@ -1,14 +1,13 @@
-#include <string.h>
-#include<stdlib.h>
-#include <stdio.h>
-#include"VmSdk.h"
+
+#include"soypay.h"
 extern unsigned char *GetMemeryData();
+
+
 void test_exit()
 {
 	__exit(RUN_SCRIPT_DATA_ERR);
 }
 
-#define TestCheck(a) {if(!(a)) { PrintfLine(__LINE__); return false;}}
 
 /**
  * @brief define the variable and call the api
@@ -157,18 +156,12 @@ bool testdiv()
 }
 bool testSHA256()
 {
+	char* phashdata = NULL;
+	unsigned short len= 0;
 	char hash[32] = {0};
-	char hashdata[] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
-//error paras test
-	TestCheck(SHA256(hashdata, 0, hash) == false);
-	//NULL input need to test or not
-
-//normal paras test
-	TestCheck(SHA256(hashdata, sizeof(hashdata), hash) == true);
-
-//	LogPrint(hash, sizeof(hash), HEX);
-	TestCheck(memcmp(hash, "\xac\x9d\x87\x1d\x5a\xfb\x21\xab\x23\x3f\x58\xbe\x61\x1f\xeb\x56\xa3\xf8\x40\x7f\x3e\xfd\x22\x8a\xb3\xcf\x08\xbb\xb9\xdb\x96\xea", sizeof(hash)) == 0);
-
+	TestCheck(SHA256(phashdata,len,hash) == false);
+	char xx[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+	TestCheck(SHA256(xx,8,hash) == true);
     return true;
 }
 bool testSignatureVerify()
@@ -226,90 +219,149 @@ bool testSignatureVerify()
 
 bool testDes()
 {
-	unsigned char input[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0xa7, 0x48, 0x89, 0x20, 0xb3, 0x8b, 0xd8, 0xe4};
-	unsigned char result[50] = { 0 };
-	unsigned short rltlen = 0;
-	unsigned char key1[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
-	unsigned char key3[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18};
-//error paras test
-	TestCheck(Des(input, 0, "", 0, true, result, sizeof(result)) == 0);
-	TestCheck(Des(input, 0, "", 0, false, result, sizeof(result)) == 0);
-	TestCheck(Des(input, sizeof(input), key1, 4, true, result, sizeof(result)) == 0);
-	TestCheck(Des(input, sizeof(input), key1, 5, false, result, sizeof(result)) == 0);
-	TestCheck(Des(input, sizeof(input), key3, 13, false, result, sizeof(result)) == 0);
-	TestCheck(Des(input, sizeof(input), key3, 14, false, result, sizeof(result)) == 0);
+	unsigned char mm[50] = { 0 };
+	TestCheck(Des("", 0, "", 0, true,mm,50) == 0);
+	TestCheck(Des("", 0, "", 0, false,mm,50) == 0);
+	// 加密数据
+	unsigned short len = Des("\x01\x02\x03\x04\x05\xa7\x48\x89\x20\xb3\x8b\xd8\xe4", 13, "\x01\x02\x03\x04\x05\x06\x07\x08", 8, true,mm,50);
+	TestCheck(len > 0);
+	unsigned char des[16] = { 0 };
+	TestCheck(Des(mm, len, "\x01\x02\x03\x04\x05\x06\x07\x08",8, false, des,16) == 16);
+	//TestCheck(strcmp((char*)des,"\x01\x02\x03\x04\x05\xa7\x48\x89\x20\xb3\x8b\xd8\xe4") != 0);
+	mm[len-5] ='\x09';
+	mm[len-1] ='\x05';
+	TestCheck(Des(mm, len, "\x01\x02\x03\x04\x05\x06\x07\x08",8, false, des,16) >0);
+	//TestCheck(strcmp((char*)des,"\x01\x02\x03\x04\x05\xa7\x48\x89\x20\xb3\x8b\xd8\xe4") == 0);
 
-//normal paras test-des
-	rltlen = Des(input, sizeof(input), key1, sizeof(key1), true, result, sizeof(result));
-	TestCheck(rltlen > 0);
-	TestCheck(memcmp(result, "\x17\x26\xc7\x5f\x28\x16\x71\x5f\xde\x89\x62\x08\x43\x34\x39\xa7", rltlen) == 0);
-	{
-		unsigned char rtmp[50] = { 0 };
-		unsigned short rtmplen = Des(result, rltlen, key1, sizeof(key1), false, rtmp, sizeof(rtmp));
-		TestCheck(rtmplen >= sizeof(input));
-		TestCheck(memcmp(input, rtmp, sizeof(input)) == 0);
-	}
-	//clear data
-	memset(result, 0, sizeof(result));
-	rltlen = 0;
-
-//normal paras test-3des
-	rltlen = Des(input, sizeof(input), key3, sizeof(key3), true, result, sizeof(result));
-	TestCheck(rltlen > 0);
-	TestCheck(memcmp(result, "\x74\x9b\x65\x42\xf9\x74\x1d\x39\x2d\xab\xae\x84\x7e\x50\x82\x70", rltlen) == 0);
-	{
-		unsigned char rtmp[50] = { 0 };
-		unsigned short rtmplen = Des(result, rltlen, key3, sizeof(key3), false, rtmp, sizeof(rtmp));
-		TestCheck(rtmplen >= sizeof(input));
-		TestCheck(memcmp(input, rtmp, sizeof(input)) == 0);
-	}
-
+	return true;
+}
+bool testLogPrint()
+{
+	LogPrint("testLogPrint TEST",sizeof("testLogPrint TEST")+1,STRING);
+	LogPrint("testLogPrint TEST",sizeof("testLogPrint TEST")+1,HEX);
 	return true;
 }
 bool testWriteOutput()
 {
 	VM_OPERATE data;
-	WriteOutput(&data, 1);
+	WriteOutput( &data, 1);
 	return true;
 }
 bool testGetCurRunEnvHeight()
 {
 	unsigned long height = GetCurRunEnvHeight();
-	char buffer[50] = {0};
-	sprintf(buffer,"testGetCurRunEnvHeight:%d",height);
-	LogPrint(buffer,52,STRING);
+	char buffer[5] = {0};
+	sprintf(buffer,"%d",height);
+	LogPrint(buffer,5,STRING);
+	TestCheck(height == 2);
+	return true;
+}
+bool testGetTxContacts(char *phash)
+{
+	char pcontact[50] = {0};
+	GetTxContacts((unsigned char*)phash,pcontact,50);
+	TestCheck(pcontact[0] == 0x01);
+	return true;
+}
+bool testGetAccounts(char *phash)
+{
+	char pcontact[6] = {0};
+	char * hash1= NULL;
+	unsigned short length = GetAccounts((unsigned char*)hash1,pcontact,6);
+	TestCheck(length == 0);
+
+	length =GetAccounts((unsigned char*)phash,pcontact,6);
+	TestCheck(length == 6);
+	char compare[6] = {0x00,0x00,0x00,0x00,0x08,0x00};
+	TestCheck(strcmp(pcontact,compare) == 0);
+	return true;
+}
+bool testGetAccountPublickey(char *phash)
+{
+	char pcontact[6] = {0};
+	char pubkey[34] = {0};
+	char*temphash = NULL;
+	unsigned  short length = GetAccountPublickey(temphash,pubkey,33);
+	TestCheck(length == 33);
+	GetAccounts((unsigned char*)phash,pcontact,6);
+
+	length = GetAccountPublickey(pcontact,pubkey,33);
+	TestCheck(length == 33);
+	char compare[34]={0x03,0x11,0xca,0x27,0x7a,0x0f,0x38,0x80,
+	0xee,0xfe,0xd3,0x49,0x72,0x7c,0xc9,0x54,
+	0x35,0x4c,0x4e,0x53,0x9b,0x81,0x28,0xc7,
+	0x9f,0x18,0xa8,0x7c,0x6f,0x2b,0x97,0x91,
+	0x86,0x00};
+	TestCheck(strcmp(pubkey,compare) == 0);
+	return true;
+}
+bool testQueryAccountBalance(char *phash)
+{
+	char paccount[6] = {0};
+	Int64 pBalance;
+	Int64Inital(&pBalance,"\x00", 1);
+	TestCheck(QueryAccountBalance((unsigned char*)paccount,&pBalance) == true);
+	LogPrint(&pBalance,8,HEX);
+	GetAccounts((unsigned char*)phash,paccount,6);
+	TestCheck(QueryAccountBalance((unsigned char*)paccount,&pBalance) == true);
+	LogPrint(&pBalance,8,HEX);
+	return true;
+}
+/// the api not uses
+bool testGetTxConFirmHeight(char *txhash)
+{
+	unsigned long height = GetTxConFirmHeight(txhash);
+	TestCheck(height ==2);
 	return true;
 }
 bool testGetTipHeight()
 {
 	unsigned long height = GetTipHeight();
-	char buffer[50] = {0};
-	sprintf(buffer,"testGetTipHeight:%d",height);
-	LogPrint(buffer,50,STRING);
+	TestCheck(height ==1);
 	return true;
 }
 bool testGetBlockHash()
 {
 	char bhash[32] = {0};
-	GetBlockHash(1,bhash);
-	LogPrint("testGetBlockHash:",sizeof("testGetBlockHash:"),STRING);
-	LogPrint(bhash,32,HEX);
+	TestCheck(GetBlockHash(1,bhash) == true);
 	return true;
 }
 bool testGetCurTxHash()
 {
 	char txhash[32] = {0};
-	GetCurTxHash(txhash);
-	LogPrint("testGetCurTxHash:",sizeof("testGetCurTxHash:"),STRING);
-	LogPrint(txhash,32,HEX);
+	TestCheck(GetCurTxHash(txhash) == true);
 	return true;
 }
+/// 没有授权
+bool testIsAuthorited(char *phash)
+{
+	char paccount[6] = {0};
+	Int64 pmoney;
+	TestCheck(IsAuthorited(paccount,&pmoney) == false);
+	GetAccounts((unsigned char*)phash,paccount,6);
+	Int64Inital(&pmoney,"\x01", 1);
+	TestCheck(IsAuthorited(paccount,&pmoney) == false);
+	return true;
+}
+///授权的账户
+bool testIsAuthorited1(char *phash)
+{
+	char paccount[6] = {0};
+	Int64 pmoney;
+	GetAccounts((unsigned char*)phash,paccount,6);
+	Int64Inital(&pmoney,"\x01", 1);
+	TestCheck(IsAuthorited(paccount,&pmoney) == true);
+	Int64Inital(&pmoney,"\xff\xff\xff\xff\xff\xff\xff\xff", 8);
+	TestCheck(IsAuthorited(paccount,&pmoney) == false);
+	return true;
+}
+
 //// test db
 bool testWriteDataDB()
 {
 	char* key =NULL;
 	char *value = "hello";
-	unsigned long time = 2;
+	unsigned long time = 40;
 	TestCheck(WriteDataDB(key,0,value,6,time) == false);
 	TestCheck(WriteDataDB(key,9,value,0,time) == false);
 	key = "key";
@@ -355,13 +407,18 @@ bool testModifyDataDB()
 	TestCheck(ModifyDataDB(key,4,value,0,ptime) == false);
 	key = "key1";
 	value= "LUO";
-	ptime = 5;
+	ptime = 50;
 	TestCheck(ModifyDataDB(key,5,value,4,ptime) == true);
 	return true;
 }
 bool testGetDBSize()
 {
+	int b = GetDBSize();
+	char buffer[10] = {0};
+	sprintf(buffer,"dbsize:%d",b);
+	LogPrint(buffer,sizeof(buffer),STRING);
 	TestCheck(GetDBSize() == 1);
+
 	return true;
 }
 bool testGetDBValue()
@@ -377,7 +434,7 @@ bool testGetDBValue()
 
 	char *wkey = "bit";
 	char *wvalue = "shit";
-	ptime = 7;
+	ptime = 70;
 	TestCheck(WriteDataDB(wkey,4,wvalue,5,ptime) == true);
 
 	valen = 15;
@@ -386,14 +443,14 @@ bool testGetDBValue()
 	TestCheck(GetDBValue(0,key,&kenlen,15,value,&valen,&ptime)== true);
 	TestCheck(strcmp(key,"bit")== 0);
 	TestCheck(strcmp(value,wvalue)== 0);
-	TestCheck(ptime == 7);
+	TestCheck(ptime == 70);
 
 	valen = 4;
 	ptime = 0;
 	TestCheck(GetDBValue(1,key,&kenlen,15,value,&valen,&ptime)== true);
 	TestCheck(strcmp(key,"key1")== 0);
 	TestCheck(strcmp(value,"LUO")== 0);
-	TestCheck(ptime == 5);
+	TestCheck(ptime == 50);
 
 	TestCheck(GetDBValue(1,key,&kenlen,15,value,&valen,&ptime)== false);
 	return true;
@@ -408,7 +465,7 @@ bool testReadDataDBTime()
 	TestCheck(ReadDataDBTime(key,5,&ptime) == false);
 	key = "key1";
 	TestCheck(ReadDataDBTime(key,5,&ptime) == true);
-	TestCheck(ptime == 5);
+	TestCheck(ptime == 50);
 	return true;
 }
 bool testModifyDataDBTime()
@@ -419,7 +476,7 @@ bool testModifyDataDBTime()
 	key = "serf";
 	TestCheck(ModifyDataDBTime(key,0,ptime) == false);
 	key = "key1";
-	ptime = 7;
+	ptime = 70;
 	TestCheck(ModifyDataDBTime(key,5,ptime) == true);
 	return true;
 }
@@ -439,140 +496,216 @@ bool testModifyDataDBVavle()
 	TestCheck(ReadDataValueDB(key,5,valen,5) > 0);
 	TestCheck(strcmp(valen,"funk")== 0);
 	TestCheck(ReadDataDBTime(key,5,&ptime) == true);
-	TestCheck(ptime == 7);
+	TestCheck(ptime == 70);
         return true;
 }
 bool testseconddb()
 {
 	unsigned long count = GetDBSize();
-	char buffer[10] = {0};
-	sprintf(buffer,"bb:%d",count);
-	LogPrint(buffer,sizeof(buffer),STRING);
 	TestCheck(count == 2);
 	return true;
 }
-int main()
+int ProcessSdk(char*pcontact)
 {
-		if(!testInt64Inital())
+	switch(pcontact[0])
+	{
+		case 0x01:
 		{
-			LogPrint("testInt64Inital",sizeof("testInt64Inital")+1,STRING);
-			test_exit();
+			if(testInt64Inital() == false)
+			{
+				LogPrint("testInt64Inital error",sizeof("testInt64Inital error")+1,STRING);
+				test_exit();
+			}
+			if(!testCompare())
+			{
+				LogPrint("testCompare error",sizeof("testCompare error")+1,STRING);
+				test_exit();
+			}
+			if(!testadd())
+			{
+				LogPrint("testadd error",sizeof("testadd error")+1,STRING);
+				test_exit();
+			}
+			if(!testmul())
+			{
+				LogPrint("testmul error",sizeof("testmul error")+1,STRING);
+				test_exit();
+			}
+			if(!testsub())
+			{
+				LogPrint("testsub error",sizeof("testsub error")+1,STRING);
+				test_exit();
+			}
+			if(!testdiv())
+			{
+				LogPrint("testdiv error",sizeof("testdiv error")+1,STRING);
+				test_exit();
+			}
+			if(!testSHA256())
+			{
+				LogPrint("testSHA256 error",sizeof("testSHA256 error")+1,STRING);
+				test_exit();
+			}
+			if(!testSignatureVerify())
+			{
+				LogPrint("testSignatureVerify error",sizeof("testSignatureVerify error")+1,STRING);
+				test_exit();
+			}
+			if(!testDes())
+			{
+				LogPrint("testDes error",sizeof("testDes error")+1,STRING);
+				test_exit();
+			}
+			if(!testLogPrint())
+			{
+				LogPrint("testLogPrint error",sizeof("testLogPrint error")+1,STRING);
+				test_exit();
+			}
+			if(!testGetCurRunEnvHeight())
+			{
+				LogPrint("testGetCurRunEnvHeight error",sizeof("testGetCurRunEnvHeight error")+1,STRING);
+				test_exit();
+			}
+			if(!testGetTipHeight())
+			{
+				LogPrint("testGetTipHeight error",sizeof("testGetTipHeight error")+1,STRING);
+				test_exit();
+			}
+			if(!testGetBlockHash())
+			{
+				LogPrint("testGetBlockHash error",sizeof("testGetBlockHash error")+1,STRING);
+				test_exit();
+			}
+			if(!testGetCurTxHash())
+			{
+				LogPrint("testGetCurTxHash error",sizeof("testGetCurTxHash error")+1,STRING);
+				test_exit();
+			}
+			LogPrint("1:test ok",sizeof("1:test ok")+1,STRING);
+			break;
 		}
-		if(!testCompare())
+		case 0x02:
 		{
-			LogPrint("testCompare",sizeof("testCompare")+1,STRING);
-			test_exit();
+			char hash[32];
+			memcpy(&hash,&pcontact[1],32);
+			if(!testGetTxContacts(hash))
+			{
+				LogPrint("testGetTxContacts error",sizeof("testGetTxContacts error")+1,STRING);
+				test_exit();
+			}
+			if(!testGetAccounts(hash))
+			{
+				LogPrint("testGetAccounts error",sizeof("testGetAccounts error")+1,STRING);
+				test_exit();
+			}
+			if(!testGetAccountPublickey(hash))
+			{
+				LogPrint("testGetAccountPublickey error",sizeof("testGetAccountPublickey error")+1,STRING);
+				test_exit();
+			}
+			if(!testQueryAccountBalance(hash))
+			{
+				LogPrint("testQueryAccountBalance error",sizeof("testQueryAccountBalance error")+1,STRING);
+				test_exit();
+			}
+			if(!testGetTxConFirmHeight(hash))
+			{
+				LogPrint("testGetTxConFirmHeight error",sizeof("testGetTxConFirmHeight error")+1,STRING);
+				test_exit();
+			}
+//			if(!testIsAuthorited(hash))
+//			{
+//				LogPrint("testIsAuthorited",sizeof("testIsAuthorited")+1,STRING);
+//				test_exit();
+//			}
+			LogPrint("2:test ok",sizeof("2:test ok")+1,STRING);
+			break;
 		}
-		if(!testadd())
+		case 0x03:
 		{
-			LogPrint("testadd",sizeof("testadd")+1,STRING);
-			test_exit();
+			if(!testWriteDataDB())
+			{
+				LogPrint("testWriteDataDB error",sizeof("testWriteDataDB error")+1,STRING);
+				test_exit();
+			}
+			if(!testDeleteDataDB())
+			{
+				LogPrint("testDeleteDataDB error",sizeof("testDeleteDataDB error")+1,STRING);
+				test_exit();
+			}
+			if(!testReadDataValueDB())
+			{
+				LogPrint("testReadDataValueDB error",sizeof("testReadDataValueDB error")+1,STRING);
+				test_exit();
+			}
+
+			if(!testModifyDataDB())
+			{
+				LogPrint("testModifyDataDB error",sizeof("testModifyDataDB error")+1,STRING);
+				test_exit();
+			}
+
+			if(!testGetDBSize())
+			{
+				LogPrint("testGetDBSize error",sizeof("testGetDBSize error")+1,STRING);
+				test_exit();
+			}
+
+			if(!testGetDBValue())
+			{
+				LogPrint("testGetDBValue error",sizeof("testGetDBValue error")+1,STRING);
+				test_exit();
+			}
+
+			if(!testReadDataDBTime())
+			{
+				LogPrint("testReadDataDBTime error",sizeof("testReadDataDBTime error")+1,STRING);
+				test_exit();
+			}
+
+			if(!testModifyDataDBTime())
+			{
+				LogPrint("testModifyDataDBTime error",sizeof("testModifyDataDBTime error")+1,STRING);
+				test_exit();
+			}
+			if(!testModifyDataDBVavle())
+			{
+				LogPrint("testModifyDataDBVavle error",sizeof("testModifyDataDBVavle error")+1,STRING);
+				test_exit();
+			}
+			LogPrint("3:test ok",sizeof("3:test ok")+1,STRING);
+			break;
 		}
-		if(!testmul())
+		case 0x04:
 		{
-			LogPrint("testmul",sizeof("testmul")+1,STRING);
-			test_exit();
-		}
-		if(!testsub())
-		{
-			LogPrint("testsub",sizeof("testsub")+1,STRING);
-			test_exit();
-		}
-		if(!testdiv())
-		{
-			LogPrint("testdiv",sizeof("testdiv")+1,STRING);
-			test_exit();
-		}
-		if(!testSHA256())
-		{
-			LogPrint("testSHA256",sizeof("testSHA256")+1,STRING);
-			test_exit();
-		}
-		if(!testSignatureVerify())
-		{
-			LogPrint("testSignatureVerify",sizeof("testSignatureVerify")+1,STRING);
-			test_exit();
-		}
-		if(!testDes())
-		{
-			LogPrint("testDes",sizeof("testDes")+1,STRING);
-			test_exit();
-		}
-		if(!testGetCurRunEnvHeight())
-		{
-			LogPrint("testGetCurRunEnvHeight",sizeof("testGetCurRunEnvHeight")+1,STRING);
-			test_exit();
-		}
-		if(!testGetTipHeight())
-		{
-			LogPrint("testGetTipHeight",sizeof("testGetTipHeight")+1,STRING);
-			test_exit();
-		}
-		if(!testGetBlockHash())
-		{
-			LogPrint("testGetBlockHash",sizeof("testGetBlockHash")+1,STRING);
-			test_exit();
-		}
-		if(!testGetCurTxHash())
-		{
-			LogPrint("testGetCurTxHash",sizeof("testGetCurTxHash")+1,STRING);
-			test_exit();
-		}
-		if(!testWriteDataDB())
-		{
-			LogPrint("testWriteDataDB",sizeof("testWriteDataDB")+1,STRING);
-			test_exit();
-		}
-		if(!testDeleteDataDB())
-		{
-			LogPrint("testDeleteDataDB",sizeof("testDeleteDataDB")+1,STRING);
-			test_exit();
-		}
-		if(!testReadDataValueDB())
-		{
-			LogPrint("testReadDataValueDB",sizeof("testReadDataValueDB")+1,STRING);
-			test_exit();
+			if(!testseconddb())
+			{
+				LogPrint("testseconddb error",sizeof("testseconddb error")+1,STRING);
+				test_exit();
+			}
+			LogPrint("4:test ok",sizeof("4:test ok")+1,STRING);
+			break;
 		}
 
-		if(!testModifyDataDB())
+		case 0x05:
 		{
-			LogPrint("testModifyDataDB",sizeof("testModifyDataDB")+1,STRING);
-			test_exit();
+			char hash[32];
+			memcpy(&hash,&pcontact[1],32);
+			//if(testIsAuthorited1(hash))
+//			{
+//				LogPrint("testIsAuthorited1 error",sizeof("testIsAuthorited1 error")+1,STRING);
+//				test_exit();
+//			}
+			LogPrint("5:test ok",sizeof("5:test ok")+1,STRING);
+			break;
 		}
-
-		if(!testGetDBSize())
-		{
-			LogPrint("testGetDBSize",sizeof("testGetDBSize")+1,STRING);
-			test_exit();
-		}
-
-		if(!testGetDBValue())
-		{
-			LogPrint("testGetDBValue",sizeof("testGetDBValue")+1,STRING);
-			test_exit();
-		}
-
-		if(!testReadDataDBTime())
-		{
-			LogPrint("testReadDataDBTime",sizeof("testReadDataDBTime")+1,STRING);
-			test_exit();
-		}
-
-		if(!testModifyDataDBTime())
-		{
-			LogPrint("testModifyDataDBTime",sizeof("testModifyDataDBTime")+1,STRING);
-			test_exit();
-		}
-		if(!testModifyDataDBVavle())
-		{
-			LogPrint("testModifyDataDBVavle",sizeof("testModifyDataDBVavle")+1,STRING);
-			test_exit();
-		}
-		if(!testseconddb())
-		{
-			LogPrint("testseconddb",sizeof("testseconddb")+1,STRING);
-			test_exit();
-		}
-__exit(RUN_SCRIPT_OK); //break,not stop
+		default:
+				{
+					LogPrint("ERROR",sizeof("ERROR"),STRING);
+					__exit(RUN_SCRIPT_DATA_ERR);
+					break;
+				}
+	}
+	__exit(RUN_SCRIPT_OK); //break,not stop
    return 0;
 }

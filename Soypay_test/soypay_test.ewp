@@ -722,7 +722,7 @@
         </option>
         <option>
           <name>OutputFile</name>
-          <state>TestAPI.d51</state>
+          <state>soypay_test.d51</state>
         </option>
         <option>
           <name>OutputFormat</name>
@@ -916,7 +916,7 @@
         </option>
         <option>
           <name>ExtraOutputFile</name>
-          <state>TestAPI.sim</state>
+          <state>soypay_test.sim</state>
         </option>
         <option>
           <name>ExtraOutputFormat</name>
@@ -2115,7 +2115,22 @@
     </settings>
   </configuration>
   <file>
-    <name>$PROJ_DIR$\src\TestAPImain.cpp</name>
+    <name>$PROJ_DIR$\src\rollback.cpp</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\script_account.cpp</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\sdk.cpp</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\soypay.h</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\soypayd_test.cpp</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\testdb.cpp</name>
   </file>
   <file>
     <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>

@@ -753,7 +753,7 @@ WARN_LOGFILE =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT = . .\..\lottery\src .\..\APItest\src .\..\sdk\src .\..\bet\src .\..\SecuredTrade\src 
+INPUT = . .\..\lottery\src .\..\sdk\src .\..\bet\src D:\cppwork\vmsdk\darksecure\src .\..\SecuredTrade\src D:\cppwork\vmsdk\Soypay_test\src D:\cppwork\vmsdk\anonymous\src
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -2087,7 +2087,7 @@ HIDE_UNDOC_RELATIONS = YES
 # set to NO
 # The default value is: NO.
 
-HAVE_DOT = NO
+HAVE_DOT = YES
 
 # The DOT_NUM_THREADS specifies the number of dot invocations doxygen is allowed
 # to run in parallel. When set to 0 doxygen will base this on the number of
