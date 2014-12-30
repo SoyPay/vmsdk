@@ -232,7 +232,7 @@ static bool RegDataCheck(const LOTTO_CTX *pctxdata)
 		return false;
 	}
 
-	if(!QueryAccountBalance(pctxdata->accid, ACOUNT_ID, &balance))
+	if(!QueryAccountBalance(pctxdata->accid, &balance))
 	{
 		ErrorCheck(0);
 		return false;
@@ -527,7 +527,7 @@ static bool OrderDataCheck(const LOTTO_CTX *pctxdata)
 		return false;
 	}
 
-	if(!QueryAccountBalance(pctxdata->accid, ACOUNT_ID, &balance))
+	if(!QueryAccountBalance(pctxdata->accid, &balance))
 	{
 		ErrorCheck(0);
 		return false;

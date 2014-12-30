@@ -3,7 +3,7 @@
 int main()
 {
 	__xdata static  char pcontact[512];
-	GetMemeroyData(pcontact,512);
+	GetCurTxContact(pcontact,512);
 	switch(pcontact[0])
 	{
 		case 0x01:

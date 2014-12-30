@@ -180,7 +180,7 @@ bool CheckContract1(const FIRST_CONTRACT* pContract) {
 
 	//step4
 	Int64 nTotalFreeMoney;
-	if (!QueryAccountBalance((const unsigned char* const ) pContract->seller.accounid, ACOUNT_ID, &nTotalFreeMoney))
+	if (!QueryAccountBalance((const unsigned char* const ) pContract->seller.accounid, &nTotalFreeMoney))
 		return false;
 
 	COMP_RET ret = Int64Compare(&pContract->nFineMoney, &nTotalFreeMoney);
@@ -622,7 +622,7 @@ bool ProcessContract4(const ARBIT_RES_CONTRACT* pContract) {
 int main() {
 	__xdata static char pContract[512];
 	unsigned long len = 512;
-	int nRet = GetMemeroyData(pContract, len);
+	int nRet = GetCurTxContact(pContract, len);
 	PrintString("nRet is %d", nRet);
 
 #pragma data_alignment = 1

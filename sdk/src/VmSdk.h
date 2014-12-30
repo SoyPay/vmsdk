@@ -80,15 +80,6 @@ typedef struct tagVMOPERATE{
 } VM_OPERATE;
 
 /**
- *ACCOUNT_RET struct
- *
- */
-typedef struct tagACCOUNT
-{
-	ACCOUNT_TYPE type;      //!< the len of account  20 indicate that key Id less than 9 that accountID
-	unsigned char Data[20]; //!< ID
-}ACCOUNT_RET;
-/**
  *@brief Comparison of two digital uppercase
  *@param pM1:
  *@param pM2:
@@ -166,13 +157,6 @@ unsigned short Des(void const* pdata, unsigned short len, void const* pkey, unsi
  *@return void
  */
 __noreturn __root void __exit(EXIT_CODE tep);
-/**@brief  insert data to The exchange of data memory
- *@param pfrist:
- *@param len: the pfrist of length
- *@return void
- *
- */
-void InsertCheckData(const void * pfrist, const unsigned short len);
 
 /**@brief  print data to screen or file
  *@param pdata: the pdata Display in the screen or be writed in the file
@@ -350,6 +334,7 @@ bool GetBlockHash(const unsigned long height,void * const pblochHash);
  */
 bool GetCurTxHash(void * const poutHash);
 /**
+ * bool IsAuthorited(const void* const account,const Int64* const pmoney)
  * @brief
  * the account the Authorited
  * @param account: the account's address
@@ -358,7 +343,6 @@ bool GetCurTxHash(void * const poutHash);
  */
 bool IsAuthorited(const void* const account,const Int64* const pmoney);
 
-unsigned long GetMemeroyData(void * const pfrist, unsigned long const len);
 bool IsRegID(const void* const account);
 /**@brief
  *@param account: the account id ,the account of length is 6

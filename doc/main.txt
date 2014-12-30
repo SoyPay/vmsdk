@@ -6,7 +6,7 @@
 \section main_intro DACRS虚拟机API
 
 调用虚拟机API几乎可以实现当前所有山寨币功能
-
+目前所有应用用的编译器是EW8051-8303-Autorun.exe
 
 \section main_tutorial 目录
 

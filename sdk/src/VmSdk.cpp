@@ -563,15 +563,6 @@ unsigned char *GetMemeryData() {
 	return Communicate;
 }
 
-unsigned long GetMemeroyData(void * const pfrist, unsigned long const len)
-{
-	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len == 0 || retdata->len > len) {
-		return 0;
-	}
-	memcpy((char*)pfrist, retdata->buffer,retdata->len);
-	return retdata->len;
-}
 bool IsRegID(const void* const account)
 {
 	char pubkey[33] = {0};

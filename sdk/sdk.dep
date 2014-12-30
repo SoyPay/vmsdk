@@ -6,16 +6,15 @@
   <configuration>
     <name>Debug</name>
     <outputs>
+      <file>$PROJ_DIR$\src\VmSdk.h</file>
+      <file>$PROJ_DIR$\src\VmSdk.cpp</file>
+      <file>$PROJ_DIR$\src\Demo.cpp</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.r51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
-      <file>$PROJ_DIR$\Debug\Exe\sdk.d51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
       <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
       <file>$PROJ_DIR$\main.cpp</file>
       <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
-      <file>$PROJ_DIR$\src\VmSdk.h</file>
-      <file>$PROJ_DIR$\src\VmSdk.cpp</file>
-      <file>$PROJ_DIR$\src\Demo.cpp</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
       <file>$PROJ_DIR$\Debug\Obj\Demo.pbi</file>
@@ -32,55 +31,28 @@
       <file>$TOOLKIT_DIR$\lib\dlib\dl8051Normal.h</file>
       <file>$PROJ_DIR$\Debug\Exe\sdk.bin</file>
       <file>$TOOLKIT_DIR$\lib\dlib\dl-pli-nlxd-1e16x01n.r51</file>
+      <file>$PROJ_DIR$\Debug\Exe\sdk.d51</file>
     </outputs>
-    <file>
-      <name>$PROJ_DIR$\Debug\Exe\sdk.d51</name>
-      <outputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 24</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 4 21 0 25</file>
-        </tool>
-      </inputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\main.cpp</name>
-      <outputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 6</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 13</file>
-        </tool>
-      </outputs>
-    </file>
     <file>
       <name>$PROJ_DIR$\src\VmSdk.cpp</name>
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 0</file>
+          <file> 3</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 16</file>
+          <file> 15</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 3 20 10 11 23 22 14 15 17 1 18 19 7</file>
+          <file> 5 19 9 10 22 21 13 14 16 4 17 18 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 3 20 10 11 23 22 14 15 17 1 18 19 7</file>
+          <file> 5 19 9 10 22 21 13 14 16 4 17 18 0</file>
         </tool>
       </inputs>
     </file>
@@ -89,21 +61,21 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 21</file>
+          <file> 20</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 12</file>
+          <file> 11</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 3 20 10 11 23 22 14 15 17 1 18 19 7</file>
+          <file> 5 19 9 10 22 21 13 14 16 4 17 18 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 3 20 10 11 23 22 14 15 17 1 18 19 7</file>
+          <file> 5 19 9 10 22 21 13 14 16 4 17 18 0</file>
         </tool>
       </inputs>
     </file>
@@ -112,9 +84,37 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 24 2</file>
+          <file> 25 23</file>
         </tool>
       </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.cpp</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 8</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 12</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\sdk.d51</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 23</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 6 20 3 24</file>
+        </tool>
+      </inputs>
     </file>
   </configuration>
   <configuration>

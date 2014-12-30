@@ -243,7 +243,7 @@ int main()
   __xdata static  char pcontact[100];
 
 	unsigned long len = 100;
- 	GetMemeroyData(pcontact,len);
+	GetCurTxContact(pcontact,len);
  	switch(pcontact[0])
  	{
 		case TX_TRADE:
