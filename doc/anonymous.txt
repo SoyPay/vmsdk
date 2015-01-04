@@ -3,6 +3,10 @@
 
 \page anonymous  匿名交易
 
+\section 合约
+-    下面例子中假设bob想给alice和lucy打钱,但是又不想别人知道是bob打钱给alice和lucy,则bob可以通过第三方应用,\n
+-	 bob可以通过此应用填写合约内容给alice和lucy账户打多少钱,然后选择从自己哪个账户打钱,签名然后发送到网络上去,当第三托管\n
+-	 有足够这样子的交易,就会执行刚才bob发送的合约内容，alice和lucy就会收到相对应的钱。\n
 
 
 \section 匿名交易规则
