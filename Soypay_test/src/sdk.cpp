@@ -1,6 +1,5 @@
 
 #include"soypay.h"
-extern unsigned char *GetMemeryData();
 
 
 void test_exit()
