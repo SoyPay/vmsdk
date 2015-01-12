@@ -217,7 +217,7 @@ int main()
 {
 	__xdata static  char pcontact[100];
 	unsigned long len = 100;
- 	GetMemeroyData(pcontact,len);
+	GetCurTxContact(pcontact,len);
  	if(!ProcessContract((CONTRACT*)pcontact))
  	{
  		__exit(RUN_SCRIPT_DATA_ERR);

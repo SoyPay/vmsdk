@@ -1,23 +1,23 @@
 /*! \mainpage Developer documentation
  *
- * \section ä¹°å®¶è´­ä¹°äº¤æ˜“åŒ…
- *æè¿°ï¼šä¹°å– åŒæ–¹å•†é‡å¥½äº¤æ˜“ä»·æ ¼ï¼Œè¶…æ—¶æ—¶é—´ï¼Œè£å†³äººç­‰ï¼Œä¹°å®¶ç»„åˆå¥½äº¤æ˜“åŒ…\n
- *å‡½æ•°ï¼šbool ProcessContract1(const FIRST_CONTRACT* pContract);\n
+ * \section Âò¼Ò¹ºÂò½»Ò×°ü
+ *ÃèÊö£ºÂòÂô Ë«·½ÉÌÁ¿ºÃ½»Ò×¼Û¸ñ£¬³¬Ê±Ê±¼ä£¬²Ã¾öÈËµÈ£¬Âò¼Ò×éºÏºÃ½»Ò×°ü\n
+ *º¯Êı£ºbool ProcessContract1(const FIRST_CONTRACT* pContract);\n
 
 
- *\section å–å®¶ç¡®è®¤åŒ…
- *æè¿°ï¼šå–å®¶æ¥å—ä¹°å®¶çš„è½¬è´¦\n
- *å‡½æ•°ï¼šbool ProcessContract2(const NEXT_CONTRACT* pContract);\n
+ *\section Âô¼ÒÈ·ÈÏ°ü
+ *ÃèÊö£ºÂô¼Ò½ÓÊÜÂò¼ÒµÄ×ªÕË\n
+ *º¯Êı£ºbool ProcessContract2(const NEXT_CONTRACT* pContract);\n
  *
  *
- *\section ä¹°å®¶ç”³è¯‰åŒ…
- *æè¿°ï¼šå–å®¶ä¸å‘è´§ï¼Œä¹°å®¶æå‡ºç”³è¯‰\n
- *å‡½æ•°ï¼šbool ProcessContract3(const NEXT_CONTRACT* pContract);\n
+ *\section Âò¼ÒÉêËß°ü
+ *ÃèÊö£ºÂô¼Ò²»·¢»õ£¬Âò¼ÒÌá³öÉêËß\n
+ *º¯Êı£ºbool ProcessContract3(const NEXT_CONTRACT* pContract);\n
  *
  *
- *\section ä»²è£ç»“æœåŒ…
- *æè¿°ï¼šä»²è£åˆ¤å†³ç»“æœ\n
- *å‡½æ•°ï¼šbool ProcessContract3(const NEXT_CONTRACT* pContract);\n
+ *\section ÖÙ²Ã½á¹û°ü
+ *ÃèÊö£ºÖÙ²ÃÅĞ¾ö½á¹û\n
+ *º¯Êı£ºbool ProcessContract3(const NEXT_CONTRACT* pContract);\n
  *
  *.
  */
@@ -34,26 +34,26 @@
 #define HASH_SIZE	32
 
 typedef struct {
-	unsigned char nType;					//!<ç±»å‹
-	unsigned char nArbitratorCount;			//!<ä»²è£è€…ä¸ªæ•°
-	ACCOUNT_ID buyer;						//!<ä¹°å®¶IDï¼ˆé‡‡ç”¨6å­—èŠ‚çš„è´¦æˆ·IDï¼‰
-	ACCOUNT_ID seller;						//!<å–å®¶IDï¼ˆé‡‡ç”¨6å­—èŠ‚çš„è´¦æˆ·IDï¼‰
-	ACCOUNT_ID arbitrator[MAX_ARBITRATOR];	//!<ä»²è£è€…IDï¼ˆé‡‡ç”¨6å­—èŠ‚çš„è´¦æˆ·IDï¼‰
-	long nHeight;							//!<è¶…æ—¶ç»å¯¹é«˜åº¦
-	Int64 nFineMoney;						//!<å–å®¶è¿çº¦åæœ€å¤§ç½šæ¬¾é‡‘é¢
-	Int64 nPayMoney;						//!<ä¹°å®¶å‘å–å®¶æ”¯ä»˜çš„é‡‘é¢
-	Int64 nFee;								//!<ä»²è£æ‰‹ç»­è´¹
-	Int64 ndeposit;							//!<ä»²è£æŠ¼é‡‘,ç”³è¯‰æ—¶ä»ä»²è£è€…æ‰£é™¤çš„æŠ¼é‡‘(å¦‚æœä»²è£ä¸å“åº”é’±å½’ä¹°å®¶å¦åˆ™ä¹°å®¶é€€è¿˜ç»™ä»²è£è€…)
+	unsigned char nType;					//!<ÀàĞÍ
+	unsigned char nArbitratorCount;			//!<ÖÙ²ÃÕß¸öÊı
+	ACCOUNT_ID buyer;						//!<Âò¼ÒID£¨²ÉÓÃ6×Ö½ÚµÄÕË»§ID£©
+	ACCOUNT_ID seller;						//!<Âô¼ÒID£¨²ÉÓÃ6×Ö½ÚµÄÕË»§ID£©
+	ACCOUNT_ID arbitrator[MAX_ARBITRATOR];	//!<ÖÙ²ÃÕßID£¨²ÉÓÃ6×Ö½ÚµÄÕË»§ID£©
+	long nHeight;							//!<³¬Ê±¾ø¶Ô¸ß¶È
+	Int64 nFineMoney;						//!<Âô¼ÒÎ¥Ô¼ºó×î´ó·£¿î½ğ¶î
+	Int64 nPayMoney;						//!<Âò¼ÒÏòÂô¼ÒÖ§¸¶µÄ½ğ¶î
+	Int64 nFee;								//!<ÖÙ²ÃÊÖĞø·Ñ
+	Int64 ndeposit;							//!<ÖÙ²ÃÑº½ğ,ÉêËßÊ±´ÓÖÙ²ÃÕß¿Û³ıµÄÑº½ğ(Èç¹ûÖÙ²Ã²»ÏìÓ¦Ç®¹éÂò¼Ò·ñÔòÂò¼ÒÍË»¹¸øÖÙ²ÃÕß)
 } FIRST_CONTRACT;
 
 typedef struct {
-	unsigned char nType;				//!<äº¤æ˜“ç±»å‹
-	unsigned char hash[HASH_SIZE];		//!<ä¸Šä¸€ä¸ªäº¤æ˜“åŒ…çš„å“ˆå¸Œ
+	unsigned char nType;				//!<½»Ò×ÀàĞÍ
+	unsigned char hash[HASH_SIZE];		//!<ÉÏÒ»¸ö½»Ò×°üµÄ¹şÏ£
 } NEXT_CONTRACT;
 
 typedef struct {
-	unsigned char nType;				//!<äº¤æ˜“ç±»å‹
-	unsigned char hash[HASH_SIZE];		//!<ä¸Šä¸€ä¸ªäº¤æ˜“çš„å“ˆå¸Œ
+	unsigned char nType;				//!<½»Ò×ÀàĞÍ
+	unsigned char hash[HASH_SIZE];		//!<ÉÏÒ»¸ö½»Ò×µÄ¹şÏ£
 	Int64 nMinus;
 } ARBIT_RES_CONTRACT;
 
@@ -73,8 +73,8 @@ void PrintString(const char *format, ...) {
 
 /**
  *
- * @param pContract æ¯ä¸ªä»²è£ç»“æœåŒ…çš„åˆçº¦å†…å®¹(ç¬¬ä¸€ä¸ªåˆçº¦ç»“æ„ä¸ºå½“å‰åˆçº¦å†…å®¹ï¼Œå‰©ä½™2ä¸ªä¸ºå¾…å¡«å……å†…å®¹)
- * @param pCount æœ‰æ•ˆåˆçº¦ç»“æ„å†…å®¹çš„ä¸ªæ•°
+ * @param pContract Ã¿¸öÖÙ²Ã½á¹û°üµÄºÏÔ¼ÄÚÈİ(µÚÒ»¸öºÏÔ¼½á¹¹Îªµ±Ç°ºÏÔ¼ÄÚÈİ£¬Ê£Óà2¸öÎª´ıÌî³äÄÚÈİ)
+ * @param pCount ÓĞĞ§ºÏÔ¼½á¹¹ÄÚÈİµÄ¸öÊı
  * @return
  */
 bool FillArContract(ARBIT_RES_CONTRACT* pContract, unsigned char* pCount) {
@@ -154,11 +154,11 @@ Int64 GetFineMoney(ARBIT_RES_CONTRACT* pContract, unsigned char nCount)
 }
 
 /**
- * @brief  	step1:blocké«˜åº¦æœ‰æ•ˆæ€§\n
- * 			step2:ä¹°å®¶å’Œå–å®¶åœ°å€æ˜¯å¦æœ‰æ•ˆ\n
- *    		step3:ä»²è£è€…åœ°å€æ˜¯å¦å­˜åœ¨ï¼Œä»²è£è€…ä¸ªæ•°æ˜¯å¦åˆæ³•ï¼Œä»²è£è€…æ˜¯å¦å…³è”è„šæœ¬\n
- * 			step4:å–å®¶çš„è‡ªç”±é‡‘é¢æ˜¯å¦è¶³å¤Ÿèµ”å¿\n
- * 			step5:æƒé™è‡ªå®šä¹‰å­—æ®µä¸­çš„å€¼ä¸å„è§’è‰²æ˜¯å¦åŒ¹é…
+ * @brief  	step1:block¸ß¶ÈÓĞĞ§ĞÔ\n
+ * 			step2:Âò¼ÒºÍÂô¼ÒµØÖ·ÊÇ·ñÓĞĞ§\n
+ *    		step3:ÖÙ²ÃÕßµØÖ·ÊÇ·ñ´æÔÚ£¬ÖÙ²ÃÕß¸öÊıÊÇ·ñºÏ·¨£¬ÖÙ²ÃÕßÊÇ·ñ¹ØÁª½Å±¾\n
+ * 			step4:Âô¼ÒµÄ×ÔÓÉ½ğ¶îÊÇ·ñ×ã¹»Åâ³¥\n
+ * 			step5:È¨ÏŞ×Ô¶¨Òå×Ö¶ÎÖĞµÄÖµÓë¸÷½ÇÉ«ÊÇ·ñÆ¥Åä
  */
 bool CheckContract1(const FIRST_CONTRACT* pContract) {
 	//step1
@@ -180,7 +180,7 @@ bool CheckContract1(const FIRST_CONTRACT* pContract) {
 
 	//step4
 	Int64 nTotalFreeMoney;
-	if (!QueryAccountBalance((const unsigned char* const ) pContract->seller.accounid, ACOUNT_ID, &nTotalFreeMoney))
+	if (!QueryAccountBalance((const unsigned char* const ) pContract->seller.accounid, &nTotalFreeMoney))
 		return false;
 
 	COMP_RET ret = Int64Compare(&pContract->nFineMoney, &nTotalFreeMoney);
@@ -199,10 +199,10 @@ bool CheckContract1(const FIRST_CONTRACT* pContract) {
 }
 
 /**
- * @brief 	step1:hashçš„æœ‰æ•ˆæ€§\n
- * 			step2:ä»æ•°æ®åº“ä¸­è¯»å–æ•°æ®åˆ¤æ–­ä¸Šä¸€ä¸ªäº¤æ˜“æ˜¯å¦å·²ç»å¤„ç†ï¼ˆæ˜¯å¦å·²ç»æœ‰å…¶ä»–å–å®¶ç¡®è®¤åŒ…ï¼Œé˜²æ­¢å–å®¶é‡å¤ç¡®è®¤ï¼‰ï¼Œå¦‚æœå·²ç»å¤„ç†åˆ™æ­¤äº¤æ˜“æ— æ•ˆè¿”å›ã€‚\n
- * 			step3:å¦‚æœä¹°å®¶æå‡ºç”³è¯‰ï¼Œå–å®¶æ˜¯å¦æœ‰è¶³å¤Ÿçš„é’±èµ”ç»™ä¹°å®¶ã€‚äº¤æ˜“ç­¾åè´¦æˆ·åœ°å€æ˜¯å¦æ˜¯ç¬¬ä¸€ä¸ªäº¤æ˜“ä¸­å–å®¶çš„åœ°å€\n
- * 			step4:ç”¨æˆ·è‡ªå®šä¹‰æ•°æ®æ£€æµ‹\n
+ * @brief 	step1:hashµÄÓĞĞ§ĞÔ\n
+ * 			step2:´ÓÊı¾İ¿âÖĞ¶ÁÈ¡Êı¾İÅĞ¶ÏÉÏÒ»¸ö½»Ò×ÊÇ·ñÒÑ¾­´¦Àí£¨ÊÇ·ñÒÑ¾­ÓĞÆäËûÂô¼ÒÈ·ÈÏ°ü£¬·ÀÖ¹Âô¼ÒÖØ¸´È·ÈÏ£©£¬Èç¹ûÒÑ¾­´¦ÀíÔò´Ë½»Ò×ÎŞĞ§·µ»Ø¡£\n
+ * 			step3:Èç¹ûÂò¼ÒÌá³öÉêËß£¬Âô¼ÒÊÇ·ñÓĞ×ã¹»µÄÇ®Åâ¸øÂò¼Ò¡£½»Ò×Ç©ÃûÕË»§µØÖ·ÊÇ·ñÊÇµÚÒ»¸ö½»Ò×ÖĞÂô¼ÒµÄµØÖ·\n
+ * 			step4:ÓÃ»§×Ô¶¨ÒåÊı¾İ¼ì²â\n
  * @param pContract
  */
 
@@ -236,9 +236,9 @@ bool CheckContract2(const NEXT_CONTRACT* pContract, FIRST_CONTRACT* pContract1) 
 }
 
 /**
- * @brief	step1ï¼šhashçš„æœ‰æ•ˆæ€§\n
- * 			step2ï¼šä¸Šä¸€ä¸ªäº¤æ˜“æ˜¯å¦æœ‰å¤„ç†è¿‡
- * 			step3:ç”¨æˆ·è‡ªå®šä¹‰æ•°æ®æ£€æµ‹\n
+ * @brief	step1£ºhashµÄÓĞĞ§ĞÔ\n
+ * 			step2£ºÉÏÒ»¸ö½»Ò×ÊÇ·ñÓĞ´¦Àí¹ı
+ * 			step3:ÓÃ»§×Ô¶¨ÒåÊı¾İ¼ì²â\n
  * @param pContract
  */
 bool CheckContract3(const NEXT_CONTRACT* pContract, FIRST_CONTRACT* pContract1, NEXT_CONTRACT* pContract2) {
@@ -268,10 +268,10 @@ bool CheckContract3(const NEXT_CONTRACT* pContract, FIRST_CONTRACT* pContract1, 
 }
 
 /**
- * @brief	step1ï¼šæ£€æŸ¥ç¬¬ä¸‰ä¸ªåŒ…çš„hashæœ‰æ•ˆæ€§\n
- * 			step2ï¼›æ‰£é’±é‡‘é¢çš„æœ‰æ•ˆæ€§\n
- * 			step3ï¼šæ£€æµ‹ä¸Šä¸€ä¸ªäº¤æ˜“æ˜¯å¦æœ‰å¤„ç†
- * 			step4:ç”¨æˆ·è‡ªå®šä¹‰æ•°æ®æ£€æµ‹\n
+ * @brief	step1£º¼ì²éµÚÈı¸ö°üµÄhashÓĞĞ§ĞÔ\n
+ * 			step2£»¿ÛÇ®½ğ¶îµÄÓĞĞ§ĞÔ\n
+ * 			step3£º¼ì²âÉÏÒ»¸ö½»Ò×ÊÇ·ñÓĞ´¦Àí
+ * 			step4:ÓÃ»§×Ô¶¨ÒåÊı¾İ¼ì²â\n
  * @param pContract
  */
 bool CheckContract4(ARBIT_RES_CONTRACT* pContract, unsigned char* pArCountInArray, FIRST_CONTRACT* pContract1,
@@ -316,11 +316,11 @@ bool CheckContract4(ARBIT_RES_CONTRACT* pContract, unsigned char* pArCountInArra
 }
 
 /**
- * @brief step1:ä»ä¹°å®¶çš„è‡ªç”±é‡‘é¢ä¸­æ‰£é™¤é‡‘é¢(åº”æ”¯ä»˜ç»™å–å®¶çš„é’±)\n
- *        step2:æŠŠä¸Šä¸€æ­¥æ“ä½œçš„é’±è½¬å…¥ä¹°å®¶çš„å†»ç»“é‡‘é¢ä¸­
- * @param vmoper æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æ•°ç»„
- * @param nVmSize æ•°ç»„å¤§å°
- * @param pContract ç¬¬ä¸€ä¸ªåˆçº¦ç»“æ„
+ * @brief step1:´ÓÂò¼ÒµÄ×ÔÓÉ½ğ¶îÖĞ¿Û³ı½ğ¶î(Ó¦Ö§¸¶¸øÂô¼ÒµÄÇ®)\n
+ *        step2:°ÑÉÏÒ»²½²Ù×÷µÄÇ®×ªÈëÂò¼ÒµÄ¶³½á½ğ¶îÖĞ
+ * @param vmoper ²Ù×÷ÕË»§µÄ½á¹¹ÌåÊı×é
+ * @param nVmSize Êı×é´óĞ¡
+ * @param pContract µÚÒ»¸öºÏÔ¼½á¹¹
  */
 bool OperAccount1(VM_OPERATE *vmoper, unsigned char nVmSize, const void* pContract) {
 	if (NULL == vmoper || NULL == pContract || nVmSize != 2)
@@ -341,11 +341,11 @@ bool OperAccount1(VM_OPERATE *vmoper, unsigned char nVmSize, const void* pContra
 }
 
 /**
- * @brief step1:ä»ä¹°å®¶çš„å†»ç»“è½¬å…¥å–å®¶çš„å†»ç»“é‡‘é¢ä¸­\n
- * 		  step2:å–å®¶è‡ªç”±é‡‘é¢ä¸­æ‰£é™¤æœ€å¤§ç½šæ¬¾åˆ°å†»ç»“é‡‘é¢ä¸­
- * @param vmoper æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æ•°ç»„
- * @param nVmSize æ•°ç»„å¤§å°
- * @param pContract ç¬¬äºŒä¸ªåˆçº¦ç»“æ„
+ * @brief step1:´ÓÂò¼ÒµÄ¶³½á×ªÈëÂô¼ÒµÄ¶³½á½ğ¶îÖĞ\n
+ * 		  step2:Âô¼Ò×ÔÓÉ½ğ¶îÖĞ¿Û³ı×î´ó·£¿îµ½¶³½á½ğ¶îÖĞ
+ * @param vmoper ²Ù×÷ÕË»§µÄ½á¹¹ÌåÊı×é
+ * @param nVmSize Êı×é´óĞ¡
+ * @param pContract µÚ¶ş¸öºÏÔ¼½á¹¹
  */
 bool OperAccount2(VM_OPERATE *vmoper, unsigned short nVmSize, FIRST_CONTRACT* pContract1,
 		const NEXT_CONTRACT* pContract2) {
@@ -422,7 +422,7 @@ bool OperAccount4(VM_OPERATE *vmoper, unsigned short nVmSize, FIRST_CONTRACT* pC
 
 	if (nArCountInArray!=pContract1->nArbitratorCount)
 	{
-		//æœ€åä¸€ä¸ªä¸­è£åˆ¤å†³æ‰æ“ä½œè´¦æˆ·
+		//×îºóÒ»¸öÖĞ²ÃÅĞ¾ö²Å²Ù×÷ÕË»§
 		return true;
 	}
 
@@ -475,9 +475,9 @@ bool OperAccount4(VM_OPERATE *vmoper, unsigned short nVmSize, FIRST_CONTRACT* pC
 }
 
 /**
- * @brief 1.	ä»ä¹°å®¶çš„è‡ªç”±é‡‘é¢è½¬å…¥ä¹°å®¶çš„å†»ç»“ä¸­
- * @param data æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æŒ‡é’ˆ
- * @param conter æ“ä½œæ¬¡æ•°
+ * @brief 1.	´ÓÂò¼ÒµÄ×ÔÓÉ½ğ¶î×ªÈëÂò¼ÒµÄ¶³½áÖĞ
+ * @param data ²Ù×÷ÕË»§µÄ½á¹¹ÌåÖ¸Õë
+ * @param conter ²Ù×÷´ÎÊı
  * @return
  */
 bool WriteOutput1(const VM_OPERATE* data, unsigned short conter) {
@@ -485,10 +485,10 @@ bool WriteOutput1(const VM_OPERATE* data, unsigned short conter) {
 }
 
 /**
- * @brief	1.	ä»ä¹°å®¶çš„è¾“å‡ºå†»ç»“è½¬åˆ°å–å®¶çš„å†»ç»“ã€‚\n
- 2.	ä»å–å®¶çš„è‡ªç”±é‡‘é¢ä¸­æ‰£æ¬¾è½¬åˆ°å–å®¶çš„å†»ç»“ä¸­
- * @param data æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æŒ‡é’ˆ
- * @param conter æ“ä½œæ¬¡æ•°
+ * @brief	1.	´ÓÂò¼ÒµÄÊä³ö¶³½á×ªµ½Âô¼ÒµÄ¶³½á¡£\n
+ 2.	´ÓÂô¼ÒµÄ×ÔÓÉ½ğ¶îÖĞ¿Û¿î×ªµ½Âô¼ÒµÄ¶³½áÖĞ
+ * @param data ²Ù×÷ÕË»§µÄ½á¹¹ÌåÖ¸Õë
+ * @param conter ²Ù×÷´ÎÊı
  * @return
  */
 bool WriteOutput2(const VM_OPERATE* data, unsigned short conter) {
@@ -496,9 +496,9 @@ bool WriteOutput2(const VM_OPERATE* data, unsigned short conter) {
 }
 
 /**
- * @brief	1.	ä»ä»²è£è€…è‡ªç”±é‡‘é¢ä¸­æ‰£é™¤å°‘é‡è´¹ç”¨åˆ°ä¹°å®¶å†»ç»“é‡‘é¢ä¸­ã€‚
- * @param data æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æŒ‡é’ˆ
- * @param conter æ“ä½œæ¬¡æ•°
+ * @brief	1.	´ÓÖÙ²ÃÕß×ÔÓÉ½ğ¶îÖĞ¿Û³ıÉÙÁ¿·ÑÓÃµ½Âò¼Ò¶³½á½ğ¶îÖĞ¡£
+ * @param data ²Ù×÷ÕË»§µÄ½á¹¹ÌåÖ¸Õë
+ * @param conter ²Ù×÷´ÎÊı
  * @return
  */
 bool WriteOutput3(const VM_OPERATE* data, unsigned short conter) {
@@ -506,11 +506,11 @@ bool WriteOutput3(const VM_OPERATE* data, unsigned short conter) {
 }
 
 /**
- * @brief	1.	ä»ä»²è£è€…çš„å†»ç»“æ¢å¤ä¸€å®šé‡‘é¢åˆ°è‡ªç”±é‡‘é¢ä¸­\n
- 2.	ä»å–å®¶çš„å†»ç»“é‡‘é¢ä¸­æ‰£é™¤è´¹ç”¨ç»™ä¹°å®¶\n
- 3.	ä»å–å®¶çš„è‡ªç”±é‡‘é¢ä¸­æ‰£é™¤ä»²è£è´¹ç”¨ç»™ä»²è£è€…
- * @param data æ“ä½œè´¦æˆ·çš„ç»“æ„ä½“æŒ‡é’ˆ
- * @param conter æ“ä½œæ¬¡æ•°
+ * @brief	1.	´ÓÖÙ²ÃÕßµÄ¶³½á»Ö¸´Ò»¶¨½ğ¶îµ½×ÔÓÉ½ğ¶îÖĞ\n
+ 2.	´ÓÂô¼ÒµÄ¶³½á½ğ¶îÖĞ¿Û³ı·ÑÓÃ¸øÂò¼Ò\n
+ 3.	´ÓÂô¼ÒµÄ×ÔÓÉ½ğ¶îÖĞ¿Û³ıÖÙ²Ã·ÑÓÃ¸øÖÙ²ÃÕß
+ * @param data ²Ù×÷ÕË»§µÄ½á¹¹ÌåÖ¸Õë
+ * @param conter ²Ù×÷´ÎÊı
  * @return
  */
 bool WriteOutput4(const VM_OPERATE* data, unsigned short conter) {
@@ -518,7 +518,7 @@ bool WriteOutput4(const VM_OPERATE* data, unsigned short conter) {
 }
 
 /**
- * @brief	å°†ç¬¬ä¸€ä¸ªäº¤æ˜“çš„å“ˆå¸Œä½œä¸ºkeyå†™å…¥æ•°æ®åº“
+ * @brief	½«µÚÒ»¸ö½»Ò×µÄ¹şÏ£×÷ÎªkeyĞ´ÈëÊı¾İ¿â
  * @return
  */
 bool WriteDB2(const char* pKey, FIRST_CONTRACT* pFirstContract) {
@@ -527,7 +527,7 @@ bool WriteDB2(const char* pKey, FIRST_CONTRACT* pFirstContract) {
 }
 
 /**
- * @brief	å°†ç¬¬äºŒä¸ªäº¤æ˜“çš„å“ˆå¸Œä½œä¸ºkeyå†™å…¥æ•°æ®åº“
+ * @brief	½«µÚ¶ş¸ö½»Ò×µÄ¹şÏ£×÷ÎªkeyĞ´ÈëÊı¾İ¿â
  * @return
  */
 bool WriteDB3(const char* pKey, FIRST_CONTRACT* pFirstContract) {
@@ -536,7 +536,7 @@ bool WriteDB3(const char* pKey, FIRST_CONTRACT* pFirstContract) {
 }
 
 /**
- * @brief	å°†ç¬¬ä¸‰ä¸ªäº¤æ˜“çš„å“ˆå¸Œä½œä¸ºkeyå†™å…¥æ•°æ®åº“
+ * @brief	½«µÚÈı¸ö½»Ò×µÄ¹şÏ£×÷ÎªkeyĞ´ÈëÊı¾İ¿â
  * @return
  */
 bool WriteDB4(const char* pKey, FIRST_CONTRACT* pFirstContract) {
@@ -545,7 +545,7 @@ bool WriteDB4(const char* pKey, FIRST_CONTRACT* pFirstContract) {
 }
 
 /**
- * @brief å¤„ç†ç¬¬ä¸€ä¸ªäº¤æ˜“
+ * @brief ´¦ÀíµÚÒ»¸ö½»Ò×
  * @param pContract
  * @return
  */
@@ -559,8 +559,8 @@ bool ProcessContract1(const FIRST_CONTRACT* pContract) {
 }
 
 /**
- * @brief å–å®¶ç¡®è®¤
- * @param pContract åˆçº¦å†…å®¹
+ * @brief Âô¼ÒÈ·ÈÏ
+ * @param pContract ºÏÔ¼ÄÚÈİ
  * @return
  */
 bool ProcessContract2(const NEXT_CONTRACT* pContract) {
@@ -576,8 +576,8 @@ bool ProcessContract2(const NEXT_CONTRACT* pContract) {
 }
 
 /**
- * @brief æ‰§è¡Œç”³è¯‰
- * @param pContract åˆçº¦å†…å®¹
+ * @brief Ö´ĞĞÉêËß
+ * @param pContract ºÏÔ¼ÄÚÈİ
  * @return
  */
 bool ProcessContract3(const NEXT_CONTRACT* pContract) {
@@ -594,8 +594,8 @@ bool ProcessContract3(const NEXT_CONTRACT* pContract) {
 }
 
 /**
- * @brief æ‰§è¡Œä»²è£ç»“æœ
- * @param pContract ä»²è£ç»“æœåˆçº¦ç»“æ„ä½“
+ * @brief Ö´ĞĞÖÙ²Ã½á¹û
+ * @param pContract ÖÙ²Ã½á¹ûºÏÔ¼½á¹¹Ìå
  * @return
  */
 bool ProcessContract4(const ARBIT_RES_CONTRACT* pContract) {
@@ -622,7 +622,7 @@ bool ProcessContract4(const ARBIT_RES_CONTRACT* pContract) {
 int main() {
 	__xdata static char pContract[512];
 	unsigned long len = 512;
-	int nRet = GetMemeroyData(pContract, len);
+	int nRet = GetCurTxContact(pContract, len);
 	PrintString("nRet is %d", nRet);
 
 #pragma data_alignment = 1

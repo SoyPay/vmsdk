@@ -2,7 +2,6 @@
 #include<stdlib.h>
 #include <stdio.h>
 #include"VmSdk.h"
-extern unsigned char *GetMemeryData();
 
 
 void test_exit()
@@ -330,10 +329,10 @@ bool testQueryAccountBalance(char *phash)
 	char paccount[6] = {0};
 	Int64 pBalance;
 	Int64Inital(&pBalance,"\x00", 1);
-	TestCheck(QueryAccountBalance((unsigned char*)paccount,ACOUNT_ID,&pBalance) == true);
+	TestCheck(QueryAccountBalance((unsigned char*)paccount,&pBalance) == true);
 	LogPrint(&pBalance,8,HEX);
 	GetAccounts((unsigned char*)phash,paccount,6);
-	TestCheck(QueryAccountBalance((unsigned char*)paccount,ACOUNT_ID,&pBalance) == true);
+	TestCheck(QueryAccountBalance((unsigned char*)paccount,&pBalance) == true);
 	LogPrint(&pBalance,8,HEX);
 	return true;
 }
@@ -540,7 +539,7 @@ int main()
 	__xdata static  char pcontact[512];
 
 	unsigned long len = 512;
- 	GetMemeroyData(pcontact,len);
+	GetCurTxContact(pcontact,len);
 	switch(pcontact[0])
 	{
 		case 0x01:

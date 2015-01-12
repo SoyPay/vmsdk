@@ -67,7 +67,7 @@ bool OperMoney(CONTRACT_DATA* pData,VM_OPERATE* pOperate,unsigned char nFrom,
 int main() {
 	__xdata static char pContract[512];
 	unsigned long len = 512;
-	int nRet = GetMemeroyData(pContract, len);
+	int nRet = GetCurTxContact(pContract, len);
 	PrintString("nRet is %d,data size is %d", nRet,sizeof(CONTRACT_DATA));
 
 	CONTRACT_DATA* pData = (CONTRACT_DATA*)pContract;
