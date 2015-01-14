@@ -304,10 +304,10 @@ unsigned short GetAccountPublickey(const void* const accounid,void * const pubke
 	memcpy(pubkey, retdata->buffer, retdata->len);
 	return retdata->len;
 }
-bool QueryAccountBalance(const unsigned char* const account,ACCOUNT_TYPE type,Int64* const pBalance){
+bool QueryAccountBalance(const unsigned char* const account,Int64* const pBalance){
 	ClearParaSpace()
 	;
-	InsertOutData(account, type == ACOUNT_ID ? 6 : 20);
+	InsertOutData(account,  6 );
 	__CallApi(QUEYACCBALANCE_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
@@ -559,19 +559,8 @@ bool ModifyDataDBVavle(const void* const key,const unsigned char keylen, const v
 	memcpy(&flag, retdata->buffer, 1);
 	return flag;
 }
-unsigned char *GetMemeryData() {
-	return Communicate;
-}
 
-unsigned long GetMemeroyData(void * const pfrist, unsigned long const len)
-{
-	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len == 0 || retdata->len > len) {
-		return 0;
-	}
-	memcpy((char*)pfrist, retdata->buffer,retdata->len);
-	return retdata->len;
-}
+
 bool IsRegID(const void* const account)
 {
 	char pubkey[33] = {0};
@@ -661,3 +650,56 @@ unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen)
 	memcpy(pContact, retdata->buffer, retdata->len);
 	return retdata->len;
 }
+//long ReadVarLong(char*buffer){
+//	 long n = 0;
+//	    while(true) {
+//	        unsigned char chData;
+//	        chData = *buffer++;
+//	        n = (n << 7) | (chData & 0x7F);
+//	        if (chData & 0x80)
+//	            n++;
+//	        else
+//	            return n;
+//	    }
+//	    return n;
+//}
+//void StringAdd(char *str)
+//{
+//	int len;
+//	len=strlen(str);
+//
+//
+//	while(len--)
+//	{
+//		if(str[len]=='F' || str[len]=='f')
+//		{
+//			str[len]='0';
+//		}
+//		else
+//		{
+//			str[len]+=1;
+//			break;
+//		}
+//	}
+//}
+//Int64 ReadVarInt64(char*buffer){
+//	Int64 ret;
+//	Int64 add;
+//	Int64 mul;
+//	Int64Inital(&add,"\x01",1);
+//	Int64Inital(&mul,"\x80",1);
+//	while(true) {
+//		unsigned char chData;
+//		chData = *buffer++;
+//		//n = (n <<7) | (chData & 0x7F);
+//		Int64Mul(&ret,&mul,&ret);
+//		ret = ret| (chData & 0x7F);
+//		if (chData & 0x80)
+//			Int64Add(&ret,&add,&ret);
+//		else{
+//			return ret;
+//		}
+//
+//	}
+//	return ret;
+//}

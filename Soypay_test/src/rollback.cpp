@@ -2,7 +2,7 @@
 #include"soypay.h"
 bool testWriteDataDB1()
 {
-	unsigned long time = 2;
+	unsigned long time = GetCurRunEnvHeight() +100;
 	char* key = "key";
 	char *value = "hello";
 	TestCheck(WriteDataDB(key,4,value,6,time) == true);
@@ -15,7 +15,7 @@ bool testModifyDataDB1()
 {
 	char*key = "key1";
 	char *value= "LUO";
-	unsigned long ptime = 5;
+	unsigned long ptime = GetCurRunEnvHeight() +50;
 	TestCheck(ModifyDataDB(key,5,value,4,ptime) == true);
 	return true;
 }

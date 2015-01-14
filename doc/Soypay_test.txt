@@ -1,0 +1,18 @@
+/*!
+
+\page Soypay_test  测试代码
+
+\section 说明
+-  自动测试 所有系统api的测试
+
+
+
+- \section 测试代码列表
+    - \ref rollback.cpp
+	- \ref script_account.cpp
+	- \ref sdk.cpp
+	- \ref soypay.h
+	- \ref soypayd_test.cpp
+	- \ref testdb.cpp
+*/
+

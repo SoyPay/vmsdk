@@ -1,6 +1,5 @@
 
 #include"soypay.h"
-extern unsigned char *GetMemeryData();
 
 
 void test_exit()
@@ -300,10 +299,10 @@ bool testQueryAccountBalance(char *phash)
 	char paccount[6] = {0};
 	Int64 pBalance;
 	Int64Inital(&pBalance,"\x00", 1);
-	TestCheck(QueryAccountBalance((unsigned char*)paccount,ACOUNT_ID,&pBalance) == true);
+	TestCheck(QueryAccountBalance((unsigned char*)paccount,&pBalance) == true);
 	LogPrint(&pBalance,8,HEX);
 	GetAccounts((unsigned char*)phash,paccount,6);
-	TestCheck(QueryAccountBalance((unsigned char*)paccount,ACOUNT_ID,&pBalance) == true);
+	TestCheck(QueryAccountBalance((unsigned char*)paccount,&pBalance) == true);
 	LogPrint(&pBalance,8,HEX);
 	return true;
 }

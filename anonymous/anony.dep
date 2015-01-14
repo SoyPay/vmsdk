@@ -29,8 +29,6 @@
       <file>$PROJ_DIR$\Debug\Exe\anony.bin</file>
       <file>$PROJ_DIR$\Debug\Obj\anonymain.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\anony.pbd</file>
-      <file>$PROJ_DIR$\..\Soypay_test\src\testdb.cpp</file>
     </outputs>
     <file>
       <name>[ROOT_NODE]</name>

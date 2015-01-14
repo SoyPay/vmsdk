@@ -28,9 +28,6 @@
   <project>
     <path>$WS_DIR$\testUint\test.ewp</path>
   </project>
-  <project>
-    <path>$WS_DIR$\APItest\TestAPI.ewp</path>
-  </project>
   <batchBuild/>
 </workspace>
 

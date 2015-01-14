@@ -29,17 +29,22 @@
  * 规则
  * @return
  */
-/*! \mainpage Developer documentation
+
+/*! \mainpage  Description Diablo than regular
  *
- * \section 买家购买交易包
- *描述：买卖 双方商量好交易价格，超时时间,买家组合好交易包\n
- *函数：bool ProcessFirstContract(const FIRST_CONTRACT* pContract);\n
-
-
+ *This is the introduction
+ *
+ *
+ *\section 买家卖家发送交易包
+ *描述：买卖 双方商量好交易价格，超时时间,买家组合好交易包
+ *函数：bool ProcessFirstContract(const FIRST_CONTRACT* pContract);
+ *
+ *
+ *
  *\section 买家确认包
- *描述：买家收到货，发送确认包\n
- *函数：bool ProcessSecondContract(const NEXT_CONTRACT* pContract);\n
- *.
+ *描述：买家收到货，发送确认包
+ *函数：bool ProcessSecondContract(const NEXT_CONTRACT* pContract);
+ *
  */
 
 #define ACCOUNT_ID_SIZE 6
@@ -238,7 +243,7 @@ int main()
   __xdata static  char pcontact[100];
 
 	unsigned long len = 100;
- 	GetMemeroyData(pcontact,len);
+	GetCurTxContact(pcontact,len);
  	switch(pcontact[0])
  	{
 		case TX_TRADE:

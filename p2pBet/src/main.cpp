@@ -204,7 +204,7 @@ static bool SendDataCheck(const BET_CTX *pbetctx)
 		return false;
 	}
 
-	if(!QueryAccountBalance(pbetctx->accid, ACOUNT_ID, &balance))
+	if(!QueryAccountBalance(pbetctx->accid, &balance))
 	{
 		ErrorCheck(0);
 		return false;
@@ -463,7 +463,7 @@ static bool AcceptDataCheck(const BET_CTX *pbetctx)
 		return false;
 	}
 
-	if(!QueryAccountBalance(pbetctx->accid, ACOUNT_ID, &balance))
+	if(!QueryAccountBalance(pbetctx->accid, &balance))
 	{
 		ErrorCheck(0);
 		return false;
