@@ -1,27 +1,23 @@
 
 /*!
 
-\page lottery  彩票Demo
+\page lottery  彩票
 
 
-主要玩法:
-
--   Correct case conversion, case folding and normalization.
--   Collation (sorting), including support for 4 Unicode
-    collation levels.
--   ......
-
-\section 随机数的产生
--	采用hash
--	好东东
--	公平的
+\section 合约
+-	任何满足具有一定金额的人可以通过第三方脚本注册彩票，彩票采用一定算法获取具有公信力的数据作为开奖源。\n
+-	以此来达到无中心机构参与的公平彩票业务。任何参与者通过发起彩票交易者的交易hash来选择投注彩票对象，\n
+-	投注者以单方签名授权的方式来完成彩票投注。\n
 
 
-\section 返奖率
--	99.99%
+\section 规则
+-	发起彩票业务者通过彩票脚本以一定金额发起彩票业务，在有效期内，投注者单方授权投注彩票，彩票定期需要
+-   人来发起开奖交易，开奖成功者会有一定的奖励回报。彩票脚本具有防奖池掏空吗，返奖率高以及无中心机构参
+-   与等优点。
 
-- \subpage code
-    - \ref lottery.cpp
-
+\section code
+    - \ref main.cpp
+	- \ref lottery.cpp
+	- \ref lottery.cpp
 */
 
