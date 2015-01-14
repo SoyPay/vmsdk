@@ -241,19 +241,6 @@ bool WriteOutput( const VM_OPERATE* data, const unsigned short conter) {
 	__CallApi(WRITEOUTPUT_FUNC);
 	return true;
 }
-unsigned long GetCurRunEnvHeight() {
-	ClearParaSpace()
-	;
-	__CallApi(GETCTXCONFIRMH_FUNC);
-	#pragma data_alignment = 1
-	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len != 4) {
-		return 0;
-	}
-	unsigned long height = 0;
-	memcpy(&height, retdata->buffer, sizeof(long));
-	return height;
-}
 
 
 bool GetTxContacts(const unsigned char * const txhash,void* const pcotact,const unsigned short maxLen) {

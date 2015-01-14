@@ -175,12 +175,6 @@ void LogPrint(const void *pdata, const unsigned short datalen,PRINT_FORMAT flag 
 bool WriteOutput( const VM_OPERATE* data, const unsigned short conter);
 
 /**@brief
- *obtain current tx's  Confirmation block height	
- *@return the  block's height keep int the height
- *  
- */
-unsigned long GetCurRunEnvHeight();
-/**@brief
  *get tx contact
  * @param txhash: the tx hash
  * @param pcotact: the tx's contact
