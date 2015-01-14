@@ -209,8 +209,14 @@ bool ProcessContract(const CONTRACT* const pContract)
 	if(!GetCurTxHash(&hash))
 		return false;
 	unsigned long outheight = GetCurRunEnvHeight() + pContract->nHeight;
-	if(!WriteDataDB(&hash,32,&flag,1,outheight))
+	if(!WriteDataDB(&hash,32,&flag,1,outheight)){
+		LogPrint("Write hash failed",sizeof("Write hash failed"),STRING);
+		LogPrint(hash,32,STRING);
 		return false;
+	}else{
+		LogPrint("Write hash seucess",sizeof("Write hash seucess"),STRING);
+		LogPrint(hash,32,STRING);
+	}
 
 }
 int main()
