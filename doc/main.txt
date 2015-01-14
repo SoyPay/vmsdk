@@ -15,6 +15,7 @@
 - \section Demo
 	- \ref rule "虚拟机与中间层的协议"
     - \ref lottery "彩票"
+    - \ref bet "点对点对赌"
 	- \ref darksecure  "暗黑比交易"
 	- \ref anonymous  "匿名交易"
 	
