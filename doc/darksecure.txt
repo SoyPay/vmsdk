@@ -1,7 +1,7 @@
 
 /*!
 
-\page darksecure  暗黑比交易
+\page darksecure  担保交易
 \section 合约
 	在下面的例子中, 我们假定Bob和 Alice 想要通过第三方托管来执行合同。假设Bob想用现金向Alice 购买一件衣服，\n
 他们决定成立一份由双方参与的合约\n
