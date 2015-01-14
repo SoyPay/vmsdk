@@ -649,3 +649,56 @@ unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen)
 	memcpy(pContact, retdata->buffer, retdata->len);
 	return retdata->len;
 }
+//long ReadVarLong(char*buffer){
+//	 long n = 0;
+//	    while(true) {
+//	        unsigned char chData;
+//	        chData = *buffer++;
+//	        n = (n << 7) | (chData & 0x7F);
+//	        if (chData & 0x80)
+//	            n++;
+//	        else
+//	            return n;
+//	    }
+//	    return n;
+//}
+//void StringAdd(char *str)
+//{
+//	int len;
+//	len=strlen(str);
+//
+//
+//	while(len--)
+//	{
+//		if(str[len]=='F' || str[len]=='f')
+//		{
+//			str[len]='0';
+//		}
+//		else
+//		{
+//			str[len]+=1;
+//			break;
+//		}
+//	}
+//}
+//Int64 ReadVarInt64(char*buffer){
+//	Int64 ret;
+//	Int64 add;
+//	Int64 mul;
+//	Int64Inital(&add,"\x01",1);
+//	Int64Inital(&mul,"\x80",1);
+//	while(true) {
+//		unsigned char chData;
+//		chData = *buffer++;
+//		//n = (n <<7) | (chData & 0x7F);
+//		Int64Mul(&ret,&mul,&ret);
+//		ret = ret| (chData & 0x7F);
+//		if (chData & 0x80)
+//			Int64Add(&ret,&add,&ret);
+//		else{
+//			return ret;
+//		}
+//
+//	}
+//	return ret;
+//}

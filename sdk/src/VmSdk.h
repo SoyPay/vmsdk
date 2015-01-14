@@ -390,6 +390,8 @@ void inline PrintfFileAndLine(unsigned short line, const char *pfile)
 	LogPrint(bffer,strlen(bffer),STRING);
 }
 #define PrintLog(a,b,c) {if(!(a)) { PrintfLine(__LINE__),LogPrint(a,b,c);}}
-
+//long ReadVarLong(char*buffer);
+//Int64 ReadVarInt64(char*buffer);
+//void Stringleft(char *str);
 #endif /* VMSDK_H_ */
 
