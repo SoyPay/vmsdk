@@ -112,7 +112,7 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 0 1</file>
+          <file> 1 0</file>
         </tool>
       </outputs>
     </file>

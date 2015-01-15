@@ -15,7 +15,7 @@
 按照如图所示的红色标起来的填写,最好点击ok建
 -   然后选择你所建的工程,点击右键,选择Add->ADD Files,则要选择刚才下载的工程sdk文件选择如图所示的文件
 *  \image html 4.jpg
--   然后选择你所建的工程,main.cpp文件,可以写如下图所示最简单的工程
+-   然后选择你所建的工程,main.cpp文件,可以写如下图所示最简单的工程，注意函数退出时一定要调用函数__exit(EXIT_CODE tep)
 *  \image html 5.jpg
 -   编译此工程,在debug文件夹目录下面会生成.bin文件,这个就是我们系统所需要的文件
 -   如果你要注册此脚本可以用rpc命令 registerscripttx  address  false  .bin文件所的目录假设(d:\\test.bin) 超时高度

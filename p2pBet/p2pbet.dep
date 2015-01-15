@@ -99,7 +99,7 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 7 14</file>
+          <file> 14 7</file>
         </tool>
       </outputs>
     </file>
@@ -131,9 +131,6 @@
         </tool>
       </outputs>
     </file>
-    <forcedrebuild>
-      <name>[REBUILD_ALL]</name>
-    </forcedrebuild>
   </configuration>
   <configuration>
     <name>Release</name>
