@@ -11,18 +11,19 @@
 \section main_tutorial 目录
 
 - \subpage VmSdk.h  "SDK"
-
+- \ref rule "虚拟机与中间层的协议"
+ 
 - \section 如何写应用程序
-   - \ref infomation "跟踪我们的步骤来操作"
+   - \ref infomation "第一个 hellow word"
    
 - \section Demo
-	- \ref rule "虚拟机与中间层的协议"
+
     - \ref lottery "彩票"
     - \ref bet "点对点对赌"
 	- \ref darksecure  "担保交易 "
 	- \ref anonymous  "匿名交易"
 	
 - \section TestDemo	
-	- \ref Soypay_test "测试代码"
+	- \ref Soypay_test "SDK 单元测试代码"
 */
 
