@@ -17,9 +17,6 @@
     <path>$WS_DIR$\p2pBet\p2pbet.ewp</path>
   </project>
   <project>
-    <path>$WS_DIR$\sdk\sdk.ewp</path>
-  </project>
-  <project>
     <path>$WS_DIR$\SecuredTrade\SecuredTrade.ewp</path>
   </project>
   <project>

@@ -34,6 +34,7 @@
       <file>$PROJ_DIR$\..\Soypay_test\src\testdb.cpp</file>
       <file>$PROJ_DIR$\..\Soypay_test\src\rollback.cpp</file>
       <file>$PROJ_DIR$\..\Soypay_test\src\sdk.cpp</file>
+      <file>$PROJ_DIR$\..\sdk\src\Demo.cpp</file>
     </outputs>
     <file>
       <name>[ROOT_NODE]</name>
