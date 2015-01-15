@@ -241,7 +241,6 @@ bool WriteOutput( const VM_OPERATE* data, const unsigned short conter) {
 	__CallApi(WRITEOUTPUT_FUNC);
 	return true;
 }
-
 unsigned long GetCurRunEnvHeight() {
 	ClearParaSpace()
 	;
@@ -256,6 +255,7 @@ unsigned long GetCurRunEnvHeight() {
 	return height;
 }
 
+
 bool GetTxContacts(const unsigned char * const txhash,void* const pcotact,const unsigned short maxLen) {
 	ClearParaSpace()
 	;
@@ -263,7 +263,7 @@ bool GetTxContacts(const unsigned char * const txhash,void* const pcotact,const 
 	__CallApi(GETTX_CONTRACT_FUNC);
 	#pragma data_alignment = 1
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len > maxLen || retdata->len <= 0) {
+	if (retdata->len > maxLen || retdata->len == 0) {
 		return false;
 	}
 	memcpy(pcotact, retdata->buffer, retdata->len);
@@ -298,7 +298,7 @@ unsigned short GetAccountPublickey(const void* const accounid,void * const pubke
 	__CallApi(GETACCPUB_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len > maxlength || !(retdata->len == MAX_PUK_LEN || retdata->len == 33) || retdata->len <= 0) {
+	if (retdata->len != 33) {
 		return 0;
 	}
 	memcpy(pubkey, retdata->buffer, retdata->len);
@@ -347,10 +347,10 @@ bool WriteDataDB(const void* const key,const unsigned char keylen,const void * c
 	if (retdata->len != 1) {
 		return false;
 	}
-	bool ret = false;
-	memcpy(&ret, retdata->buffer, 1);
-	return ret;
-
+//	bool ret = false;
+//	memcpy(&ret, retdata->buffer, 1);
+//	return ret;
+	return retdata->buffer[0];
 }
 bool DeleteDataDB(const void* const key,const unsigned char keylen) {
 	ClearParaSpace();
@@ -405,9 +405,9 @@ bool ModifyDataDB(const void* const key,const unsigned char keylen, const void* 
 	if (retdata->len != 1) {
 		return false;
 	}
-	bool ret = false;
-	memcpy(&ret, retdata->buffer, 1);
-	return ret;
+//	bool ret = false;
+//	memcpy(&ret, retdata->buffer, 1);
+	return retdata->buffer[0];
 }
 unsigned long GetDBSize() {
 	__CallApi(GETDBSIZE_FUNC);
@@ -477,7 +477,7 @@ bool GetBlockHash(const unsigned long height,void * const pblochHash) {
 bool GetCurTxHash(void * const poutHash) {
 	__CallApi(GetCURTXHASH_FUNC);
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len > 32 || retdata->len <= 0) {
+	if (retdata->len != 32) {
 		return false;
 	}
 	memcpy(poutHash, retdata->buffer, retdata->len);
@@ -494,9 +494,10 @@ bool IsAuthorited(const void* const account,const Int64* const pmoney) {
 	if (retdata->len != 1) {
 		return false;
 	}
-	bool flag = false;
-	memcpy(&flag, retdata->buffer, 1);
-	return flag;
+//	bool flag = false;
+//	memcpy(&flag, retdata->buffer, 1);
+	return retdata->buffer[0];
+//	return flag;
 }
 bool ReadDataDBTime(const void* const key,const unsigned char keylen, unsigned long * const ptime) {
 	ClearParaSpace();
@@ -507,7 +508,7 @@ bool ReadDataDBTime(const void* const key,const unsigned char keylen, unsigned l
 	InsertOutData(key, keylen);
 	__CallApi(READDBTIME_FUNC);
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len != 4) {
+	if (retdata->len != sizeof(unsigned long)) {
 		return false;
 	}
 	memcpy(ptime, retdata->buffer, sizeof(*ptime));
@@ -526,9 +527,9 @@ bool ModifyDataDBTime(const void* const key,const unsigned char keylen, const un
 	if (retdata->len != 1) {
 		return false;
 	}
-	bool flag;
-	memcpy(&flag, retdata->buffer, 1);
-	return flag;
+//	bool flag;
+//	memcpy(&flag, retdata->buffer, 1);
+	return retdata->buffer[0];
 }
 
 bool ModifyDataDBVavle(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen) {
@@ -544,9 +545,9 @@ bool ModifyDataDBVavle(const void* const key,const unsigned char keylen, const v
 	if (retdata->len != 1) {
 		return false;
 	}
-	bool flag;
-	memcpy(&flag, retdata->buffer, 1);
-	return flag;
+//	bool flag;
+//	memcpy(&flag, retdata->buffer, 1);
+	return retdata->buffer[0];
 }
 
 
@@ -585,7 +586,7 @@ bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* c
 	__CallApi(GETSCRIPTDATA_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len > maxlen ||  retdata->len <= 0) {
+	if (retdata->len > maxlen) {
 		return 0;
 	}
 	memcpy(pvalve, retdata->buffer, retdata->len);
@@ -594,10 +595,10 @@ bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* c
 bool GetCurScritpAccount(void* const account)
 {
 	ClearParaSpace();
-	if(account == NULL)
-	{
-		return false;
-	}
+//	if(account == NULL)
+//	{
+//		return false;
+//	}
 	__CallApi(GETSCRIPTID_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
@@ -633,9 +634,6 @@ unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen)
 	__CallApi(GETCURTXCONTACT_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len <= 0) {
-		return 0;
-	}
 	memcpy(pContact, retdata->buffer, retdata->len);
 	return retdata->len;
 }

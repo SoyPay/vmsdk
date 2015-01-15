@@ -3,10 +3,16 @@
 
 \mainpage VmSdk
 
-\section main_intro DACRS虚拟机API
+\section main_intro DACRS虚拟机SDK
+	虚拟机是DACRS（Distributed Autonomous Corporations Runtime System）系统的核心，因为虚拟机的存在，使得开发者可以\n
+实现各种各样业务需求，满足应用需要，而不再像bts 一样，实现一个功能就要开发一个新的区块链，或者更新所有的客户端。\n
+基于区块链技术，DACRS系统将保证应用的p2p在网络中每一台主机上运行的结果完全一致，并保证其安全性。
 
-调用虚拟机API几乎可以实现当前所有山寨币功能\n
-目前所有应用用的编译器是EW8051-8303-Autorun.exe\n
+   在系统内部虚拟了一个图灵完备的8501单片机，因而应用可以使用成熟的C/C++ for 8051 编译器，主要有 keil for 8051 or IAR for 8051 \n
+理论上所有8051编译器都可以使用，但团队现阶段开发和测试都是用的 IAR for 8051 版本：EW8051-8303。
+ 
+   应用同过调用API接口，和DACRS 交互，可以读写应用私有数据库，和操作系统账户（需要通过权限校验），从而实现各种各样的应用，为了防止开发者\n
+滥用系统资源，系统将对应用所消耗的资源进行收费，并限定最大值，使资源获得最大限度的公平使用。   
 
 \section main_tutorial 目录
 
@@ -14,16 +20,16 @@
 - \ref rule "虚拟机与中间层的协议"
  
 - \section 如何写应用程序
-   - \ref infomation "第一个 hellow word"
+   - \ref infomation " hello  word"
    
 - \section Demo
 
     - \ref lottery "彩票"
-    - \ref bet "点对点对赌"
-	- \ref darksecure  "担保交易 "
-	- \ref anonymous  "匿名交易"
-	
-- \section TestDemo	
-	- \ref Soypay_test "SDK 单元测试代码"
-*/
+    - \ref p2pbet "点对点对赌"
+    - \ref darksecure "抵押交易（无需仲裁）"
+    - \ref securedtrademain "担保交易（需双方信任的一个或者多个第三方仲裁）"
 
+	
+- \section unit	test
+	- \ref unit_test "SDK 单元测试代码"
+*/
