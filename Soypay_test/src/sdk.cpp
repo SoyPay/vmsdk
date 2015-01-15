@@ -313,12 +313,7 @@ bool testGetTxConFirmHeight(char *txhash)
 	TestCheck(height ==2);
 	return true;
 }
-bool testGetTipHeight()
-{
-	unsigned long height = GetTipHeight();
-	TestCheck(height ==1);
-	return true;
-}
+
 bool testGetBlockHash()
 {
 	char bhash[32] = {0};
@@ -563,11 +558,6 @@ int ProcessSdk(char*pcontact)
 			if(!testGetCurRunEnvHeight())
 			{
 				LogPrint("testGetCurRunEnvHeight error",sizeof("testGetCurRunEnvHeight error")+1,STRING);
-				test_exit();
-			}
-			if(!testGetTipHeight())
-			{
-				LogPrint("testGetTipHeight error",sizeof("testGetTipHeight error")+1,STRING);
 				test_exit();
 			}
 			if(!testGetBlockHash())
