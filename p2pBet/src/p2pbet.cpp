@@ -356,7 +356,7 @@ static bool RecordSendBetStatus(const BET_CTX *pbetctx)
 	savedata.hight = psdata->hight;
 	memcpy(savedata.sendid, pbetctx->accid, sizeof(pbetctx->accid));
 
-	if(!WriteDataDB(pbetctx->txhash, sizeof(pbetctx->txhash), &savedata, sizeof(SAVE_DATA), 12345))
+	if(!WriteDataDB(pbetctx->txhash, sizeof(pbetctx->txhash), &savedata, sizeof(SAVE_DATA), savedata.hight))
 	{
 		ErrorCheck(0);
 		return false;
