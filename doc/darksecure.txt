@@ -15,7 +15,7 @@
 -	买家收到货,发送确认包,脚本账户打3m/2币到卖家账户中
 
 
-- \section 暗黑比代码
+- \section 担保交易代码
     - \ref darksecuremain.cpp
 
 */

@@ -12,11 +12,14 @@
 
 - \subpage VmSdk.h  "SDK"
 
+- \section 如何写应用程序
+   - \ref infomation "跟踪我们的步骤来操作"
+   
 - \section Demo
 	- \ref rule "虚拟机与中间层的协议"
     - \ref lottery "彩票"
     - \ref bet "点对点对赌"
-	- \ref darksecure  "暗黑币交易"
+	- \ref darksecure  "担保交易 "
 	- \ref anonymous  "匿名交易"
 	
 - \section TestDemo	
