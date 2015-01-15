@@ -6,22 +6,17 @@
 -	然后到这个地址(git@172.23.1.167:/home/gitrepo/vmsdk.git)下载我们的工程以及SDK
 -   然后打开工程的file->open,然后会出现如下框
 *  \image html 1.jpg
-*  \image latex application.eps "My application" width=10cm
 点击红色标示起来的文件打开工程
 -   然后选择工程Project->Create new project 则出现如下框
 *  \image html 2.jpg
-*  \image latex application.eps "My application" width=10cm
 则选择红色标起来的任何一个选项你想建的工程类型,然后给工程命名
 -   然后选择你所建的工程,点击右键,选择option选项,则会出现如下框：
 *  \image html 3.jpg
-*  \image latex application.eps "My application" width=10cm
 按照如图所示的红色标起来的填写,最好点击ok建
 -   然后选择你所建的工程,点击右键,选择Add->ADD Files,则要选择刚才下载的工程sdk文件选择如图所示的文件
 *  \image html 4.jpg
-*  \image latex application.eps "My application" width=10cm
 -   然后选择你所建的工程,main.cpp文件,可以写如下图所示最简单的工程
 *  \image html 5.jpg
-*  \image latex application.eps "My application" width=10cm
 -   编译此工程,在debug文件夹目录下面会生成.bin文件,这个就是我们系统所需要的文件
 -   如果你要注册此脚本可以用rpc命令 registerscripttx  address  false  .bin文件所的目录假设(d:\\test.bin) 超时高度
 -   以上就是如何用8051创建脚本，以及将生产的.bin文件注册到dacrs	系统中
