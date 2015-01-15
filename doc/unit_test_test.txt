@@ -1,6 +1,6 @@
 /*!
 
-\page Soypay_test  测试代码
+\page unit_test  测试代码
 
 \section 说明
 -  自动测试 所有系统api的测试
@@ -11,8 +11,8 @@
     - \ref rollback.cpp
 	- \ref script_account.cpp
 	- \ref sdk.cpp
-	- \ref soypay.h
-	- \ref soypayd_test.cpp
+	- \ref unit_test.h
+	- \ref unit_test.cpp
 	- \ref testdb.cpp
 */
 

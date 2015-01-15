@@ -3,7 +3,7 @@
 
 \mainpage VmSdk
 
-\section main_intro DACRS虚拟机API
+\section main_intro DACRS虚拟机SDK
 	虚拟机是DACRS（Distributed Autonomous Corporations Runtime System）系统的核心，因为虚拟机的存在，使得开发者可以\n
 实现各种各样业务需求，满足应用需要，而不再像bts 一样，实现一个功能就要开发一个新的区块链，或者更新所有的客户端。\n
 基于区块链技术，DACRS系统将保证应用的p2p在网络中每一台主机上运行的结果完全一致，并保证其安全性。
@@ -20,16 +20,16 @@
 - \ref rule "虚拟机与中间层的协议"
  
 - \section 如何写应用程序
-   - \ref infomation "第一个 hellow word"
+   - \ref infomation " hello  word"
    
 - \section Demo
 
     - \ref lottery "彩票"
     - \ref p2pbet "点对点对赌"
-	- \ref darksecure  "担保交易 "
-	- \ref anonymous  "匿名交易"
+    - \ref darksecure "抵押交易（无需仲裁）"
+    - \ref securedtrademain "担保交易（需双方信任的一个或者多个第三方仲裁）"
+
 	
 - \section unit	test
-	- \ref Soypay_test "SDK 单元测试代码"
+	- \ref unit_test "SDK 单元测试代码"
 */
-
