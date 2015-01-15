@@ -753,7 +753,7 @@ WARN_LOGFILE =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT = . .\..\lottery\src .\..\sdk\src .\..\bet\src D:\cppwork\vmsdk\darksecure\src .\..\SecuredTrade\src D:\cppwork\vmsdk\anonymous\src D:\cppwork\vmsdk\p2pBet\src D:\cppwork\vmsdk\Soypay_test\src 
+INPUT = . .\..\lottery\src .\..\sdk\src .\..\bet\src D:\cppwork\vmsdk\darksecure\src .\..\SecuredTrade\src D:\cppwork\vmsdk\anonymous\src D:\cppwork\vmsdk\p2pBet\src D:\cppwork\vmsdk\Soypay_test\src images 
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses

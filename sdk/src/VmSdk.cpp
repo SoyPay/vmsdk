@@ -242,6 +242,19 @@ bool WriteOutput( const VM_OPERATE* data, const unsigned short conter) {
 	return true;
 }
 
+unsigned long GetCurRunEnvHeight() {
+	ClearParaSpace()
+	;
+	__CallApi(GETCTXCONFIRMH_FUNC);
+	#pragma data_alignment = 1
+	FUN_RET_DATA *retdata = GetInterflowP();
+	if (retdata->len != 4) {
+		return 0;
+	}
+	unsigned long height = 0;
+	memcpy(&height, retdata->buffer, sizeof(long));
+	return height;
+}
 
 bool GetTxContacts(const unsigned char * const txhash,void* const pcotact,const unsigned short maxLen) {
 	ClearParaSpace()
@@ -448,17 +461,7 @@ bool GetDBValue(const unsigned long index,void* const key,unsigned char * const 
 
 	return true;
 }
-unsigned long GetTipHeight() {
-	__CallApi(GETTIPH_FUNC);
 
-	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len != 4) {
-		return false;
-	}
-	unsigned long height = false;
-	memcpy(&height, retdata->buffer, sizeof(height));
-	return height;
-}
 bool GetBlockHash(const unsigned long height,void * const pblochHash) {
 	ClearParaSpace()
 	;

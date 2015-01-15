@@ -47,6 +47,10 @@
       <name>$PROJ_DIR$\src\sdk.cpp</name>
       <outputs>
         <tool>
+          <name>ICC8051</name>
+          <file> 19</file>
+        </tool>
+        <tool>
           <name>BICOMP</name>
           <file> 22</file>
         </tool>
@@ -88,6 +92,10 @@
     <file>
       <name>$PROJ_DIR$\src\rollback.cpp</name>
       <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 13</file>
+        </tool>
         <tool>
           <name>BICOMP</name>
           <file> 21</file>
@@ -132,13 +140,17 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 24 29</file>
+          <file> 29 24</file>
         </tool>
       </outputs>
     </file>
     <file>
       <name>$PROJ_DIR$\src\testdb.cpp</name>
       <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 15</file>
+        </tool>
         <tool>
           <name>BICOMP</name>
           <file> 20</file>

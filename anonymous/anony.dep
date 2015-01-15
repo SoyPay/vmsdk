@@ -32,6 +32,7 @@
       <file>$PROJ_DIR$\..\testUint\src\main.cpp</file>
       <file>$PROJ_DIR$\Debug\Obj\anony.pbd</file>
       <file>$PROJ_DIR$\..\Soypay_test\src\testdb.cpp</file>
+      <file>$PROJ_DIR$\..\Soypay_test\src\rollback.cpp</file>
       <file>$PROJ_DIR$\..\Soypay_test\src\sdk.cpp</file>
     </outputs>
     <file>
