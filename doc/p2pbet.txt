@@ -1,7 +1,7 @@
 
 /*!
 
-\page bet  点对点对赌
+\page p2pbet  点对点对赌
 
 
 \section 合约
