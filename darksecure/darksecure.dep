@@ -12,14 +12,14 @@
       <file>$PROJ_DIR$\Debug\Exe\darksecure.bin</file>
       <file>$PROJ_DIR$\Debug\Exe\darksecure.d51</file>
       <file>$PROJ_DIR$\main.cpp</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\darksecuremain.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\darksecuremain.r51</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\darksecuremain.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
       <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
@@ -42,17 +42,17 @@
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 10</file>
+          <file> 9</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 8 24 25 20 18 12 13 7 16 15 17 6 0</file>
+          <file> 11 24 25 20 18 8 7 12 16 15 17 13 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 8 24 25 20 18 12 13 7 16 15 17 6 0</file>
+          <file> 11 24 25 20 18 8 7 12 16 15 17 13 0</file>
         </tool>
       </inputs>
     </file>
@@ -61,21 +61,21 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 11</file>
+          <file> 6</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 9</file>
+          <file> 10</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 8 24 25 20 18 12 13 7 16 15 17 6 0</file>
+          <file> 11 24 25 20 18 8 7 12 16 15 17 13 0</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 8 24 25 20 18 12 13 7 16 15 17 6 0</file>
+          <file> 11 24 25 20 18 8 7 12 16 15 17 13 0</file>
         </tool>
       </inputs>
     </file>
@@ -90,7 +90,7 @@
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 14 21 11 19</file>
+          <file> 14 21 6 19</file>
         </tool>
       </inputs>
     </file>
