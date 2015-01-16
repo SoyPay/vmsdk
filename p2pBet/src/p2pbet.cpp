@@ -13,6 +13,7 @@ typedef unsigned char uchar;
 typedef unsigned int u16;
 typedef unsigned long u32;
 
+#define REMAINHIGHT (10)
 #define ErrorCheck(a) {if(!(a)) {PrintfFileAndLine(__LINE__, __FILE__);}}
 
 /**
@@ -470,6 +471,12 @@ static bool AcceptDataCheck(const BET_CTX *pbetctx)
 	}
 
 	if(Int64Compare(&balance, &psdata->money) != COMP_LARGER)
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
+	if(gSaveData.hight - GetCurRunEnvHeight() < REMAINHIGHT)
 	{
 		ErrorCheck(0);
 		return false;
