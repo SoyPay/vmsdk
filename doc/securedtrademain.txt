@@ -4,7 +4,7 @@
 \page securedtrademain  担保交易（需双方信任的第三方仲裁）
 \section 合约
 	类似淘宝，ebay 交易方式 ，只不过纠纷仲裁方由 淘宝，ebay 客户人员 变成 双方信任的人，而且是分布式 \n
-	具体请查看 《DACRS 白皮书》 4.1	担保交易应用
+	具体请查看 《DACRS 白皮书》 4.1	担保交易应用 http://bbs.dspay.org/forum.php?mod=viewthread&tid=899&extra=
 
 \section 程序执行规则
 -	为简化操作，避免同一个交易包多次签名，我们把一仲裁分成四个交易包 \n
@@ -13,7 +13,7 @@
    -	2. 卖家从blockchaim里看到相应的交易后，发出接受此交易的数据包，表示接受次交易，dacrs \n 
             系统将买家冻结的钱转到卖家账户里，并冻结.
    -	3. 买家收到货没有问题，则超时后卖家钱自动到账	
-        4. 其它一些异常情况，和攻击方法请仔细查看 《DACRS 白皮书》 4.1	担保交易应用
+        4. 其它一些异常情况，和攻击方法请仔细查看 《DACRS 白皮书》 4.1	担保交易应用 http://bbs.dspay.org/forum.php?mod=viewthread&tid=899&extra=        
 
 
 - \section 代码
