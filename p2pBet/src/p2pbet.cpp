@@ -13,6 +13,7 @@ typedef unsigned char uchar;
 typedef unsigned int u16;
 typedef unsigned long u32;
 
+#define REMAINHIGHT (10)
 #define ErrorCheck(a) {if(!(a)) {PrintfFileAndLine(__LINE__, __FILE__);}}
 
 /**
@@ -41,7 +42,8 @@ typedef struct {
 	OPERATETYPE type;
 	Int64 money;
 	uchar targetkey[32];//发起对赌的哈希，也是对赌数据的关键字
-	uchar dhash[32];//32 + one byte checksum
+//	uchar dhash[32];//32 + one byte checksum
+	uchar data[5];
 }ACCEPT_DATA;
 
 /**
@@ -50,13 +52,12 @@ typedef struct {
 typedef struct {
 	OPERATETYPE type;
 	uchar targetkey[32];//发起对赌的哈希，也是对赌数据的关键字
-	uchar dhash[5];
+	uchar data[5];
 }OPEN_DATA;
 
 enum BETSTATUS {
 	BETSEND,  //!< SEND
 	BETACCEPT,//!< ACCEPT
-	BETOPEN1,//!< ONE OPEN
 	BETOPEN   //!< OPEN
 };
 
@@ -71,7 +72,7 @@ typedef struct {
 	Int64 money;//bet amount
 	u32 hight;//解冻高度
 	uchar shash[32];//send data hash
-	uchar ahash[32];//accept data hash
+//	uchar ahash[32];//accept data hash
 	uchar sdata[5];//send data
 	uchar adata[5];//accept data
 }SAVE_DATA;
@@ -257,7 +258,7 @@ static bool SendOperateAccount(const BET_CTX *pbetctx)
 static bool AcceptOperateAccount(const BET_CTX *pbetctx)
 {
 	ACCEPT_DATA *psdata = (ACCEPT_DATA *)gContractData;
-	VM_OPERATE operate[2];
+	VM_OPERATE operate[4];
 
 	if(pbetctx == NULL)
 	{
@@ -265,6 +266,7 @@ static bool AcceptOperateAccount(const BET_CTX *pbetctx)
 		return false;
 	}
 
+	//先把自己的钱冻结起来
 	memcpy(operate[0].accountid, pbetctx->accid, sizeof(pbetctx->accid));
 	memcpy(&operate[0].money, &psdata->money, sizeof(psdata->money));
 	operate[0].opeatortype = MINUS_FREE;
@@ -275,7 +277,17 @@ static bool AcceptOperateAccount(const BET_CTX *pbetctx)
 	operate[1].opeatortype = ADD_FREEZD;
 	operate[1].outheight = gSaveData.hight;
 
-	return WriteOutput(operate, 2);
+	memcpy(operate[2].accountid, gSaveData.sendid, sizeof(gSaveData.sendid));
+	memcpy(&operate[2].money, &gSaveData.money, sizeof(psdata->money));
+	operate[2].opeatortype = MINUS_FREEZD;
+	operate[2].outheight = gSaveData.hight;
+
+	memcpy(operate[3].accountid, pbetctx->accid, sizeof(pbetctx->accid));
+	memcpy(&operate[3].money, &gSaveData.money, sizeof(psdata->money));
+	operate[3].opeatortype = ADD_FREEZD;
+	operate[3].outheight = gSaveData.hight;
+
+	return WriteOutput(operate, 4);
 }
 
 static bool OpenOperateAccount(const BET_CTX *pbetctx)
@@ -283,117 +295,40 @@ static bool OpenOperateAccount(const BET_CTX *pbetctx)
 	VM_OPERATE operate[2];
 	OPEN_DATA *psdata = (OPEN_DATA *)gContractData;
 
-	if(gSaveData.status == BETACCEPT)//fisrt open
+	uchar rslt = 0;
+	for(uchar ii = 0; ii < 5; ii++)
 	{
-		memcpy(operate[0].accountid, gSaveData.sendid, sizeof(gSaveData.sendid));
-		memcpy(&operate[0].money, &gSaveData.money, sizeof(gSaveData.money));
-		operate[0].outheight = gSaveData.hight;
-
-		memcpy(&operate[1].accountid, &gSaveData.acceptid, sizeof(gSaveData.acceptid));
-		memcpy(&operate[1].money, &gSaveData.money, sizeof(gSaveData.money));
-		operate[1].outheight = gSaveData.hight;
-
-		if(memcmp(pbetctx->accid, gSaveData.sendid, sizeof(pbetctx->accid)) == 0)//send first
-		{
-			operate[0].opeatortype = ADD_FREEZD;
-			operate[1].opeatortype = MINUS_FREEZD;
-		}
-		else if(memcmp(pbetctx->accid, gSaveData.acceptid, sizeof(pbetctx->accid)) == 0)//accept first
-		{
-			operate[0].opeatortype = MINUS_FREEZD;
-			operate[1].opeatortype = ADD_FREEZD;
-		}
-		else
-		{
-			ErrorCheck(0);
-			return false;
-		}
+		LogPrint(&psdata->data[ii], sizeof(uchar), HEX);
+		rslt += psdata->data[ii];
 	}
-	else if(gSaveData.status == BETOPEN1)//second open
+
+	for(uchar kk = 0; kk < 5; kk++)
 	{
-		uchar rslt = 0;
-		for(uchar ii = 0; ii < 5; ii++)
-		{
-			LogPrint(&psdata->dhash[ii], sizeof(uchar), HEX);
-			rslt += psdata->dhash[ii];
-		}
+		LogPrint(&gSaveData.adata[kk], sizeof(uchar), HEX);
+		rslt += gSaveData.adata[kk];
+	}
 
-		if(memcmp(pbetctx->accid, gSaveData.acceptid, sizeof(pbetctx->accid)) == 0)
-		{
-			for(uchar kk = 0; kk < 5; kk++)
-			{
-				LogPrint(&gSaveData.sdata[kk], sizeof(uchar), HEX);
-				rslt += gSaveData.sdata[kk];
-			}
-		}
-		else if(memcmp(pbetctx->accid, gSaveData.sendid, sizeof(pbetctx->accid)) == 0)
-		{
-			for(uchar kk = 0; kk < 5; kk++)
-			{
-				LogPrint(&gSaveData.adata[kk], sizeof(uchar), HEX);
-				rslt += gSaveData.adata[kk];
-			}
-		}
-		else
-		{
-			ErrorCheck(0);
-			return false;
-		}
-		LogPrint(&rslt, sizeof(uchar), HEX);
-		memcpy(operate[0].accountid, gSaveData.sendid, sizeof(gSaveData.sendid));
-		Int64Add(&gSaveData.money, &gSaveData.money, &operate[0].money);
-		operate[0].outheight = gSaveData.hight;
+	LogPrint(&rslt, sizeof(uchar), HEX);
+	memcpy(operate[0].accountid, gSaveData.sendid, sizeof(gSaveData.sendid));
+	Int64Add(&gSaveData.money, &gSaveData.money, &operate[0].money);
+	operate[0].outheight = gSaveData.hight;
 
-		memcpy(operate[1].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
+	memcpy(operate[1].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
 //		Int64Add(&gSaveData.money, &gSaveData.money, &operate[1].money);
-		memcpy(&operate[1].money, &operate[0].money, sizeof(operate[0].money));
-		operate[1].outheight = gSaveData.hight;
-		if(rslt%2)//juge result,send win
-		{
-			LogPrint("A WIN", sizeof("A WIN"), STRING);
-			if(memcmp(pbetctx->accid, gSaveData.sendid, sizeof(pbetctx->accid)) == 0)//accept first
-			{
-				operate[0].opeatortype = ADD_FREE;
-				operate[1].opeatortype = MINUS_FREEZD;
-			}
-			else if(memcmp(pbetctx->accid, gSaveData.acceptid, sizeof(pbetctx->accid)) == 0)//send first
-			{
-				operate[0].opeatortype = ADD_FREE;
-				operate[1].opeatortype = MINUS_FREEZD;
-				memcpy(operate[1].accountid, gSaveData.sendid, sizeof(gSaveData.sendid));
-			}
-			else
-			{
-				ErrorCheck(0);
-				return false;
-			}
-		}
-		else//accept win
-		{
-			LogPrint("B WIN", sizeof("B WIN"), STRING);
-			if(memcmp(pbetctx->accid, gSaveData.sendid, sizeof(pbetctx->accid)) == 0)//accept first
-			{
-				operate[0].opeatortype = MINUS_FREEZD;
-				operate[1].opeatortype = ADD_FREE;
-				memcpy(operate[0].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
-			}
-			else if(memcmp(pbetctx->accid, gSaveData.acceptid, sizeof(pbetctx->accid)) == 0)//send first
-			{
-				operate[0].opeatortype = MINUS_FREEZD;
-				operate[1].opeatortype = ADD_FREE;
-			}
-			else
-			{
-				ErrorCheck(0);
-				return false;
-			}
-		}
-
-	}
-	else//error status
+	memcpy(&operate[1].money, &operate[0].money, sizeof(operate[0].money));
+	operate[1].outheight = gSaveData.hight;
+	if(rslt%2)//juge result,send win
 	{
-		ErrorCheck(0);
-		return false;
+		LogPrint("A WIN", sizeof("A WIN"), STRING);
+		operate[0].opeatortype = ADD_FREE;
+		operate[1].opeatortype = MINUS_FREEZD;
+	}
+	else//accept win
+	{
+		LogPrint("B WIN", sizeof("B WIN"), STRING);
+		memcpy(operate[0].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
+		operate[0].opeatortype = MINUS_FREEZD;
+		operate[1].opeatortype = ADD_FREE;
 	}
 
 	return WriteOutput(operate, 2);
@@ -422,7 +357,7 @@ static bool RecordSendBetStatus(const BET_CTX *pbetctx)
 	savedata.hight = psdata->hight;
 	memcpy(savedata.sendid, pbetctx->accid, sizeof(pbetctx->accid));
 
-	if(!WriteDataDB(pbetctx->txhash, sizeof(pbetctx->txhash), &savedata, sizeof(SAVE_DATA), 12345))
+	if(!WriteDataDB(pbetctx->txhash, sizeof(pbetctx->txhash), &savedata, sizeof(SAVE_DATA), savedata.hight))
 	{
 		ErrorCheck(0);
 		return false;
@@ -541,6 +476,12 @@ static bool AcceptDataCheck(const BET_CTX *pbetctx)
 		return false;
 	}
 
+	if(gSaveData.hight - GetCurRunEnvHeight() < REMAINHIGHT)
+	{
+		ErrorCheck(0);
+		return false;
+	}
+
 //	if(!CheckDataHash(psdata->dhash))
 //	{
 //		return false;
@@ -564,7 +505,7 @@ static bool RecordAcceptBetStatus(const BET_CTX *pbetctx)
 	}
 
 	gSaveData.status = BETACCEPT;
-	memcpy(gSaveData.ahash, psdata->dhash, sizeof(psdata->dhash));
+	memcpy(gSaveData.adata, psdata->data, sizeof(psdata->data));
 	memcpy(gSaveData.acceptid, pbetctx->accid, sizeof(pbetctx->accid));
 
 	if(!ModifyDataDBVavle(psdata->targetkey, sizeof(psdata->targetkey), &gSaveData, sizeof(SAVE_DATA)))
@@ -630,7 +571,7 @@ static bool IsHaveP2PBet(const void * phash)
 
 //	LogPrint(&gSaveData.status, sizeof(gSaveData.status), HEX);
 
-	if(gSaveData.status != BETACCEPT && gSaveData.status != BETOPEN1)
+	if(gSaveData.status != BETACCEPT)
 	{
 		ErrorCheck(0);
 		return false;
@@ -656,30 +597,9 @@ static bool IsDataVaild(const BET_CTX *pbetctx)
 		return false;
 	}
 
-	SHA256(podata->dhash, sizeof(podata->dhash), checkhash);
+	SHA256(podata->data, sizeof(podata->data), checkhash);
 
-//	for(uchar ii = 0; ii < 32; ii++)
-//	{
-//		checkhash[32] += checkhash[ii];
-//	}
-
-	if(memcmp(pbetctx->accid, gSaveData.acceptid, sizeof(pbetctx->accid)) == 0)
-	{
-		if(memcmp(checkhash, gSaveData.ahash, sizeof(checkhash)) != 0)
-		{
-			ErrorCheck(0);
-			return false;
-		}
-	}
-	else if(memcmp(pbetctx->accid, gSaveData.sendid, sizeof(pbetctx->accid)) == 0)
-	{
-		if(memcmp(checkhash, gSaveData.shash, sizeof(checkhash)) != 0)
-		{
-			ErrorCheck(0);
-			return false;
-		}
-	}
-	else
+	if(memcmp(checkhash, gSaveData.shash, sizeof(checkhash)) != 0)
 	{
 		ErrorCheck(0);
 		return false;
@@ -732,21 +652,9 @@ static bool RecordOpenBetStatus(const BET_CTX *pdata)
 		return false;
 	}
 
-	gSaveData.status = (gSaveData.status == BETACCEPT)?(BETOPEN1):(BETOPEN);
+	gSaveData.status = BETOPEN;
 
-	if(memcmp(pdata->accid, gSaveData.sendid, sizeof(pdata->accid)) == 0)
-	{
-		memcpy(gSaveData.sdata, podata->dhash, sizeof(podata->dhash));
-	}
-	else if(memcmp(pdata->accid, gSaveData.acceptid, sizeof(pdata->accid)) == 0)
-	{
-		memcpy(gSaveData.adata, podata->dhash, sizeof(podata->dhash));
-	}
-	else
-	{
-		ErrorCheck(0);
-		return false;
-	}
+	memcpy(gSaveData.sdata, podata->data, sizeof(podata->data));
 
 	if(!ModifyDataDBVavle(podata->targetkey, sizeof(podata->targetkey), &gSaveData, sizeof(SAVE_DATA)))
 	{

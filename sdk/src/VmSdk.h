@@ -10,9 +10,6 @@
 #define MAX_ACCOUNT_LEN 6
 #define check(a) {if(!(a)) { __exit(RUN_SCRIPT_DATA_ERR);}}
 
-
-
-
 /**
  *LogPint format
  */
@@ -173,13 +170,13 @@ void LogPrint(const void *pdata, const unsigned short datalen,PRINT_FORMAT flag 
  *
  */
 bool WriteOutput( const VM_OPERATE* data, const unsigned short conter);
-
 /**@brief
- *obtain current tx's  Confirmation block height	
+ *obtain current tx's  Confirmation block height
  *@return the  block's height keep int the height
- *  
+ *
  */
 unsigned long GetCurRunEnvHeight();
+
 /**@brief
  *get tx contact
  * @param txhash: the tx hash
@@ -313,12 +310,7 @@ unsigned long GetDBSize();
  */
 
 bool GetDBValue(const unsigned long index,void* const key,unsigned char * const keylen,unsigned short maxkeylen,void* const value,unsigned short* const maxbuffer, unsigned long* const ptime);
-/**@brief
- *get current tip block height
- *@return return tip block height
- *
- */
-unsigned long GetTipHeight();
+
 /**@brief
  *Access to the specified block height hash
  *@param height: the block heigh

@@ -71,7 +71,7 @@ typedef struct {
  */
 bool CheckfirstContact(const FIRST_CONTRACT* const pContract)
 {
-	unsigned long nTipHeight = GetTipHeight();
+	unsigned long nTipHeight = GetCurRunEnvHeight();
 	if(pContract->nHeight <= nTipHeight)
 	{
 		return false;
