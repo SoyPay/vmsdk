@@ -13,6 +13,7 @@ typedef unsigned char uchar;
 typedef unsigned int u16;
 typedef unsigned long u32;
 
+#define BET_MIN    ("\xA0\x86\x01\x00\x00\x00\x00\x00")//100000
 #define REMAINHIGHT (10)
 #define ErrorCheck(a) {if(!(a)) {PrintfFileAndLine(__LINE__, __FILE__);}}
 
@@ -124,7 +125,7 @@ static bool CheckMinimumAmount(const Int64 *pdata)
 		return false;
 	}
 
-	Int64Inital(&minamount,"\x00\x00\x00\x00\x00\x01\x00\x00",8);
+	Int64Inital(&minamount, BET_MIN, 8);
 
 	if(Int64Compare(pdata, &minamount) != COMP_LARGER)
 	{
