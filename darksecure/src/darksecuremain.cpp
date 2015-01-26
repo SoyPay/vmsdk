@@ -71,17 +71,14 @@ typedef struct {
  */
 bool CheckfirstContact(const FIRST_CONTRACT* const pContract)
 {
-	unsigned long nTipHeight = GetCurRunEnvHeight();
-	if(pContract->nHeight <= nTipHeight)
-	{
-		return false;
-	}
 	if(!IsRegID(&pContract->buyer))
 	{
+		LogPrint("the buyer id is not esist",sizeof("the buyer id is not esist"),STRING);
 		return false;
 	}
 	if(!IsRegID(&pContract->seller))
 	{
+		LogPrint("the seller id is not esist",sizeof("the seller id is not esist"),STRING);
 		return false;
 	}
 //	if(!IsAuthorited(&pContract->buyer,&pContract->nPayMoney))
@@ -162,7 +159,6 @@ bool CheckSecondContact(const NEXT_CONTRACT* const pContract)
 		{
 			return false;
 		}
-	LogPrint((char*)&contract,sizeof(contract),HEX);
 	char hash[32] = {0};
 	if(!GetCurTxHash(hash)){
 		return false;
@@ -182,7 +178,7 @@ bool CheckSecondContact(const NEXT_CONTRACT* const pContract)
 	bool flag = false;
 	if(!ReadDataValueDB((const unsigned char * const ) pContract->hash,32,&flag,1))
 	{
-		LogPrint("read db failed",sizeof("read db failed"),STRING);
+		LogPrint("read db dark failed",sizeof("read db dark failed"),STRING);
 		return false;
 	}
 	if(flag)
@@ -202,9 +198,13 @@ void WriteSecondContact(const FIRST_CONTRACT* const pContract)
 
 	VM_OPERATE ret;
 	memcpy(ret.accountid,&pContract->seller,sizeof(ret.accountid));
-	memcpy(&ret.money,&result,sizeof(Int64));
+	memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
 	ret.opeatortype = ADD_FREE;
 	ret.outheight = GetCurRunEnvHeight() + pContract->nHeight;
+	WriteOutput(&ret,1);
+
+	memcpy(ret.accountid,&pContract->buyer,sizeof(ret.accountid));
+	memcpy(&ret.money,&pout,sizeof(Int64));
 	WriteOutput(&ret,1);
 
 	char accountid[6] = {0};
@@ -248,6 +248,7 @@ int main()
  	{
 		case TX_TRADE:
 		{
+			LogPrint("TX_TRADE",sizeof("TX_TRADE"),STRING);
 			if(!ProcessFirstContract((FIRST_CONTRACT*)pcontact))
 			{
 				LogPrint("ProcessFirstContract error",sizeof("ProcessFirstContract error"),STRING);

@@ -25,7 +25,7 @@
 - \section Demo
 
     - \ref lottery "彩票(暂时没有完成，只是理论可行)"
-    - \ref p2pbet "点对点对赌"
+    - \ref p2pdice "p2p投色子游戏"
     - \ref darksecure "抵押交易（无需仲裁）"
     - \ref securedtrademain "担保交易（需双方信任的一个或者多个第三方仲裁）"
 
