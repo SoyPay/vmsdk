@@ -64,6 +64,7 @@ enum Role {
 void PrintString(const char *format, ...) {
 	va_list arg;
 	static char tmp[255];
+	memset(tmp,0,sizeof(tmp));
 	va_start(arg, format);
 	vsprintf(tmp, format, arg);
 	va_end(arg);
@@ -163,37 +164,53 @@ Int64 GetFineMoney(ARBIT_RES_CONTRACT* pContract, unsigned char nCount)
 bool CheckContract1(const FIRST_CONTRACT* pContract) {
 	//step1
 	unsigned long nRunTimeHeight = GetCurRunEnvHeight();
-	if ((unsigned long) pContract->nHeight < nRunTimeHeight)
+	if (pContract->nHeight < 0) {
+		PrintString("[Error]pContract->nHeight is %d",pContract->nHeight);
 		return false;
+	}
 
 	//step2
 	if (!IsRegID((const void* const ) pContract->buyer.accounid)
-			|| !IsRegID((const void* const ) pContract->seller.accounid))
+			|| !IsRegID((const void* const ) pContract->seller.accounid)) {
+		PrintString("[Error]IsRegID step 2failed in CheckContract1");
 		return false;
+	}
 
 	//step3
 	for (int i = 0;i<pContract->nArbitratorCount;i++)
 	{
-		if (!IsRegID((const void*) pContract->arbitrator[0].accounid))
+		if (!IsRegID((const void*) pContract->arbitrator[0].accounid)) {
+			PrintString("[Error]IsRegID step 3failed in CheckContract1");
 			return false;
+		}
+
 	}
 
 	//step4
 	Int64 nTotalFreeMoney;
-	if (!QueryAccountBalance((const unsigned char* const ) pContract->seller.accounid, &nTotalFreeMoney))
+	if (!QueryAccountBalance((const unsigned char* const ) pContract->seller.accounid, &nTotalFreeMoney)) {
+		PrintString("[Error]QueryAccountBalance failed in CheckContract1");
 		return false;
+	}
+
 
 	COMP_RET ret = Int64Compare(&pContract->nFineMoney, &nTotalFreeMoney);
-	if (COMP_ERR == ret || COMP_LARGER == ret)
+	if (COMP_ERR == ret || COMP_LARGER == ret) {
+		PrintString("[Error]not enough money to fine in CheckContract1");
 		return false;
+	}
+
 
 	//step5
 	char szUserData[2] = { 0 };
 	unsigned short nRes = GetAuthUserDefine((const void* const ) pContract->buyer.accounid, szUserData,
 			sizeof(szUserData) / sizeof(szUserData[0]));
 
-	if (!nRes || BUYER != szUserData[0])
+	if (!nRes || BUYER != szUserData[0]) {
+		PrintString("[Error]check userdata in CheckContract1 failed");
 		return false;
+	}
+
 
 	return true;
 }
@@ -209,28 +226,36 @@ bool CheckContract1(const FIRST_CONTRACT* pContract) {
 bool CheckContract2(const NEXT_CONTRACT* pContract, FIRST_CONTRACT* pContract1) {
 	//step1
 	if (!GetTxContacts((const unsigned char * const ) pContract->hash, (void* const ) pContract1,
-			sizeof(FIRST_CONTRACT)))
+			sizeof(FIRST_CONTRACT))) {
+		PrintString("[Error]GetTxContacts failed in CheckContract2");
 		return false;
+	}
 
 	//step2
 	char szValue[2] = { 0 };
 	unsigned short nRes = ReadDataValueDB(pContract->hash, sizeof(pContract->hash), szValue,
 			sizeof(szValue) / sizeof(szValue[0]));
-	if (nRes && 1 == szValue[0])
+	if (nRes && 1 == szValue[0]) {
+		PrintString("[Error]ReadDataValueDB failed in CheckContract2");
 		return false;
+	}
 
 	//step3
 	ACCOUNT_ID sellID;
 	if (ACCOUNT_ID_SIZE != GetAccounts((const unsigned char *) pContract->hash, (void*) sellID.accounid, sizeof(sellID))
-			|| !memcmp((const void*) sellID.accounid, (const void*) pContract1->seller.accounid, ACCOUNT_ID_SIZE))
+			|| !memcmp((const void*) sellID.accounid, (const void*) pContract1->seller.accounid, ACCOUNT_ID_SIZE)) {
+		PrintString("[Error]GetAccounts failed in CheckContract2");
 		return false;
+	}
 
 	//step4
 	char szUserData[2] = { 0 };
 	nRes = GetAuthUserDefine((const void* const ) pContract1->seller.accounid, szUserData,
 			sizeof(szUserData) / sizeof(szUserData[0]));
-	if (!nRes || SELLER != szUserData[0])
+	if (!nRes || SELLER != szUserData[0]) {
+		PrintString("[Error]check userdata in CheckContract2 failed");
 		return false;
+	}
 
 	return true;
 }
@@ -244,26 +269,35 @@ bool CheckContract2(const NEXT_CONTRACT* pContract, FIRST_CONTRACT* pContract1) 
 bool CheckContract3(const NEXT_CONTRACT* pContract, FIRST_CONTRACT* pContract1, NEXT_CONTRACT* pContract2) {
 	//step1
 	if (!GetTxContacts((const unsigned char * const ) pContract->hash, (void* const ) pContract2,
-			sizeof(NEXT_CONTRACT)))
+			sizeof(NEXT_CONTRACT))) {
+		PrintString("[Error]GetTxContacts2 failed in CheckContract3");
 		return false;
+	}
 
 	if (!GetTxContacts((const unsigned char * const ) pContract2->hash, (void* const ) pContract1,
-			sizeof(FIRST_CONTRACT)))
+			sizeof(FIRST_CONTRACT))) {
+		PrintString("[Error]GetTxContacts1 failed in CheckContract3");
 		return false;
+	}
 
 	//step2
 	char szValue[2] = { 0 };
 	unsigned short nRes = ReadDataValueDB(pContract->hash, sizeof(pContract->hash), szValue,
 			sizeof(szValue) / sizeof(szValue[0]));
-	if (nRes && 1 == szValue[0])
+	if (nRes && 1 == szValue[0]) {
+		PrintString("[Error]ReadDataValueDB failed in CheckContract3");
 		return false;
+	}
 
 	//step3
 	char szUserData[2] = { 0 };
 	nRes = GetAuthUserDefine((const void* const ) pContract1->buyer.accounid, szUserData,
 			sizeof(szUserData) / sizeof(szUserData[0]));
-	if (!nRes || BUYER != szUserData[0])
+	if (!nRes || BUYER != szUserData[0]) {
+		PrintString("[Error]GetAuthUserDefine failed in CheckContract3");
 		return false;
+	}
+
 	return true;
 }
 
@@ -278,39 +312,61 @@ bool CheckContract4(ARBIT_RES_CONTRACT* pContract, unsigned char* pArCountInArra
 		NEXT_CONTRACT* pContract2) {
 	//step1
 	NEXT_CONTRACT contract3;
-	if (!FillArContract(pContract, pArCountInArray))
+	if (!FillArContract(pContract, pArCountInArray)) {
+		PrintString("[Error]FillArContract failed in CheckContract4");
 		return false;
+	}
+	PrintString("11111");
+	LogPrint(pContract1->arbitrator[0].accounid,6,HEX);
+
 	SetArContactInOrder(pContract, *pArCountInArray);
 
-	if (!GetTxContacts((const unsigned char * const ) pContract[0].hash, (void* const ) &contract3, sizeof(contract3)))
+	PrintString("2222");
+	LogPrint(pContract1->arbitrator[0].accounid,6,HEX);
+	if (!GetTxContacts((const unsigned char * const ) pContract[0].hash, (void* const ) &contract3, sizeof(contract3))) {
+		PrintString("[Error]GetTxContacts3 failed in CheckContract4");
 		return false;
+	}
 
-	if (!GetTxContacts((const unsigned char * const ) contract3.hash, (void* const ) pContract2, sizeof(NEXT_CONTRACT)))
+
+	if (!GetTxContacts((const unsigned char * const ) contract3.hash, (void* const ) pContract2, sizeof(NEXT_CONTRACT))) {
+		PrintString("[Error]GetTxContacts3 failed in CheckContract4");
 		return false;
+	}
+
 
 	if (!GetTxContacts((const unsigned char * const ) pContract2->hash, (void* const ) pContract1,
-			sizeof(FIRST_CONTRACT)))
+			sizeof(FIRST_CONTRACT))) {
+		PrintString("[Error]GetTxContacts3 failed in CheckContract4");
 		return false;
+	}
+
 
 	//step 2
 	int nIndex = *pArCountInArray-1;
 	COMP_RET ret = Int64Compare(&pContract[nIndex].nMinus, &pContract1->nFineMoney);
-	if (COMP_ERR == ret || COMP_LARGER == ret)
+	if (COMP_ERR == ret || COMP_LARGER == ret) {
+		PrintString("[Error]nMinus is biger than nFineMoney");
 		return false;
+	}
 
 	//step3
 	char szValue[2] = { 0 };
 	unsigned short nRes = ReadDataValueDB(pContract[nIndex].hash, sizeof(pContract[nIndex].hash), szValue,
 			sizeof(szValue) / sizeof(szValue[0]));
-	if (nRes && 1 == szValue[0])
+	if (nRes && 1 == szValue[0]) {
+		PrintString("[Error]ReadDataValueDB failed in CheckContract4");
 		return false;
+	}
 
 	//step4
 	char szUserData[2] = { 0 };
 	nRes = GetAuthUserDefine((const void* const ) pContract1->arbitrator[0].accounid, szUserData,
 			sizeof(szUserData) / sizeof(szUserData[0]));
-	if (!nRes || ARBITRATOR != szUserData[0])
+	if (!nRes || ARBITRATOR != szUserData[0]) {
+		PrintString("[Error]GetAuthUserDefine failed in CheckContract4");
 		return false;
+	}
 
 	return true;
 }
@@ -350,7 +406,10 @@ bool OperAccount1(VM_OPERATE *vmoper, unsigned char nVmSize, const void* pContra
 bool OperAccount2(VM_OPERATE *vmoper, unsigned short nVmSize, FIRST_CONTRACT* pContract1,
 		const NEXT_CONTRACT* pContract2) {
 	if (NULL == vmoper || NULL == pContract1 || nVmSize != 4)
+	{
+		PrintString("[ERROE]OperAccount2 failed");
 		return false;
+	}
 
 	int nConfirmHeight = GetTxConFirmHeight(pContract2->hash);
 	//step1
@@ -429,7 +488,6 @@ bool OperAccount4(VM_OPERATE *vmoper, unsigned short nVmSize, FIRST_CONTRACT* pC
 	int nConfirmHeight = GetTxConFirmHeight(pContract2->hash);
 	unsigned long nHeight = nConfirmHeight + pContract1->nHeight;
 	Int64 nFineMoney = GetFineMoney(pArContract,nArCountInArray);
-	LogPrint(nFineMoney.data,8,HEX);
 
 	//step 1
 	memcpy(vmoper[0].accountid, pContract1->seller.accounid, ACCOUNT_ID_SIZE);
@@ -449,26 +507,22 @@ bool OperAccount4(VM_OPERATE *vmoper, unsigned short nVmSize, FIRST_CONTRACT* pC
 		vmoper[2+4*i].opeatortype = MINUS_FREEZD;
 		vmoper[2+4*i].outheight = nHeight;
 		vmoper[2+4*i].money = pContract1->ndeposit;
-		LogPrint(vmoper[2+4*i].accountid,6,HEX);
 
 		memcpy(vmoper[3+4*i].accountid, pContract1->arbitrator[i].accounid, ACCOUNT_ID_SIZE);
 		vmoper[3+4*i].opeatortype = ADD_FREE;
 		vmoper[3+4*i].outheight = nHeight;
 		vmoper[3+4*i].money = pContract1->ndeposit;
-		LogPrint(vmoper[3+4*i].accountid,6,HEX);
 
 		//step 3
 		memcpy(vmoper[4+4*i].accountid, pContract1->buyer.accounid, ACCOUNT_ID_SIZE);
 		vmoper[4+4*i].opeatortype = MINUS_FREE;
 		vmoper[4+4*i].outheight = nHeight;
 		vmoper[4+4*i].money = pContract1->nFee;
-		LogPrint(vmoper[4+4*i].accountid,6,HEX);
 
 		memcpy(vmoper[5+4*i].accountid, pContract1->arbitrator[i].accounid, ACCOUNT_ID_SIZE);
 		vmoper[5+4*i].opeatortype = ADD_FREE;
 		vmoper[5+4*i].outheight = nHeight;
 		vmoper[5+4*i].money = pContract1->nFee;
-		LogPrint(vmoper[5+4*i].accountid,6,HEX);
 	}
 
 	return true;
@@ -572,6 +626,7 @@ bool ProcessContract2(const NEXT_CONTRACT* pContract) {
 				return WriteOutput2(vmOper, sizeof(vmOper) / sizeof(vmOper[0]));
 		}
 	}
+	PrintString("ProcessContract2 failed");
 	return false;
 }
 
@@ -590,6 +645,7 @@ bool ProcessContract3(const NEXT_CONTRACT* pContract) {
 				return WriteOutput3(vmOper, 2*firstContract.nArbitratorCount);
 		}
 	}
+	PrintString("ProcessContract3 failed");
 	return false;
 }
 
@@ -616,6 +672,7 @@ bool ProcessContract4(const ARBIT_RES_CONTRACT* pContract) {
 					return true;
 		}
 	}
+	PrintString("ProcessContract4 failed");
 	return false;
 }
 
@@ -661,8 +718,10 @@ int main() {
 	}
 
 	if (bProcessRet) {
+		PrintString("run ok");
 		__exit(RUN_SCRIPT_OK);
 	} else {
+		PrintString("run failed");
 		__exit(RUN_SCRIPT_DATA_ERR);
 	}
 
