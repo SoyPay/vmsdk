@@ -23,4 +23,6 @@
 -   编译此工程,在debug文件夹目录下面会生成.bin文件,就是应用的可以执行程序
 -   通过rpc 命令或者 UIdemo 工具即可以注册到系统中
 -   \image html 6.jpg
+-	也可以查看  开发者如何在系统中注册应用并获取AppID 
+-   http://bbs.dspay.org/forum.php?mod=viewthread&tid=1475
 */
