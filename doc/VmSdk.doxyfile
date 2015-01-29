@@ -32,13 +32,13 @@ DOXYFILE_ENCODING = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME = "VmSdk"
+PROJECT_NAME = "zý(SMC)/DACRSûß Sdk"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER = 0.02beta
+PROJECT_NUMBER = 0.03beta
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -779,7 +779,7 @@ FILE_PATTERNS = *.cpp *.h *.txt
 # be searched for input files as well.
 # The default value is: NO.
 
-RECURSIVE = NO
+RECURSIVE = YES
 
 # The EXCLUDE tag can be used to specify files and/or directories that should be
 # excluded from the INPUT source files. This way you can easily exclude a
