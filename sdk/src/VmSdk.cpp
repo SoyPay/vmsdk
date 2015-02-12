@@ -302,7 +302,7 @@ unsigned short GetAccountPublickey(const void* const accounid,void * const pubke
 		return 0;
 	}
 	memcpy(pubkey, retdata->buffer, retdata->len);
-	return retdata->len;
+	return 33;
 }
 bool QueryAccountBalance(const unsigned char* const account,Int64* const pBalance){
 	ClearParaSpace()
@@ -389,8 +389,8 @@ unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen,
 		return 0;
 	}
 	memcpy(value, retdata->buffer, retdata->len);
-	unsigned short size = retdata->len;
-	return size;
+	return retdata->len;
+
 }
 bool ModifyDataDB(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen,const unsigned long ptime) {
 	ClearParaSpace();
