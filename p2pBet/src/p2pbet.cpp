@@ -87,7 +87,7 @@ typedef struct {
 __xdata __no_init static uchar gContractData[256];
 #pragma data_alignment = 1
 __xdata __no_init static SAVE_DATA gSaveData;
-__xdata __no_init  int curhigh;
+__xdata __no_init u32 curhigh;
 
 
 
@@ -364,7 +364,7 @@ static bool RecordSendBetStatus(const BET_CTX *pbetctx)
 //		return false;
 //	}
 
-	memset(&savedata, 0, sizeof(SAVE_DATA));
+	memset(&savedata, 0, sizeof(savedata));
 	savedata.status = BETSEND;
 	memcpy(&savedata.money, &psdata->money, sizeof(psdata->money));
 	memcpy(&savedata.shash, &psdata->dhash, sizeof(psdata->dhash));
@@ -372,12 +372,12 @@ static bool RecordSendBetStatus(const BET_CTX *pbetctx)
 	savedata.delyhight = psdata->hight;
 	memcpy(savedata.sendid, pbetctx->accid, sizeof(pbetctx->accid));
 
-//	ErrorCheck(0);
+
 //	LogPrint(&savedata,sizeof(savedata),HEX);
 
 //	LogPrint(psdata,sizeof(SEND_DATA),HEX);
 
-	if(!WriteDataDB(pbetctx->txhash, sizeof(pbetctx->txhash), &savedata, sizeof(SAVE_DATA), savedata.hight))
+	if(!WriteDataDB(pbetctx->txhash, sizeof(pbetctx->txhash), &savedata, sizeof(savedata), savedata.hight))
 	{
 //		ErrorCheck(0);
 		return false;
@@ -441,11 +441,11 @@ static bool IsHaveSendBet(const void * phash)
 
 static bool IsEqualSendAmount(const Int64 *pdata)
 {
-	if(pdata == NULL)
-	{
+//	if(pdata == NULL)
+//	{
 //		ErrorCheck(0);
-		return false;
-	}
+//		return false;
+//	}
 
 	if(Int64Compare(pdata, &gSaveData.money) != COMP_EQU)
 	{
@@ -468,11 +468,11 @@ static bool AcceptDataCheck(const BET_CTX *pbetctx)
 #pragma data_alignment = 1
 	Int64 balance;
 
-	if(pbetctx == NULL)
-	{
-//		ErrorCheck(0);
-		return false;
-	}
+//	if(pbetctx == NULL)
+//	{
+////		ErrorCheck(0);
+//		return false;
+//	}
 
 	if(!IsHaveSendBet(psdata->targetkey))
 	{
@@ -792,7 +792,7 @@ static bool InitCtxData(BET_CTX const *pctxdata)
 int main()
 {
 	__xdata __no_init static BET_CTX BetCtx;
-
+//	RecordSendBetStatus(NULL);
 	if(!InitCtxData(&BetCtx))
 	{
 //		ErrorCheck(0);
