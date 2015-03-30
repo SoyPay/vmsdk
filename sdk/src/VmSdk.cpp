@@ -42,6 +42,11 @@ enum CALL_API_FUN {
 	GETCURDECOMPRESSCONTACR_FUNC,   //!<GETCURDECOMPRESSCONTACR_FUNC
 	GETDECOMPRESSCONTACR_FUNC,   	//!<GETDECOMPRESSCONTACR_FUNC
 	GETCURPAYMONEY_FUN,             //!<GETCURPAYMONEY_FUN
+
+	//add by ranger
+	GET_APP_USER_ACC_VALUE_FUN,             //!<GET_APP_USER_ACC_FUN
+	GET_APP_USER_ACC_FUND_WITH_TAG_FUN,             //!<GET_APP_USER_ACC_FUND_WITH_TAG_FUN
+	GET_WIRITE_OUT_APP_OPERATE_FUN,             //!<GET_WIRITE_OUT_APP_OPERATE_FUN
 };
 enum COMPRESS_TYPE {
 	U16_TYPE = 0,					// U16_TYPE
@@ -593,9 +598,40 @@ bool GetCurPayAmount(Int64* const pM2){
 	__CallApi(GETCURPAYMONEY_FUN);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len != 8) {
-			return 0;
+	if (retdata->len != sizeof(Int64)) {
+			return false;
 		}
-	memcpy(pM2, retdata->buffer, retdata->len);
-	return retdata->len;
+	memcpy(pM2, retdata->buffer, sizeof(Int64));
+	return true;
 }
+
+bool GetUserAppAccValue(Int64* const pRet,S_APP_ID const * const pAppID)
+{
+	ClearParaSpace()
+	;
+	InsertOutData(pAppID, sizeof(*pAppID));
+	__CallApi(GET_APP_USER_ACC_VALUE_FUN);
+
+	FUN_RET_DATA *retdata = GetInterflowP();
+	if (retdata->len != sizeof(Int64))
+		return false;
+	memcpy(pRet, retdata->buffer, sizeof(Int64));
+	return true;
+}
+
+bool GetUserAppAccFoudWithTag(Int64* const pRet,S_APP_ID const *  pAppID,S_FUND_TAG const *pFundTag )
+{
+	ClearParaSpace()
+	;
+	InsertOutData(pAppID, sizeof(*pAppID));
+	InsertOutData(pFundTag, sizeof(*pFundTag));
+	__CallApi(GET_APP_USER_ACC_VALUE_FUN);
+
+	FUN_RET_DATA *retdata = GetInterflowP();
+	if (retdata->len != sizeof(Int64))
+		return false;
+	memcpy(pRet, retdata->buffer, sizeof(Int64));
+	return true;
+}
+
+

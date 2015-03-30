@@ -2124,6 +2124,9 @@
     <name>$PROJ_DIR$\src\sdk.cpp</name>
   </file>
   <file>
+    <name>$PROJ_DIR$\src\test.cpp</name>
+  </file>
+  <file>
     <name>$PROJ_DIR$\src\testdb.cpp</name>
   </file>
   <file>

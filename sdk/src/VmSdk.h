@@ -32,6 +32,21 @@ enum EXIT_CODE {
 	RUN_SCRIPT_DATA_ERR = 0x00,//!< RUN_SCRIPT_DATA_ERR
 	RUN_SCRIPT_OK =  0x01,  //!< RUN_SCRIPT_OK
 };
+static const int MAX_TAG_SIZE  = 40;
+static const int MAX_UDER_ID_SIZE  = 40;
+struct S_APP_ID
+{
+	unsigned char idlen;
+	unsigned char ID[MAX_UDER_ID_SIZE];
+};
+
+struct S_FUND_TAG
+{
+	unsigned int  timeOut;
+	unsigned char taglen;
+	unsigned char ID[MAX_TAG_SIZE];
+};
+
 
 /***
  *
@@ -321,6 +336,17 @@ bool GetCurPayAmount(Int64* const pM2);
 unsigned short GetCurTxAccount(void * const account,unsigned short maxlen);
 unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen);
 unsigned short GetDeCompressContact(void * const pinContact,unsigned short inlen,void * const poutContact,unsigned short outmaxlen);
+
+/**@brief
+ *@param pRet: the ret app account value
+ *@param pUserID: the user app acount id
+ *@param Idlen   :  the userID len
+ *@return return true or false
+ *
+ */
+bool GetUserAppAccValue(Int64* const pRet,S_APP_ID const * const pAppID);
+
+
 void inline PrintfLine(unsigned short sort)
 {
 	char bffer[20]={0};
