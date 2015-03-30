@@ -31,7 +31,7 @@ bool ProcessScript(char*pcontact)
 	{
 		case 0x0d:
 				{
-					processTx((unsigned char*)account,ADD_FREE);
+					//processTx((unsigned char*)account,ADD_FREE);
 					break;
 				}
 		case 0x0e:
@@ -39,6 +39,11 @@ bool ProcessScript(char*pcontact)
 					processTx((unsigned char*)account,MINUS_FREE);
 					break;
 				}
+		case 0x13:
+		{
+			processTx((unsigned char*)account,ADD_FREE);
+			break;
+		}
 
 	}
 	__exit(RUN_SCRIPT_OK);

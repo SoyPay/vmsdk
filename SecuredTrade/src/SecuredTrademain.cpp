@@ -233,7 +233,7 @@ bool CheckContract2(const NEXT_CONTRACT* pContract, FIRST_CONTRACT* pContract1) 
 
 	//step2
 	char szValue[2] = { 0 };
-	unsigned short nRes = ReadDataValueDB(pContract->hash, sizeof(pContract->hash), szValue,
+	unsigned short nRes = ReadData(pContract->hash, sizeof(pContract->hash), szValue,
 			sizeof(szValue) / sizeof(szValue[0]));
 	if (nRes && 1 == szValue[0]) {
 		PrintString("[Error]ReadDataValueDB failed in CheckContract2");
@@ -282,7 +282,7 @@ bool CheckContract3(const NEXT_CONTRACT* pContract, FIRST_CONTRACT* pContract1, 
 
 	//step2
 	char szValue[2] = { 0 };
-	unsigned short nRes = ReadDataValueDB(pContract->hash, sizeof(pContract->hash), szValue,
+	unsigned short nRes = ReadData(pContract->hash, sizeof(pContract->hash), szValue,
 			sizeof(szValue) / sizeof(szValue[0]));
 	if (nRes && 1 == szValue[0]) {
 		PrintString("[Error]ReadDataValueDB failed in CheckContract3");
@@ -352,7 +352,7 @@ bool CheckContract4(ARBIT_RES_CONTRACT* pContract, unsigned char* pArCountInArra
 
 	//step3
 	char szValue[2] = { 0 };
-	unsigned short nRes = ReadDataValueDB(pContract[nIndex].hash, sizeof(pContract[nIndex].hash), szValue,
+	unsigned short nRes = ReadData(pContract[nIndex].hash, sizeof(pContract[nIndex].hash), szValue,
 			sizeof(szValue) / sizeof(szValue[0]));
 	if (nRes && 1 == szValue[0]) {
 		PrintString("[Error]ReadDataValueDB failed in CheckContract4");

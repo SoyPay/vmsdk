@@ -22,10 +22,7 @@ enum CALL_API_FUN {
 	GETACCPUB_FUNC,           //!< GETACCPUB_FUNC
 	QUEYACCBALANCE_FUNC,      //!< QUEYACCBALANCE_FUNC
 	GETTXCONFIRH_FUNC,        //!< GETTXCONFIRH_FUNC
-	GETTIPH_FUNC,             //!< GETTIPH_FUNC
 	GETBLOCKHASH_FUNC,        //!< GETBLOCKHASH_FUNC
-	ISAUTHORIT_FUNC,          //!<ISAUTHORIT
-	GETAUTHORITDEFINE_FUNC,	  //!<GETAUTHORITDEFINE_FUNC
 
 
 	//// tx api
@@ -33,20 +30,28 @@ enum CALL_API_FUN {
 	WRITEDB_FUNC,       //!< WRITEDB_FUNC
 	DELETEDB_FUNC,      //!< DELETEDB_FUNC
 	READDB_FUNC,        //!< READDB_FUNC
-	MODIFYDB_FUNC,      //!< MODIFYDB_FUNC
 	GETDBSIZE_FUNC,     //!< GETDBSIZE_FUNC
 	GETDBVALUE_FUNC,    //!< GETDBVALUE_FUNC
 	GetCURTXHASH_FUNC,  //!< GetCURTXHASH_FUNC
-	READDBTIME_FUNC,     //!< READDBTIME_FUNC
-	MODIFYDBTIME_FUNC,  //!< MODIFYDBTIME_FUNC
 	MODIFYDBVALUE_FUNC ,  //!< MODIFYDBVALUE_FUNC
 	WRITEOUTPUT_FUNC,     //!<WRITEOUTPUT_FUNC
 	GETSCRIPTDATA_FUNC,		  //!<GETSCRIPTDATA_FUNC
 	GETSCRIPTID_FUNC,		  //!<GETSCRIPTID_FUNC
 	GETCURTXACCOUNT_FUNC,		  //!<GETSCRIPTID_FUNC
 	GETCURTXCONTACT_FUNC,		 //!<GETCURTXCONTACT_FUNC
+	GETCURDECOMPRESSCONTACR_FUNC,   //!<GETCURDECOMPRESSCONTACR_FUNC
+	GETDECOMPRESSCONTACR_FUNC,   	//!<GETDECOMPRESSCONTACR_FUNC
+	GETCURPAYMONEY_FUN,             //!<GETCURPAYMONEY_FUN
 };
-
+enum COMPRESS_TYPE {
+	U16_TYPE = 0,					// U16_TYPE
+	I16_TYPE = 1,					// I16_TYPE
+	U32_TYPE = 2,					// U32_TYPE
+	I32_TYPE = 3,					// I32_TYPE
+	U64_TYPE = 4,					// U64_TYPE
+	I64_TYPE = 5,					// I64_TYPE
+	NO_TYPE = 6,                   // NO_TYPE +n (tip char)
+};
 __root __code static const char aa[]@0x0008 = {0x22,0x22}; //{0,0,0,0x80,0xFB};
 __root __code static const char a12[]@0x0012 = {0x22,0x22};
 __root __xdata __no_init static  unsigned char Communicate[4*1024]@0xEFFF;
@@ -332,7 +337,7 @@ unsigned long GetTxConFirmHeight(const void * const txhash) {
 	memcpy(&height, retdata->buffer, retdata->len);
 	return height;
 }
-bool WriteDataDB(const void* const key,const unsigned char keylen,const void * const value,const unsigned short valuelen,const unsigned long time) {
+bool WriteData(const void* const key,const unsigned char keylen,const void * const value,const unsigned short valuelen) {
 	ClearParaSpace();
 //	if(keylen <=0 || valuelen<=0)
 //	{
@@ -340,7 +345,6 @@ bool WriteDataDB(const void* const key,const unsigned char keylen,const void * c
 //	}
 	InsertOutData(key, keylen);
 	InsertOutData(value, valuelen);
-	InsertOutData(&time, 4);
 	__CallApi(WRITEDB_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
@@ -352,7 +356,7 @@ bool WriteDataDB(const void* const key,const unsigned char keylen,const void * c
 //	return ret;
 	return retdata->buffer[0];
 }
-bool DeleteDataDB(const void* const key,const unsigned char keylen) {
+bool DeleteData(const void* const key,const unsigned char keylen) {
 	ClearParaSpace();
 //	if(keylen <= 0)
 //		return false;
@@ -374,7 +378,7 @@ bool DeleteDataDB(const void* const key,const unsigned char keylen) {
 	//return falg;
 }
 
-unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen, void* const value,unsigned short const maxbuffer) {
+unsigned short ReadData(const void* const key,const unsigned char keylen, void* const value,unsigned short const maxbuffer) {
 	ClearParaSpace();
 //	if(keylen <= 0 || maxbuffer <= 0)
 //		return 0;
@@ -392,21 +396,21 @@ unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen,
 	return retdata->len;
 
 }
-bool ModifyDataDB(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen,const unsigned long ptime) {
+bool ModifyData(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen) {
 	ClearParaSpace();
-//	if(keylen <= 0 || valuelen <= 0)
+//	if(keylen <= 0 || valuelen<= 0)
+//	{
 //		return false;
+//	}
 	InsertOutData(key, keylen);
 	InsertOutData(pvalue, valuelen);
-	InsertOutData(&ptime, sizeof(ptime));
-	__CallApi(MODIFYDB_FUNC);
-
+	__CallApi(MODIFYDBVALUE_FUNC);
 	FUN_RET_DATA *retdata = GetInterflowP();
 	if (retdata->len != 1) {
 		return false;
 	}
-//	bool ret = false;
-//	memcpy(&ret, retdata->buffer, 1);
+//	bool flag;
+//	memcpy(&flag, retdata->buffer, 1);
 	return retdata->buffer[0];
 }
 unsigned long GetDBSize() {
@@ -420,7 +424,7 @@ unsigned long GetDBSize() {
 	memcpy(&size, retdata->buffer, sizeof(size));
 	return size;
 }
-bool GetDBValue(const unsigned long index,void* const key,unsigned char * const keylen,unsigned short maxkeylen,void* const value,unsigned short* const maxbuffer, unsigned long* const ptime)
+bool GetDBValue(const unsigned long index,void* const key,unsigned char * const keylen,unsigned short maxkeylen,void* const value,unsigned short* const maxbuffer)
  {
 
 	ClearParaSpace();
@@ -452,13 +456,6 @@ bool GetDBValue(const unsigned long index,void* const key,unsigned char * const 
 	memcpy(value, retdata->buffer, retdata->len);
 	*maxbuffer = retdata->len;
 
-   #pragma data_alignment = 1
-	retdata = (FUN_RET_DATA *) ((unsigned char*) retdata->buffer + retdata->len);
-	if (retdata->len != sizeof(*ptime)) {
-		return false;
-	}
-	memcpy((char*) ptime, retdata->buffer, sizeof(*ptime));
-
 	return true;
 }
 
@@ -484,71 +481,8 @@ bool GetCurTxHash(void * const poutHash) {
 	return true;
 }
 
-bool IsAuthorited(const void* const account,const Int64* const pmoney) {
-	ClearParaSpace()
-	;
-	InsertOutData(account, 6);
-	InsertOutData(pmoney, 8);
-	__CallApi(ISAUTHORIT_FUNC);
-	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len != 1) {
-		return false;
-	}
-//	bool flag = false;
-//	memcpy(&flag, retdata->buffer, 1);
-	return retdata->buffer[0];
-//	return flag;
-}
-bool ReadDataDBTime(const void* const key,const unsigned char keylen, unsigned long * const ptime) {
-	ClearParaSpace();
-//	if(keylen <= 0)
-//	{
-//		return false;
-//	}
-	InsertOutData(key, keylen);
-	__CallApi(READDBTIME_FUNC);
-	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len != sizeof(unsigned long)) {
-		return false;
-	}
-	memcpy(ptime, retdata->buffer, sizeof(*ptime));
-	return true;
-}
-bool ModifyDataDBTime(const void* const key,const unsigned char keylen, const unsigned long ptime) {
-	ClearParaSpace();
-//	if(keylen <= 0)
-//	{
-//		return false;
-//	}
-	InsertOutData(key, keylen);
-	InsertOutData(&ptime, 4);
-	__CallApi(MODIFYDBTIME_FUNC);
-	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len != 1) {
-		return false;
-	}
-//	bool flag;
-//	memcpy(&flag, retdata->buffer, 1);
-	return retdata->buffer[0];
-}
 
-bool ModifyDataDBVavle(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen) {
-	ClearParaSpace();
-//	if(keylen <= 0 || valuelen<= 0)
-//	{
-//		return false;
-//	}
-	InsertOutData(key, keylen);
-	InsertOutData(pvalue, valuelen);
-	__CallApi(MODIFYDBVALUE_FUNC);
-	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len != 1) {
-		return false;
-	}
-//	bool flag;
-//	memcpy(&flag, retdata->buffer, 1);
-	return retdata->buffer[0];
-}
+
 
 
 bool IsRegID(const void* const account)
@@ -560,20 +494,7 @@ bool IsRegID(const void* const account)
 	}
 	return false;
 }
-unsigned short GetAuthUserDefine(const void* const account,void *const pout,const unsigned short maxlen)
-{
-	ClearParaSpace();
 
-	InsertOutData(account, 6);
-	__CallApi(GETAUTHORITDEFINE_FUNC);
-
-	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len > maxlen ||  retdata->len <= 0) {
-		return 0;
-	}
-	memcpy(pout, retdata->buffer, retdata->len);
-	return retdata->len;
-}
 bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* const pvalve,short maxlen)
 {
 	ClearParaSpace();
@@ -592,7 +513,7 @@ bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* c
 	memcpy(pvalve, retdata->buffer, retdata->len);
 	return retdata->len;
 }
-bool GetCurScritpAccount(void* const account)
+bool GetScriptID(void* const account)
 {
 	ClearParaSpace();
 //	if(account == NULL)
@@ -607,7 +528,8 @@ bool GetCurScritpAccount(void* const account)
 		}
 	memcpy(account, retdata->buffer, retdata->len);
 	return retdata->len;
-	}
+}
+
 unsigned short GetCurTxAccount(void * const account,unsigned short maxlen)
 {
 		ClearParaSpace();
@@ -637,56 +559,43 @@ unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen)
 	memcpy(pContact, retdata->buffer, retdata->len);
 	return retdata->len;
 }
-//long ReadVarLong(char*buffer){
-//	 long n = 0;
-//	    while(true) {
-//	        unsigned char chData;
-//	        chData = *buffer++;
-//	        n = (n << 7) | (chData & 0x7F);
-//	        if (chData & 0x80)
-//	            n++;
-//	        else
-//	            return n;
-//	    }
-//	    return n;
-//}
-//void StringAdd(char *str)
-//{
-//	int len;
-//	len=strlen(str);
-//
-//
-//	while(len--)
-//	{
-//		if(str[len]=='F' || str[len]=='f')
-//		{
-//			str[len]='0';
-//		}
-//		else
-//		{
-//			str[len]+=1;
-//			break;
-//		}
-//	}
-//}
-//Int64 ReadVarInt64(char*buffer){
-//	Int64 ret;
-//	Int64 add;
-//	Int64 mul;
-//	Int64Inital(&add,"\x01",1);
-//	Int64Inital(&mul,"\x80",1);
-//	while(true) {
-//		unsigned char chData;
-//		chData = *buffer++;
-//		//n = (n <<7) | (chData & 0x7F);
-//		Int64Mul(&ret,&mul,&ret);
-//		ret = ret| (chData & 0x7F);
-//		if (chData & 0x80)
-//			Int64Add(&ret,&add,&ret);
-//		else{
-//			return ret;
-//		}
-//
-//	}
-//	return ret;
-//}
+unsigned short CurDeCompressContact(unsigned char *pformat,unsigned short formlen,void * const poutContact, unsigned short outmaxlen) {
+
+	ClearParaSpace()
+	;
+	InsertOutData(pformat, formlen);
+	__CallApi(GETCURDECOMPRESSCONTACR_FUNC);
+
+	FUN_RET_DATA *retdata = GetInterflowP();
+	if (retdata->len > outmaxlen || retdata->len == 0)
+		return retdata->len;
+	memcpy(poutContact, retdata->buffer, retdata->len);
+	return retdata->len;
+}
+
+unsigned short DeCompressContact(unsigned char *pformat,unsigned short formlen,const unsigned char * const txhash, void * const poutContact,
+		unsigned short outmaxlen) {
+
+	ClearParaSpace()
+	;
+	InsertOutData(pformat, formlen);
+	InsertOutData(txhash, 32);
+	__CallApi(GETDECOMPRESSCONTACR_FUNC);
+
+	FUN_RET_DATA *retdata = GetInterflowP();
+	if (retdata->len > outmaxlen || retdata->len == 0)
+		return retdata->len;
+	memcpy(poutContact, retdata->buffer, retdata->len);
+	return retdata->len;
+}
+bool GetCurPayAmount(Int64* const pM2){
+	ClearParaSpace();
+	__CallApi(GETCURPAYMONEY_FUN);
+
+	FUN_RET_DATA *retdata = GetInterflowP();
+	if (retdata->len != 8) {
+			return 0;
+		}
+	memcpy(pM2, retdata->buffer, retdata->len);
+	return retdata->len;
+}

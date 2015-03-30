@@ -326,67 +326,43 @@ bool testGetCurTxHash()
 	TestCheck(GetCurTxHash(txhash) == true);
 	return true;
 }
-/// 没有授权
-bool testIsAuthorited(char *phash)
-{
-	char paccount[6] = {0};
-	Int64 pmoney;
-	TestCheck(IsAuthorited(paccount,&pmoney) == false);
-	GetAccounts((unsigned char*)phash,paccount,6);
-	Int64Inital(&pmoney,"\x01", 1);
-	TestCheck(IsAuthorited(paccount,&pmoney) == false);
-	return true;
-}
-///授权的账户
-bool testIsAuthorited1(char *phash)
-{
-	char paccount[6] = {0};
-	Int64 pmoney;
-	GetAccounts((unsigned char*)phash,paccount,6);
-	Int64Inital(&pmoney,"\x01", 1);
-	TestCheck(IsAuthorited(paccount,&pmoney) == true);
-	Int64Inital(&pmoney,"\xff\xff\xff\xff\xff\xff\xff\xff", 8);
-	TestCheck(IsAuthorited(paccount,&pmoney) == false);
-	return true;
-}
 
 //// test db
 bool testWriteDataDB()
 {
 	char* key =NULL;
 	char *value = "hello";
-	unsigned long time = 40;
-	TestCheck(WriteDataDB(key,0,value,6,time) == false);
-	TestCheck(WriteDataDB(key,9,value,0,time) == false);
+	TestCheck(WriteData(key,0,value,6) == false);
+	TestCheck(WriteData(key,9,value,0) == false);
 	key = "key";
 	value = NULL;
-	TestCheck(WriteDataDB(key,4,value,6,time) == true);
+	TestCheck(WriteData(key,4,value,6) == true);
 	key = "key";
 	value = "hello";
-	TestCheck(WriteDataDB(key,4,value,6,time) == true);
+	TestCheck(WriteData(key,4,value,6) == true);
 	key = "key1";
 	value = "hellow";
-	TestCheck(WriteDataDB(key,5,value,7,time) == true);
+	TestCheck(WriteData(key,5,value,7) == true);
 	return true;
 }
 bool testDeleteDataDB()
 {
 	char* key =NULL;
-	TestCheck(DeleteDataDB(key,0)== false);
+	TestCheck(DeleteData(key,0)== false);
 	key = "key";
-	TestCheck(DeleteDataDB(key,4)== true);
+	TestCheck(DeleteData(key,4)== true);
 	return true;
 }
 bool testReadDataValueDB()
 {
 	char* key =NULL;
 	char value[7] = {0};
-	TestCheck(ReadDataValueDB(key,0,value,0) == 0);
+	TestCheck(ReadData(key,0,value,0) == 0);
 	key = "key";
-	TestCheck(ReadDataValueDB(key,4,value,0) == 0);
-	TestCheck(ReadDataValueDB(key,4,value,7) == 0);
+	TestCheck(ReadData(key,4,value,0) == 0);
+	TestCheck(ReadData(key,4,value,7) == 0);
 	key = "key1";
-	TestCheck(ReadDataValueDB(key,5,value,7)> 0);
+	TestCheck(ReadData(key,5,value,7)> 0);
 	TestCheck(strcmp(value,"hellow") ==0);
 	return true;
 }
@@ -394,15 +370,13 @@ bool testModifyDataDB()
 {
 	char* key =NULL;
 	char *value = NULL;
-	unsigned long ptime = 0;
-	TestCheck(ModifyDataDB(key,0,value,7,ptime) == false);
-	TestCheck(ModifyDataDB(key,5,value,0,ptime) == false);
+	TestCheck(ModifyData(key,0,value,7) == false);
+	TestCheck(ModifyData(key,5,value,0) == false);
 	key = "sse";
-	TestCheck(ModifyDataDB(key,4,value,0,ptime) == false);
+	TestCheck(ModifyData(key,4,value,0) == false);
 	key = "key1";
 	value= "LUO";
-	ptime = 50;
-	TestCheck(ModifyDataDB(key,5,value,4,ptime) == true);
+	TestCheck(ModifyData(key,5,value,4) == true);
 	return true;
 }
 bool testGetDBSize()
@@ -417,81 +391,53 @@ bool testGetDBSize()
 }
 bool testGetDBValue()
 {
+
 	char key[15] ={0};
 	char value[15] = {0};
 	unsigned char kenlen =0;
 	unsigned short valen = 0;
-	unsigned long ptime = 0;
-	TestCheck(GetDBValue(0,key,(unsigned char*)&kenlen,0,value,&valen,&ptime)== false);
+
+	TestCheck(GetDBValue(0,key,(unsigned char*)&kenlen,0,value,&valen)== false);
+
 	kenlen = 5;
-	TestCheck(GetDBValue(0,key,(unsigned char*)&kenlen,0,value,&valen,&ptime)== false);
+	TestCheck(GetDBValue(0,key,(unsigned char*)&kenlen,0,value,&valen)== false);
+
 
 	char *wkey = "bit";
 	char *wvalue = "shit";
-	ptime = 70;
-	TestCheck(WriteDataDB(wkey,4,wvalue,5,ptime) == true);
+	TestCheck(WriteData(wkey,4,wvalue,5) == true);
 
 	valen = 15;
-	ptime = 0;
 	kenlen = sizeof(key);
-	TestCheck(GetDBValue(0,key,&kenlen,15,value,&valen,&ptime)== true);
+	TestCheck(GetDBValue(0,key,&kenlen,15,value,&valen)== true);
 	TestCheck(strcmp(key,"bit")== 0);
 	TestCheck(strcmp(value,wvalue)== 0);
-	TestCheck(ptime == 70);
 
 	valen = 4;
-	ptime = 0;
-	TestCheck(GetDBValue(1,key,&kenlen,15,value,&valen,&ptime)== true);
+	TestCheck(GetDBValue(1,key,&kenlen,15,value,&valen)== true);
 	TestCheck(strcmp(key,"key1")== 0);
 	TestCheck(strcmp(value,"LUO")== 0);
-	TestCheck(ptime == 50);
 
-	TestCheck(GetDBValue(1,key,&kenlen,15,value,&valen,&ptime)== false);
+	TestCheck(GetDBValue(1,key,&kenlen,15,value,&valen)== false);
 	return true;
 
-}
-bool testReadDataDBTime()
-{
-	char *key = NULL;
-	unsigned long ptime = 0;
-	TestCheck(ReadDataDBTime(key,0,&ptime) == false);
-	key = "serf";
-	TestCheck(ReadDataDBTime(key,5,&ptime) == false);
-	key = "key1";
-	TestCheck(ReadDataDBTime(key,5,&ptime) == true);
-	TestCheck(ptime == 50);
-	return true;
-}
-bool testModifyDataDBTime()
-{
-	char *key = NULL;
-	unsigned long ptime = 0;
-	TestCheck(ModifyDataDBTime(key,0,ptime) == false);
-	key = "serf";
-	TestCheck(ModifyDataDBTime(key,0,ptime) == false);
-	key = "key1";
-	ptime = 70;
-	TestCheck(ModifyDataDBTime(key,5,ptime) == true);
-	return true;
 }
 bool testModifyDataDBVavle()
 {
 	char *key = NULL;
 	char *value = NULL;
-	TestCheck(ModifyDataDBVavle(key,0,value,1) == false);
-	TestCheck(ModifyDataDBVavle(key,5,value,0) == false);
+	TestCheck(ModifyData(key,0,value,1) == false);
+	TestCheck(ModifyData(key,5,value,0) == false);
 	key = "123";
 	value = "funk";
-	TestCheck(ModifyDataDBVavle(key,4,value,5) == false);
+	TestCheck(ModifyData(key,4,value,5) == false);
 	key = "key1";
-	TestCheck(ModifyDataDBVavle(key,5,value,5) == true);
+	TestCheck(ModifyData(key,5,value,5) == true);
 	unsigned long ptime = 0;
 	char valen[5] ={0};
-	TestCheck(ReadDataValueDB(key,5,valen,5) > 0);
+	TestCheck(ReadData(key,5,valen,5) > 0);
 	TestCheck(strcmp(valen,"funk")== 0);
-	TestCheck(ReadDataDBTime(key,5,&ptime) == true);
-	TestCheck(ptime == 70);
-        return true;
+     return true;
 }
 bool testseconddb()
 {
@@ -639,24 +585,13 @@ int ProcessSdk(char*pcontact)
 				LogPrint("testGetDBSize error",sizeof("testGetDBSize error")+1,STRING);
 				test_exit();
 			}
-
+			LogPrint("11",sizeof("11")+1,STRING);
 			if(!testGetDBValue())
 			{
 				LogPrint("testGetDBValue error",sizeof("testGetDBValue error")+1,STRING);
 				test_exit();
 			}
-
-			if(!testReadDataDBTime())
-			{
-				LogPrint("testReadDataDBTime error",sizeof("testReadDataDBTime error")+1,STRING);
-				test_exit();
-			}
-
-			if(!testModifyDataDBTime())
-			{
-				LogPrint("testModifyDataDBTime error",sizeof("testModifyDataDBTime error")+1,STRING);
-				test_exit();
-			}
+			LogPrint("21",sizeof("21")+1,STRING);
 			if(!testModifyDataDBVavle())
 			{
 				LogPrint("testModifyDataDBVavle error",sizeof("testModifyDataDBVavle error")+1,STRING);

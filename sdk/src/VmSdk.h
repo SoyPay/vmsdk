@@ -20,19 +20,11 @@ enum PRINT_FORMAT {
 
 
 //// operate the account
-/***
- *操作账户支持的操作
- */
+
 enum OperType {
 	ADD_FREE = 1, //!< ADD_FREE
 	MINUS_FREE,   //!< MINUS_FREE
-	ADD_SELF,     //!< ADD_SELF
-	MINUS_SELF,   //!< MINUS_SELF
-	ADD_FREEZD,   //!< ADD_FREEZD
-	MINUS_FREEZD, //!< MINUS_FREEZD
-	NULL_OPERTYPE,//!< NULL_OPERTYPE
 };
-
 /*
  *the function exit
  */
@@ -71,7 +63,7 @@ typedef struct tagACCOUNT_ID
 
 typedef struct tagVMOPERATE{
 	unsigned char accountid[6];      //!< account id
-	OperType opeatortype;           //!< operate the account
+	unsigned char opeatortype;           //!< operate the account
 	unsigned long outheight;       //!< out of the height
 	Int64 money;
 } VM_OPERATE;
@@ -232,7 +224,7 @@ unsigned long GetTxConFirmHeight(const void * const txhash) ;
  *@return true write success
  *
  **/
-bool WriteDataDB(const void* const key,const unsigned char keylen,const void * const value,const unsigned short valuelen,const unsigned long time);
+bool WriteData(const void* const key,const unsigned char keylen,const void * const value,const unsigned short valuelen);
 /**@brief
  *delete data to the pScriptid table
  *@param key: delete key
@@ -240,7 +232,7 @@ bool WriteDataDB(const void* const key,const unsigned char keylen,const void * c
  *@return true  write success
  *
  */
-bool DeleteDataDB(const void* const key,const unsigned char keylen);
+bool DeleteData(const void* const key,const unsigned char keylen);
 /**@brief
  *query data through key from the pScriptid table
  *@param key: query key
@@ -250,27 +242,7 @@ bool DeleteDataDB(const void* const key,const unsigned char keylen);
  *@return unsigned short : output value's length
  *
  */
-unsigned short ReadDataValueDB(const void* const key,const unsigned char keylen, void* const value,unsigned short const maxbuffer);
-/**
- * @brief get outtime
- * @param key:
- * @param keylen: the key length
- * @param ptime:
- * @return
- */
-bool ReadDataDBTime(const void* const key,const unsigned char keylen, unsigned long * const ptime);
-/**@brief
- *Modify data through key from the pScriptid table
- *@param key: throng find key to modify value and time
- *@param keylen: the key length
- *@param pvalue: modify value to pvalue
- *@param valuelen: the pvalue length
- *@param ptime: modify the database time to ptime
- *@return true modify success
- *
- */
-
-bool ModifyDataDB(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen,const unsigned long ptime);
+unsigned short ReadData(const void* const key,const unsigned char keylen, void* const value,unsigned short const maxbuffer);
 
 /**
  *brief
@@ -281,15 +253,8 @@ bool ModifyDataDB(const void* const key,const unsigned char keylen, const void* 
  * @param valuelen: the pvalue length
  * @return
  */
-bool ModifyDataDBVavle(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen);
-/**
- * @brief modify outtime through key
- * @param key: key's word
- * @param keylen: the key length
- * @param ptime
- * @return
- */
-bool ModifyDataDBTime(const void* const key,const unsigned char keylen, const unsigned long ptime);
+bool ModifyData(const void* const key,const unsigned char keylen, const void* const pvalue,const unsigned short valuelen);
+
 /**@brief
  *get the database The number of keys
  *@return if the database exist data return the the number keys's count
@@ -309,7 +274,7 @@ unsigned long GetDBSize();
  *
  */
 
-bool GetDBValue(const unsigned long index,void* const key,unsigned char * const keylen,unsigned short maxkeylen,void* const value,unsigned short* const maxbuffer, unsigned long* const ptime);
+bool GetDBValue(const unsigned long index,void* const key,unsigned char * const keylen,unsigned short maxkeylen,void* const value,unsigned short* const maxbuffer);
 
 /**@brief
  *Access to the specified block height hash
@@ -325,25 +290,9 @@ bool GetBlockHash(const unsigned long height,void * const pblochHash);
  *@return return current block height
  */
 bool GetCurTxHash(void * const poutHash);
-/**
- * bool IsAuthorited(const void* const account,const Int64* const pmoney)
- * @brief
- * the account the Authorited
- * @param account: the account's address
- * @param pmoney: the money
- * @return: true Expressed permission false No authorization
- */
-bool IsAuthorited(const void* const account,const Int64* const pmoney);
 
 bool IsRegID(const void* const account);
-/**@brief
- *@param account: the account id ,the account of length is 6
- *@param pout: run the functoin the define char put into pout
- *@param maxlen: the pout of length
- *@return return the pout of length
- *
- */
-unsigned short GetAuthUserDefine(const void* const account,void *const pout,const unsigned short maxlen);
+
 /**@brief
  *@param scriptID: the scriplt id ,the account of length is 6
  *@param pkey: the key value
@@ -360,7 +309,9 @@ bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* c
  *@return return true
  *
  */
-bool GetCurScritpAccount(void* const account);
+bool GetScriptID(void* const account);
+
+bool GetCurPayAmount(Int64* const pM2);
 /**@brief
  *@param account: obtain the currnet tx sign account
  *@param maxlen: the account of length
@@ -369,6 +320,7 @@ bool GetCurScritpAccount(void* const account);
  */
 unsigned short GetCurTxAccount(void * const account,unsigned short maxlen);
 unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen);
+unsigned short GetDeCompressContact(void * const pinContact,unsigned short inlen,void * const poutContact,unsigned short outmaxlen);
 void inline PrintfLine(unsigned short sort)
 {
 	char bffer[20]={0};

@@ -176,7 +176,7 @@ bool CheckSecondContact(const NEXT_CONTRACT* const pContract)
 		return false;
 	}
 	bool flag = false;
-	if(!ReadDataValueDB((const unsigned char * const ) pContract->hash,32,&flag,1))
+	if(!ReadData((const unsigned char * const ) pContract->hash,32,&flag,1))
 	{
 		LogPrint("read db dark failed",sizeof("read db dark failed"),STRING);
 		return false;

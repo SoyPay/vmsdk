@@ -431,7 +431,7 @@ static bool IsHaveSendBet(const void * phash)
 //		ErrorCheck(0);
 //		return false;
 //	}
-	if(!ReadDataValueDB(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
+	if(!ReadData(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
 	{
 //		ErrorCheck(0);
 		return false;
@@ -587,7 +587,7 @@ static bool IsHaveP2PBet(const void * phash)
 //		return false;
 //	}
 
-	if(!ReadDataValueDB(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
+	if(!ReadData(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
 	{
 //		ErrorCheck(0);
 		return false;
