@@ -32,20 +32,6 @@ enum EXIT_CODE {
 	RUN_SCRIPT_DATA_ERR = 0x00,//!< RUN_SCRIPT_DATA_ERR
 	RUN_SCRIPT_OK =  0x01,  //!< RUN_SCRIPT_OK
 };
-static const int MAX_TAG_SIZE  = 40;
-static const int MAX_UDER_ID_SIZE  = 40;
-struct S_APP_ID
-{
-	unsigned char idlen;
-	unsigned char ID[MAX_UDER_ID_SIZE];
-};
-
-struct S_FUND_TAG
-{
-	unsigned int  timeOut;
-	unsigned char taglen;
-	unsigned char ID[MAX_TAG_SIZE];
-};
 
 
 /***
@@ -60,6 +46,31 @@ enum COMP_RET {
 typedef struct tag_INT64 {
 	unsigned char data[8];
 } Int64;
+
+
+static const int MAX_TAG_SIZE  = 40;
+static const int MAX_UDER_ID_SIZE  = 40;
+enum APP_OP_TYPE{
+	ADD_FREE_OP = 1,
+	SUB_FREE_OP,
+	ADD_FREEZED_OP,
+	SUB_FREEZED_OP
+};
+struct S_APP_ID
+{
+	unsigned char idlen;                    //!the len of the tag
+	unsigned char ID[MAX_UDER_ID_SIZE];     //! the ID for the
+};
+
+struct APP_ACC_OPERATE
+{
+	unsigned char opeatortype;		//!OperType
+	unsigned int outheight;		    //!< the transacion Timeout height
+	Int64 mMoney;			        //!<The transfer amount
+	S_APP_ID AppAccID;				//!< accountid
+	S_APP_ID FundTag;               //!the fund tag used for find found
+};
+
 
 /**
  * @brief 初始化 Int64 数据 Int64 在IAR for 8051 里不支持 \n
@@ -344,7 +355,24 @@ unsigned short GetDeCompressContact(void * const pinContact,unsigned short inlen
  *@return return true or false
  *
  */
-bool GetUserAppAccValue(Int64* const pRet,S_APP_ID const * const pAppID);
+bool GetUserAppAccValue(Int64* const pRet,S_APP_ID const * const pAppUserID);
+/**@brief
+ * 		get the app user freezed value  by tag
+ *@param pRet: the ret app account value
+ *@param pAppUserID : the user app acount id and fund tag
+ *@return return true or false
+ *
+ */
+bool GetUserAppAccFoudWithTag(Int64* const pRet,APP_ACC_OPERATE const *  pAppUserID);
+
+/**@brief
+ * 		 out put the operater for vm to  operate
+ *@param  pOpertate:
+ *@param conter : the conter of APP_ACC_OPERATE
+ *@return return true  never false
+ *
+ */
+bool WriteAppOperateOutput( const APP_ACC_OPERATE* pOpertate, const unsigned short conter);
 
 
 void inline PrintfLine(unsigned short sort)

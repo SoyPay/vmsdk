@@ -619,12 +619,11 @@ bool GetUserAppAccValue(Int64* const pRet,S_APP_ID const * const pAppID)
 	return true;
 }
 
-bool GetUserAppAccFoudWithTag(Int64* const pRet,S_APP_ID const *  pAppID,S_FUND_TAG const *pFundTag )
+bool GetUserAppAccFoudWithTag(Int64* const pRet,APP_ACC_OPERATE const *  pAppID)
 {
 	ClearParaSpace()
 	;
 	InsertOutData(pAppID, sizeof(*pAppID));
-	InsertOutData(pFundTag, sizeof(*pFundTag));
 	__CallApi(GET_APP_USER_ACC_VALUE_FUN);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
@@ -633,5 +632,17 @@ bool GetUserAppAccFoudWithTag(Int64* const pRet,S_APP_ID const *  pAppID,S_FUND_
 	memcpy(pRet, retdata->buffer, sizeof(Int64));
 	return true;
 }
+
+
+
+
+bool WriteAppOperateOutput( const APP_ACC_OPERATE* pOpertate, const unsigned short conter) {
+	ClearParaSpace()
+	;
+	InsertOutData(pOpertate, conter * sizeof(*pOpertate));
+	__CallApi(WRITEOUTPUT_FUNC);
+	return true;
+}
+
 
 
