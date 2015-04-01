@@ -605,7 +605,7 @@ bool GetCurPayAmount(Int64* const pM2){
 	return true;
 }
 
-bool GetUserAppAccValue(Int64* const pRet,S_APP_ID const * const pAppID)
+bool GetUserAppAccFreeValue(Int64* const pRet,const S_APP_ID const *  pAppID)
 {
 	ClearParaSpace()
 	;

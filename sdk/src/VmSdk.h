@@ -65,7 +65,7 @@ struct S_APP_ID
 struct APP_ACC_OPERATE
 {
 	unsigned char opeatortype;		//!OperType
-	unsigned int outheight;		    //!< the transacion Timeout height
+	unsigned long outheight;		    //!< the transacion Timeout height
 	Int64 mMoney;			        //!<The transfer amount
 	S_APP_ID AppAccID;				//!< accountid
 	S_APP_ID FundTag;               //!the fund tag used for find found
@@ -355,7 +355,7 @@ unsigned short GetDeCompressContact(void * const pinContact,unsigned short inlen
  *@return return true or false
  *
  */
-bool GetUserAppAccValue(Int64* const pRet,S_APP_ID const * const pAppUserID);
+bool GetUserAppAccFreeValue(Int64* const pRet,const S_APP_ID  * const pAppUserID);
 /**@brief
  * 		get the app user freezed value  by tag
  *@param pRet: the ret app account value
