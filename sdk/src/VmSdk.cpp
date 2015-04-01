@@ -624,7 +624,7 @@ bool GetUserAppAccFoudWithTag(Int64* const pRet,APP_ACC_OPERATE const *  pAppID)
 	ClearParaSpace()
 	;
 	InsertOutData(pAppID, sizeof(*pAppID));
-	__CallApi(GET_APP_USER_ACC_VALUE_FUN);
+	__CallApi(GET_APP_USER_ACC_FUND_WITH_TAG_FUN);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
 	if (retdata->len != sizeof(Int64))
@@ -640,7 +640,7 @@ bool WriteAppOperateOutput( const APP_ACC_OPERATE* pOpertate, const unsigned sho
 	ClearParaSpace()
 	;
 	InsertOutData(pOpertate, conter * sizeof(*pOpertate));
-	__CallApi(WRITEOUTPUT_FUNC);
+	__CallApi(GET_WIRITE_OUT_APP_OPERATE_FUN);
 	return true;
 }
 

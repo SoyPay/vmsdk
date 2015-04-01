@@ -8,3 +8,4 @@ int ProcessRollBack(char*pcontact);
 bool ProcessScript(char*pcontact);
 bool ProcessTestDB(char*pcontact);
 bool ProcessTest(char*pcontact);
+bool ProcessAppAcc(char*pcontact);

@@ -50,6 +50,15 @@ int main()
 			ProcessTest((char*)pcontact);
 			break;
 		}
+		case 0x16:
+		case 0x17:
+		case 0x18:
+		case 0x19:
+		case 0x1a:
+		{
+			ProcessAppAcc((char*)pcontact);
+			break;
+		}
 		default:
 				{
 					__exit(RUN_SCRIPT_DATA_ERR);
