@@ -143,7 +143,7 @@ bool ProcessAppAcc(char*pcontact)
 		case 0x16:{
 			LogPrint("16",strlen("16")+1,STRING);
 			if(!WriteAcct()){
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
@@ -157,7 +157,7 @@ bool ProcessAppAcc(char*pcontact)
 			memcpy(&count,&pcontact[0],sizeof(char));
 			memcpy(&paymoey,&pcontact[1],sizeof(Int64));
 			if(!checkfreezedata((count-21),paymoey)){
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
@@ -165,7 +165,7 @@ bool ProcessAppAcc(char*pcontact)
 			Int64 paymoey;
 			memcpy(&paymoey,&pcontact[1],sizeof(Int64));
 			if(!minuxfreeValue(paymoey,false)){
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
@@ -173,16 +173,15 @@ bool ProcessAppAcc(char*pcontact)
 			Int64 paymoey;
 			memcpy(&paymoey,&pcontact[1],sizeof(Int64));
 			if(!minuxfreeValue(paymoey,true)){
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
 		default:
 			{
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 				break;
 			}
 	}
-	__exit(RUN_SCRIPT_OK);
-  return true;
+	__VmExit(RUN_SCRIPT_OK);
 }

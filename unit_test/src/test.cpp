@@ -16,7 +16,7 @@ bool CancelOrder(){
 
 	Int64 paymoney;
 	Int64Inital(&paymoney,"\x00", 1);
-	QueryAccountBalance((const unsigned char* const)scriptid,&paymoney);
+	QueryAccountBalance((const unsigned char* )scriptid,&paymoney);
 
 	VM_OPERATE ret;
 	memcpy(ret.accountid,scriptid,sizeof(ret.accountid));
@@ -41,16 +41,15 @@ bool ProcessTest(char*pcontact)
 		}
 		case 0x15:{
 			if(!CancelOrder()){
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
 		default:
 			{
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 				break;
 			}
 	}
-	__exit(RUN_SCRIPT_OK);
-  return true;
+	__VmExit(RUN_SCRIPT_OK);
 }

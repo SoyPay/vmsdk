@@ -4,7 +4,7 @@
 
 void test_exit()
 {
-	__exit(RUN_SCRIPT_DATA_ERR);
+	__VmExit(RUN_SCRIPT_DATA_ERR);
 }
 
 
@@ -249,7 +249,7 @@ bool testWriteOutput()
 bool testGetCurRunEnvHeight()
 {
 	unsigned long height = GetCurRunEnvHeight();
-	char buffer[5] = {0};
+	char buffer[8] = {0};
 	sprintf(buffer,"%d",height);
 	LogPrint(buffer,5,STRING);
 	TestCheck(height == 2);
@@ -433,7 +433,6 @@ bool testModifyDataDBVavle()
 	TestCheck(ModifyData(key,4,value,5) == false);
 	key = "key1";
 	TestCheck(ModifyData(key,5,value,5) == true);
-	unsigned long ptime = 0;
 	char valen[5] ={0};
 	TestCheck(ReadData(key,5,valen,5) > 0);
 	TestCheck(strcmp(valen,"funk")== 0);
@@ -626,10 +625,10 @@ int ProcessSdk(char*pcontact)
 		default:
 				{
 					LogPrint("ERROR",sizeof("ERROR"),STRING);
-					__exit(RUN_SCRIPT_DATA_ERR);
+					__VmExit(RUN_SCRIPT_DATA_ERR);
 					break;
 				}
 	}
-	__exit(RUN_SCRIPT_OK); //break,not stop
-   return 0;
+	__VmExit(RUN_SCRIPT_OK); //break,not stop
+
 }

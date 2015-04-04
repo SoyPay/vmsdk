@@ -22,7 +22,7 @@ void readdata(char*hash,unsigned long preHeight)
 	unsigned short valen = 32;
 	int key = 0;
 	char phash[33] = {0};
-	unsigned long poutHeight = 0;
+
 	unsigned char keylen = sizeof(key);
 	bool flag = true;
 
@@ -99,7 +99,7 @@ void Lastreaddata()
 	unsigned short valen = 32;
 	int key = 0;
 	char phash[33] = {0};
-	unsigned long poutHeight = 0;
+
 	unsigned char keylen = 2;
 	bool flag = true;
 	if(!GetDBValue(0,&key,(unsigned char*)&keylen,keylen,phash,&valen))
@@ -152,7 +152,7 @@ bool ProcessTestDB(char*pcontact)
 					LogPrint(&heigh,4,HEX);
 					memcpy(&heigh,&pcontact[1],sizeof(heigh));
 					break;
-					ModifydataDB(heigh);
+					//ModifydataDB(heigh);
 				}
 		case 0x12:
 		{
@@ -161,6 +161,5 @@ bool ProcessTestDB(char*pcontact)
 		}
 
 	}
-	__exit(RUN_SCRIPT_OK);
-	  return true;
+	__VmExit(RUN_SCRIPT_OK);
 }

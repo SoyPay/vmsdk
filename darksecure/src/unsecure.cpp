@@ -242,7 +242,7 @@ int main()
 			if(!BuyerTradePackage((FIRST_CONTRACT*)pcontact))
 			{
 				LogPrint("TX_BUYTRADE error",sizeof("TX_BUYTRADE error"),STRING);
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
@@ -252,7 +252,7 @@ int main()
 			if(!SellerTradePackage((NEXT_CONTRACT*) pcontact))
 			{
 				LogPrint("TX_SELLERTRADE error",sizeof("TX_SELLERTRADE error"),STRING);
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
@@ -262,7 +262,7 @@ int main()
 			if(!BuyerConfirmPackage((NEXT_CONTRACT*) pcontact))
 			{
 				LogPrint("TX_BUYERCONFIM error",sizeof("TX_BUYERCONFIM error"),STRING);
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
@@ -272,17 +272,17 @@ int main()
 			if(!BuyerCancelPackage((NEXT_CONTRACT*) pcontact))
 			{
 				LogPrint("TX_BUYERCANCEL error",sizeof("TX_BUYERCANCEL error"),STRING);
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
 		default:
 		{
 			LogPrint("tx format error",sizeof("tx format error"),STRING);
-			__exit(RUN_SCRIPT_DATA_ERR);
+			__VmExit(RUN_SCRIPT_DATA_ERR);
 			break;
 		}
  	}
- 	__exit(RUN_SCRIPT_OK);
+ 	__VmExit(RUN_SCRIPT_OK);
     return 0;
 }

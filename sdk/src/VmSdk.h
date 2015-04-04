@@ -10,67 +10,74 @@
 #define MAX_ACCOUNT_LEN 6
 #define check(a) {if(!(a)) { __exit(RUN_SCRIPT_DATA_ERR);}}
 
+# ifndef __cplusplus
+#define bool  char
+#define true  1
+#define false 0
+#endif
+
+
 
 /**
  *LogPint format
  */
-enum PRINT_FORMAT {
+typedef enum  tagPRINT_FORMAT{
 	STRING =0 ,//!< STRING
 	HEX = 1,   //!< HEX
-};
+}PRINT_FORMAT;
 
 
 //// operate the account
 
-enum OperType {
+typedef enum  tagOperType{
 	ADD_FREE = 1, //!< ADD_FREE
 	MINUS_FREE,   //!< MINUS_FREE
-};
+}OperType;
 /*
  *the function exit
  */
-enum EXIT_CODE {
+typedef enum tagEXIT_CODE {
 	RUN_SCRIPT_DATA_ERR = 0x00,//!< RUN_SCRIPT_DATA_ERR
 	RUN_SCRIPT_OK =  0x01,  //!< RUN_SCRIPT_OK
-};
+}EXIT_CODE;
 
 
 /***
  *
  */
-enum COMP_RET {
+typedef enum  tagCOMP_RET{
 	COMP_EQU = 0,   //!< COMP_EQU
 	COMP_LESS = 1,  //!< COMP_LESS
 	COMP_LARGER = 2,//!< COMP_LARGER
 	COMP_ERR = 3,   //!< COMP_ERR
-};
+}COMP_RET;
 typedef struct tag_INT64 {
 	unsigned char data[8];
 } Int64;
 
 
-static const int MAX_TAG_SIZE  = 40;
-static const int MAX_UDER_ID_SIZE  = 40;
-enum APP_OP_TYPE{
+#define MAX_TAG_SIZE         40
+#define  MAX_UDER_ID_SIZE    40
+typedef enum tagAPP_OP_TYPE {
 	ADD_FREE_OP = 1,
 	SUB_FREE_OP,
 	ADD_FREEZED_OP,
 	SUB_FREEZED_OP
-};
-struct S_APP_ID
+}APP_OP_TYPE;
+typedef struct
 {
 	unsigned char idlen;                    //!the len of the tag
 	unsigned char ID[MAX_UDER_ID_SIZE];     //! the ID for the
-};
+}S_APP_ID;
 
-struct APP_ACC_OPERATE
+typedef struct
 {
 	unsigned char opeatortype;		//!OperType
 	unsigned long outheight;		    //!< the transacion Timeout height
 	Int64 mMoney;			        //!<The transfer amount
-	S_APP_ID AppAccID;				//!< accountid
-	S_APP_ID FundTag;               //!the fund tag used for find found
-};
+	 S_APP_ID AppAccID;				//!< accountid
+	 S_APP_ID FundTag;               //!the fund tag used for find found
+}APP_ACC_OPERATE;
 
 
 /**
@@ -172,7 +179,7 @@ unsigned short Des(void const* pdata, unsigned short len, void const* pkey, unsi
  *@param tep: RUN_SCRIPT_OK the script run ok RUN_SCRIPT_DATA_ERR
  *@return void
  */
-__noreturn __root void __exit(EXIT_CODE tep);
+__noreturn  void __VmExit(EXIT_CODE tep);
 
 /**@brief  print data to screen or file
  *@param pdata: the pdata Display in the screen or be writed in the file
@@ -181,7 +188,7 @@ __noreturn __root void __exit(EXIT_CODE tep);
  *@return void
  *
  */
-void LogPrint(const void *pdata, const unsigned short datalen,PRINT_FORMAT flag );
+void LogPrint(const void *pdata, const unsigned short datalen, PRINT_FORMAT flag );
 /**@brief  write the data to The exchange of data memory one by one
  *@param data: write int the memory
  *@param conter: the retpacket of count
@@ -356,7 +363,7 @@ unsigned short GetDeCompressContact(void * const pinContact,unsigned short inlen
  *@return return true or false
  *
  */
-bool GetUserAppAccFreeValue(Int64* const pRet,const S_APP_ID  * const pAppUserID);
+bool GetUserAppAccFreeValue(Int64* const pRet,const  S_APP_ID  *  pAppUserID);
 /**@brief
  * 		get the app user freezed value  by tag
  *@param pRet: the ret app account value
@@ -364,7 +371,7 @@ bool GetUserAppAccFreeValue(Int64* const pRet,const S_APP_ID  * const pAppUserID
  *@return return true or false
  *
  */
-bool GetUserAppAccFoudWithTag(Int64* const pRet,APP_ACC_OPERATE const *  pAppUserID);
+bool GetUserAppAccFoudWithTag(Int64* const pRet,const  APP_ACC_OPERATE  *  pAppUserID);
 
 /**@brief
  * 		 out put the operater for vm to  operate
@@ -373,21 +380,13 @@ bool GetUserAppAccFoudWithTag(Int64* const pRet,APP_ACC_OPERATE const *  pAppUse
  *@return return true  never false
  *
  */
-bool WriteAppOperateOutput( const APP_ACC_OPERATE* pOpertate, const unsigned short conter);
+bool WriteAppOperateOutput( const  APP_ACC_OPERATE* pOpertate, const unsigned short conter);
 
 
-void inline PrintfLine(unsigned short sort)
-{
-	char bffer[20]={0};
-	sprintf(bffer,"line:%d ",sort);
-	LogPrint(bffer,strlen(bffer),STRING);
-}
-void inline PrintfFileAndLine(unsigned short line, const char *pfile)
-{
-	char bffer[256]={0};
-	sprintf(bffer,"func:%sline:%d ",pfile, line);
-	LogPrint(bffer,strlen(bffer),STRING);
-}
+void PrintfLine(unsigned short sort);
+
+void  PrintfFileAndLine(unsigned short line, const char *pfile);
+
 #define PrintLog(a,b,c) {if(!(a)) { PrintfLine(__LINE__),LogPrint(a,b,c);}}
 //long ReadVarLong(char*buffer);
 //Int64 ReadVarInt64(char*buffer);

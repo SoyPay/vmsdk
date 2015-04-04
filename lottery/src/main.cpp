@@ -1332,13 +1332,13 @@ int main()
 	if(!InitCtxData(&LottoCtx))
 	{
 		ErrorCheck(0);
-		__exit(RUN_SCRIPT_DATA_ERR);
+		__VmExit(RUN_SCRIPT_DATA_ERR);
 	}
 
 	if(!GetContractData(&LottoCtx))
 	{
 		ErrorCheck(0);
-		__exit(RUN_SCRIPT_DATA_ERR);
+		__VmExit(RUN_SCRIPT_DATA_ERR);
 	}
 
 #if 1
@@ -1378,10 +1378,10 @@ int main()
 	if(!RunContractData(&LottoCtx))
 	{
 		ErrorCheck(0);
-		__exit(RUN_SCRIPT_DATA_ERR);
+		__VmExit(RUN_SCRIPT_DATA_ERR);
 	}
 
-	__exit(RUN_SCRIPT_OK);
+	__VmExit(RUN_SCRIPT_OK);
 	return 1;
 }
 

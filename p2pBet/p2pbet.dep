@@ -2,10 +2,11 @@
 
 <project>
   <fileVersion>2</fileVersion>
-  <fileChecksum>3671655197</fileChecksum>
+  <fileChecksum>794014805</fileChecksum>
   <configuration>
     <name>Debug</name>
     <outputs>
+      <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
       <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
       <file>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</file>
       <file>$PROJ_DIR$\src\p2pbet.cpp</file>
@@ -13,13 +14,12 @@
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
       <file>$PROJ_DIR$\Debug\Obj\p2pbet.r51</file>
       <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
-      <file>$PROJ_DIR$\Debug\Exe\p2pbet.bin</file>
       <file>$PROJ_DIR$\src\main.cpp</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
+      <file>$PROJ_DIR$\Debug\Exe\p2pbet.bin</file>
       <file>$PROJ_DIR$\Debug\Exe\p2pbet.d51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
@@ -38,7 +38,7 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 14 11</file>
+          <file> 14 13</file>
         </tool>
       </outputs>
     </file>
@@ -51,17 +51,17 @@
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 10</file>
+          <file> 0</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 3 9 7 16 22 4 23 17 24 15 13 8 0</file>
+          <file> 4 8 9 16 22 5 23 17 24 15 12 10 1</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 3 9 7 16 22 4 23 17 24 15 13 8 0</file>
+          <file> 4 8 9 16 22 5 23 17 24 15 12 10 1</file>
         </tool>
       </inputs>
     </file>
@@ -70,13 +70,13 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 5</file>
+          <file> 6</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 3 9 7 16 22 4 23 17 24 15 13 8 0</file>
+          <file> 4 8 9 16 22 5 23 17 24 15 12 10 1</file>
         </tool>
       </inputs>
     </file>
@@ -95,11 +95,11 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 3 9 7 16 22 4 23 17 24 15 13 8 0</file>
+          <file> 4 8 9 16 22 5 23 17 24 15 12 10 1</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 3 9 7 16 22 4 23 17 24 15 13 8 0</file>
+          <file> 4 8 9 16 22 5 23 17 24 15 12 10 1</file>
         </tool>
       </inputs>
     </file>
@@ -108,13 +108,13 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 11</file>
+          <file> 13</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 6 25 5 21</file>
+          <file> 7 25 6 21</file>
         </tool>
       </inputs>
     </file>
