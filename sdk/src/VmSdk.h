@@ -10,6 +10,7 @@
 #define MAX_ACCOUNT_LEN 6
 #define check(a) {if(!(a)) { __exit(RUN_SCRIPT_DATA_ERR);}}
 
+
 /**
  *LogPint format
  */

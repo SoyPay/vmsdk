@@ -55,6 +55,8 @@ int main()
 		case 0x18:
 		case 0x19:
 		case 0x1a:
+		case 0x1b:
+		case 0x1c:
 		{
 			ProcessAppAcc((char*)pcontact);
 			break;

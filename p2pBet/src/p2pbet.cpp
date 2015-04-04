@@ -9,811 +9,513 @@
 #include <stdio.h>
 #include"VmSdk.h"
 
-typedef unsigned char uchar;
-typedef unsigned int u16;
-typedef unsigned long u32;
-
-#define BET_MIN    ("\xA0\x86\x01\x00\x00\x00\x00\x00")//100000
-#define REMAINHIGHT (10)
-#define ErrorCheck(a) {if(!(a)) {PrintfFileAndLine(__LINE__, __FILE__);}}
-
-/**
- * p2pBet Operate Type
- */
-enum OPERATETYPE {
-	SEND = 1,  //!< SEND
-	ACCEPT,//!< ACCEPT
-	OPEN   //!< OPEN
-};
-
-/**
- * send bet data struct
- */
+#define min_out_height  10
 typedef struct {
-	OPERATETYPE type;
+	unsigned char nType;
+	unsigned char noperateType;
 	Int64 money;
-	u32 hight;
-	uchar dhash[32];//32 + one byte checksum
+	unsigned int hight;
+	unsigned char dhash[32];//32 + one byte checksum
 }SEND_DATA;
 
-/**
- * accept bet data struct
- */
 typedef struct {
-	OPERATETYPE type;
+	unsigned char betstate;
 	Int64 money;
-	uchar targetkey[32];//发起对赌的哈希，也是对赌数据的关键字
-//	uchar dhash[32];//32 + one byte checksum
-	uchar data[5];
+	unsigned int hight;
+	unsigned char dhash[32];//32 + one byte checksum
+	unsigned char accepthash[32];//32 + one byte checksum
+	ACCOUNT_ID sendbetid;
+	ACCOUNT_ID acceptbetid;
+	unsigned char acceptebetdata;
+
+}DB_DATA;
+
+typedef struct {
+	unsigned char nType;
+	unsigned char noperateType;
+	Int64 money;
+	unsigned char acceptdata;
+	unsigned char txhash[32];
 }ACCEPT_DATA;
 
-/**
- * open bet data struct
- */
 typedef struct {
-	OPERATETYPE type;
-	uchar targetkey[32];//发起对赌的哈希，也是对赌数据的关键字
-	uchar data[5];
+	unsigned char nType;
+	unsigned char noperateType;
+	unsigned char txhash[32];
+	unsigned char senddata[33];
 }OPEN_DATA;
 
-enum BETSTATUS {
-	BETSEND,  //!< SEND
-	BETACCEPT,//!< ACCEPT
-	BETOPEN   //!< OPEN
+enum TXTYPE{
+	TX_SENDBET = 0x01,
+	TX_ACCEPTBET = 0x02,
+	TX_OPENBET = 0x03,
+	TX_WITHDRAWAL = 0x04,
+};
+enum OPERATE{
+	OP_SYSTEMACC = 0x00,
+	OP_APPACC = 0x01,
+	OP_NULL = 0x02,
 };
 
-/**
- * the data struct saved in database
- */
-//关键字暂时定为accid + current hight
-typedef struct {
-	BETSTATUS status;
-	uchar sendid[6];//send bet account id
-	uchar acceptid[6];//accept bet account id
-	Int64 money;//bet amount
-	u32 hight;//上次冻结高度
-	u32 delyhight;
-	uchar shash[32];//send data hash
-//	uchar ahash[32];//accept data hash
-	uchar sdata[5];//send data
-	uchar adata[5];//accept data
-}SAVE_DATA;
+bool CheckAccVaild(unsigned char type,Int64 money){
 
-typedef struct {
-	uchar txhash[32];//current tx hash
-	uchar accid[6];//current account id
-}BET_CTX;
+	Int64 paymoey;
+	Int64Inital(&paymoey,"\x00",1);
+	 if(!GetCurPayAmount(&paymoey)){
+		 return false;
+	 }
+	 switch(type){
+	    case OP_SYSTEMACC:{ //// 从脚本账户中扣金额 检查金额是否和合约中的金额一致
+	    	 if( Int64Compare(&money, &paymoey) != COMP_EQU){
+	    		 return false;
+	    	 }
+	    	break;
+	    }
+	    case OP_APPACC:{//// 从应用账户中扣金额 检查 检查应用账户中是否有足够的金额，已经是系统账户中没有扣钱
+	    	char account[6];
+	    	if(!GetCurTxAccount(account,sizeof(account))){
+	    		return false;
+	    	}
+			Int64 compare;
+			Int64Inital(&compare,"\x00",1);
+			if(Int64Compare(&compare, &paymoey) != COMP_EQU){  /// 不能从系统账户扣钱
+			 return false;
+			}
 
-__xdata __no_init static uchar gContractData[256];
-#pragma data_alignment = 1
-__xdata __no_init static SAVE_DATA gSaveData;
-__xdata __no_init u32 curhigh;
+			S_APP_ID id;
+			id.idlen = sizeof(account);
+			memcpy(&id.ID,account,sizeof(account));
 
+			Int64 pRet;
+			Int64Inital(&pRet,"\x00",1);
+			GetUserAppAccFreeValue(&pRet,&id);
+	    	 if(Int64Compare(&pRet, &money) == COMP_LESS){      //系统应用账户中要有足够的自由金额
+	    		 return false;
+	    	 }
+	    	break;
+	    }
+	    case OP_NULL:{
+	   	    	return false;
+	   	    }
+		default:
+				{
+					return false;
+				}
+	    }
+	 return true;
+}
+bool CheckSendBetPackage(const SEND_DATA* const pContract){
+	if(pContract->hight < min_out_height){
+		return false;
+	}
 
+	if(!CheckAccVaild(pContract->noperateType,pContract->money)){
+		return false;
+	}
+	return true;
+}
 
-/**
- * @brief get contract data
- * @param pdata:out data point
- * @return
- */
-static bool GetContractData(const BET_CTX *pctxdata)
-{
-//	if(pctxdata == NULL)
-//	{
-////		ErrorCheck(0);
-//		return false;
-//	}
+bool WriteSendBetPakage(const DB_DATA* const pContract,const char*const txhash,char type){
 
-	if(GetCurTxContact(gContractData, sizeof(gContractData)) == 0)
-	{
-//		ErrorCheck(0);
+	APP_ACC_OPERATE writecode[2];
+	int count = type == OP_APPACC?2:1;
+	S_APP_ID id;
+	APP_ACC_OPERATE pAppID;
+	id.idlen = sizeof(pContract->sendbetid);
+	memcpy(&id.ID,&pContract->sendbetid,sizeof(pContract->sendbetid));
+	memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+	memcpy(&pAppID.mMoney,&pContract->money,sizeof(Int64));
+
+	S_APP_ID tag;
+	tag.idlen = 32;
+	pAppID.outheight = GetCurRunEnvHeight() + pContract->hight;;
+	memcpy(&tag.ID,txhash,32);
+	memcpy(&pAppID.FundTag,&tag,sizeof(S_APP_ID));
+
+	pAppID.opeatortype = ADD_FREEZED_OP;
+	writecode[0] = pAppID;
+	if(type == OP_APPACC){
+		pAppID.opeatortype=SUB_FREE_OP;
+		writecode[1] = pAppID;
+	}
+	if(!WriteAppOperateOutput(&pAppID, count)){
+		return false;
+	}
+
+	return true;
+}
+bool SendBetPackage(const SEND_DATA* const pContract){
+
+	if(!CheckSendBetPackage(pContract)){
+		LogPrint("check SendBetPackage error",sizeof("check SendBetPackage error")+1,STRING);
+				return false;
+	}
+
+	char account[6];
+	if(!GetCurTxAccount(account,sizeof(account))){
+		return false;
+	}
+
+	char txhash[32];
+	if(!GetCurTxHash(txhash)){
+		return false;
+	}
+	DB_DATA dbdata;
+	dbdata.betstate = 0x00;
+	memcpy(&dbdata.money,&pContract->money,sizeof(dbdata.money));
+	memcpy(&dbdata.dhash,&pContract->dhash,sizeof(dbdata.dhash));
+	memcpy(&dbdata.sendbetid,&account,sizeof(dbdata.sendbetid));
+	dbdata.hight = GetCurRunEnvHeight() + pContract->hight;
+	if( !WriteData(txhash,sizeof(txhash),&dbdata,sizeof(dbdata))){
+		return false;
+	}
+	if(!WriteSendBetPakage(&dbdata,txhash,pContract->noperateType)){
 		return false;
 	}
 
 	return true;
 }
 
-/**
- * @brief check the script min amount
- * @param pdata:the input amount
- * @return
- */
-static bool CheckMinimumAmount(const Int64 *pdata)
-{
-#pragma data_alignment = 1
-	Int64 minamount;
+bool CheckAcceptBetPackage(const ACCEPT_DATA* const pContract,Int64 sendmoney,unsigned char betsate){
+	if(!CheckAccVaild(pContract->noperateType,pContract->money)){
+		return false;
+	}
+	Int64 paymoey;
+	Int64Inital(&paymoey,"\x00",1);
+	 if(!GetCurPayAmount(&paymoey)){
+		 return false;
+	 }
+	 if(Int64Compare(&paymoey, &sendmoney) != COMP_EQU){
+		 return false;
+	 }
+	 if(pContract->acceptdata != 0x00 && pContract->acceptdata != 0x01){
+		 return false;
+	 }
+     if(betsate&0x01 == 0x01){
+    	 return  false;      //已经被接赌
+     }
+	 return true;
+}
 
-//	if(pdata == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
+bool WritAcceptBetPakage(const DB_DATA* const pContract,const char*const txhash,unsigned char type){
 
-	Int64Inital(&minamount, BET_MIN, 8);
+	APP_ACC_OPERATE writecode[3];
+	int count = type == OP_APPACC?3:2;
+	S_APP_ID id;
+	APP_ACC_OPERATE pAppID;
+	id.idlen = sizeof(pContract->sendbetid);
+	memcpy(&id.ID,&pContract->sendbetid,sizeof(pContract->sendbetid));
+	memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+	memcpy(&pAppID.mMoney,&pContract->money,sizeof(Int64));
 
-	if(Int64Compare(pdata, &minamount) != COMP_LARGER)
-	{
-//		ErrorCheck(0);
+	S_APP_ID tag;
+	tag.idlen = 32;
+	pAppID.outheight = GetTxConFirmHeight(txhash)  + pContract->hight;
+	memcpy(&tag.ID,txhash,32);
+	memcpy(&pAppID.FundTag,&tag,sizeof(tag));
+	pAppID.opeatortype = SUB_FREEZED_OP;
+
+	writecode[0]=pAppID;
+
+	memcpy(&id.ID,&pContract->acceptbetid,sizeof(pContract->acceptbetid));
+	memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+	pAppID.outheight = GetCurRunEnvHeight()  + pContract->hight;
+	Int64 mul;
+	Int64Inital(&mul,"\x02",1);
+	Int64Mul(&pAppID.mMoney, &mul,&pAppID.mMoney);
+	pAppID.opeatortype = ADD_FREEZED_OP;
+
+	writecode[1]=pAppID;
+	if(type == OP_APPACC){
+		pAppID.opeatortype=SUB_FREE_OP;
+		writecode[2]=pAppID;
+	}
+	if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&writecode, count)){
 		return false;
 	}
 
 	return true;
 }
 
-/**
- * @brief check send bet hight
- * @param phight:input hight
- * @return
- */
-//static bool CheckSendBetHight(const u32 *phight)
-//{
-////	if(phight == NULL)
-////	{
-////		ErrorCheck(0);
-////		return false;
-////	}
-//
-//	if(*phight <= GetCurRunEnvHeight())
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-//
-//	return true;
-//}
+bool AcceptBetPackage(const ACCEPT_DATA* const pContract){
 
-/**
- * @brief check data hash
- * @param pdata:the input data
- * @return
- */
-//static bool CheckDataHash(const void *pdata)
-//{
-//	uchar checksum = 0;
-//	if(pdata == NULL)
-//	{
-//		return false;
-//	}
-//
-//	for(uchar ii = 0; ii < 32; ii++)
-//	{
-//		checksum += pdata[ii];
-//	}
-//
-//	if(checksum != pdata[32])
-//	{
-//		return false;
-//	}
-//
-//	return true;
-//}
+	DB_DATA dbdata;
+	if(!ReadData(pContract->txhash,sizeof(pContract->txhash), &dbdata,sizeof(dbdata))){
+		LogPrint("AcceptBetPackage read db error",sizeof("AcceptBetPackage read db error")+1,STRING);
+		LogPrint(pContract->txhash,32,HEX);
+		return false;
+	}
+	char account[6];
+	if(!GetCurTxAccount(account,sizeof(account))){
 
-/**
- * @brief send bet data check
- * @param pdata:the send bet data
- * @return
- */
-static bool SendDataCheck(const BET_CTX *pbetctx)
-{
-#pragma data_alignment = 1
-	SEND_DATA *psdata = (SEND_DATA *)gContractData;
-	Int64 balance;
-
-//	if(pbetctx == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	if(!CheckMinimumAmount(&psdata->money))
-	{
-//		ErrorCheck(0);
 		return false;
 	}
 
-	if(!QueryAccountBalance(pbetctx->accid, &balance))
-	{
-//		ErrorCheck(0);
+	char acceptehash[32];
+	if(!GetCurTxHash(acceptehash)){
 		return false;
 	}
+	memcpy(&dbdata.acceptbetid,&account,sizeof(dbdata.acceptbetid));
+	memcpy(&dbdata.accepthash,&acceptehash,sizeof(dbdata.accepthash));
+	dbdata.acceptebetdata = pContract->acceptdata;
 
-	if(Int64Compare(&balance, &psdata->money) != COMP_LARGER)
-	{
-//		ErrorCheck(0);
+	if(!CheckAcceptBetPackage(pContract,dbdata.money,dbdata.betstate)){
 		return false;
 	}
-
-	if(psdata->hight < 10)
-	{
-//		ErrorCheck(0);
+	if(!WritAcceptBetPakage((DB_DATA*)&dbdata,(char*)pContract->txhash,pContract->noperateType)){
 		return false;
 	}
-
-//	if(!CheckDataHash(psdata->dhash))
-//	{
-//		return false;
-//	}
-
+	///表示接赌
+	dbdata.acceptebetdata = 0x01;
+	if( !WriteData(pContract->txhash,sizeof(pContract->txhash),&dbdata,sizeof(dbdata))){
+		LogPrint(pContract->txhash,32,HEX);
+		return false;
+	}
 	return true;
 }
-
-static bool SendOperateAccount(const BET_CTX *pbetctx)
-{
-#pragma data_alignment = 1
-	SEND_DATA *psdata = (SEND_DATA *)gContractData;
-#pragma data_alignment = 1
-	VM_OPERATE operate[2];
-
-//	if(pbetctx == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	memcpy(operate[0].accountid, pbetctx->accid, sizeof(pbetctx->accid));
-	memcpy(&operate[0].money, &psdata->money, sizeof(psdata->money));
-	operate[0].opeatortype = MINUS_FREE;
-	operate[0].outheight =  curhigh+psdata->hight;
-
-	memcpy(operate[1].accountid, pbetctx->accid, sizeof(pbetctx->accid));
-	memcpy(&operate[1].money, &psdata->money, sizeof(psdata->money));
-	operate[1].opeatortype = ADD_FREEZD;
-	operate[1].outheight = curhigh+psdata->hight;
-
-    return WriteOutput(operate, 2);
-}
-
-static bool AcceptOperateAccount(const BET_CTX *pbetctx)
-{
-#pragma data_alignment = 1
-	ACCEPT_DATA *psdata = (ACCEPT_DATA *)gContractData;
-#pragma data_alignment = 1
-	VM_OPERATE operate[4];
-
-//	if(pbetctx == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	//先把自己的钱冻结起来
-	memcpy(operate[0].accountid, pbetctx->accid, sizeof(pbetctx->accid));
-	memcpy(&operate[0].money, &psdata->money, sizeof(psdata->money));
-	operate[0].opeatortype = MINUS_FREE;
-	operate[0].outheight = gSaveData.hight;
-
-	memcpy(operate[1].accountid, pbetctx->accid, sizeof(pbetctx->accid));
-	memcpy(&operate[1].money, &psdata->money, sizeof(psdata->money));
-	operate[1].opeatortype = ADD_FREEZD;
-	operate[1].outheight = curhigh+gSaveData.delyhight;
-
-	memcpy(operate[2].accountid, gSaveData.sendid, sizeof(gSaveData.sendid));
-	memcpy(&operate[2].money, &gSaveData.money, sizeof(psdata->money));
-	operate[2].opeatortype = MINUS_FREEZD;
-	operate[2].outheight = gSaveData.hight;
-
-	memcpy(operate[3].accountid, pbetctx->accid, sizeof(pbetctx->accid));
-	memcpy(&operate[3].money, &gSaveData.money, sizeof(psdata->money));
-	operate[3].opeatortype = ADD_FREEZD;
-	operate[3].outheight = curhigh+gSaveData.delyhight;;
-
-	return WriteOutput(operate, 4);
-}
-
-static bool OpenOperateAccount(const BET_CTX *pbetctx)
-{
-#pragma data_alignment = 1
-	VM_OPERATE operate[2];
-#pragma data_alignment = 1
-	OPEN_DATA *psdata = (OPEN_DATA *)gContractData;
-
-	uchar rslt = 0;
-	for(uchar ii = 0; ii < 5; ii++)
-	{
-//		LogPrint(&psdata->data[ii], sizeof(uchar), HEX);
-		rslt += psdata->data[ii];
-	}
-
-	for(uchar kk = 0; kk < 5; kk++)
-	{
-//		LogPrint(&gSaveData.adata[kk], sizeof(uchar), HEX);
-		rslt += gSaveData.adata[kk];
-	}
-
-//	LogPrint(&rslt, sizeof(uchar), HEX);
-	memcpy(operate[0].accountid, gSaveData.sendid, sizeof(gSaveData.sendid));
-	Int64Add(&gSaveData.money, &gSaveData.money, &operate[0].money);
-	operate[0].outheight = gSaveData.hight;
-
-	memcpy(operate[1].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
-//		Int64Add(&gSaveData.money, &gSaveData.money, &operate[1].money);
-	memcpy(&operate[1].money, &operate[0].money, sizeof(operate[0].money));
-	operate[1].outheight = gSaveData.hight;
-	if(rslt%2)//juge result,send win
-	{
-//		LogPrint("A WIN", sizeof("A WIN"), STRING);
-		operate[0].opeatortype = ADD_FREE;
-		operate[1].opeatortype = MINUS_FREEZD;
-	}
-	else//accept win
-	{
-//		LogPrint("B WIN", sizeof("B WIN"), STRING);
-		memcpy(operate[0].accountid, gSaveData.acceptid, sizeof(gSaveData.acceptid));
-		operate[0].opeatortype = MINUS_FREEZD;
-		operate[1].opeatortype = ADD_FREE;
-	}
-
-	return WriteOutput(operate, 2);
-}
-
-/**
- * @brief record send bet status
- * @param pdata:the contract data
- * @return
- */
-static bool RecordSendBetStatus(const BET_CTX *pbetctx)
-{
-#pragma data_alignment = 1
-	SEND_DATA *psdata = (SEND_DATA *)gContractData;
-#pragma data_alignment = 1
-	SAVE_DATA savedata;
-
-//	if(pbetctx == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	memset(&savedata, 0, sizeof(savedata));
-	savedata.status = BETSEND;
-	memcpy(&savedata.money, &psdata->money, sizeof(psdata->money));
-	memcpy(&savedata.shash, &psdata->dhash, sizeof(psdata->dhash));
-	savedata.hight = curhigh+psdata->hight;
-	savedata.delyhight = psdata->hight;
-	memcpy(savedata.sendid, pbetctx->accid, sizeof(pbetctx->accid));
-
-
-//	LogPrint(&savedata,sizeof(savedata),HEX);
-
-//	LogPrint(psdata,sizeof(SEND_DATA),HEX);
-
-	if(!WriteDataDB(pbetctx->txhash, sizeof(pbetctx->txhash), &savedata, sizeof(savedata), savedata.hight))
-	{
-//		ErrorCheck(0);
+bool CheckOpenBetPackage(const OPEN_DATA* const pContract,const DB_DATA* const dbdata){
+	char account[6];
+	if(!GetCurTxAccount(account,sizeof(account))){
 		return false;
+	}
+
+	if(strcmp(account,(char*)&dbdata->sendbetid) != 0){
+		 LogPrint("263",sizeof("188")+1,STRING);
+		return false;
+	}
+
+	unsigned char checkhash[32];
+	unsigned char senddata = pContract->senddata[32];
+	//开奖数字在1-6之间
+	if(senddata > 6){
+		 LogPrint("271",sizeof("271")+1,STRING);
+		return false;
+	}
+	SHA256(pContract->senddata, sizeof(pContract->senddata), checkhash);
+	if(memcmp(checkhash,dbdata->dhash,sizeof(dbdata->dhash)) != 0){
+		return false;
+	}
+    if(dbdata->betstate&0x01 != 0x01){
+   	 return  false;      //未被接赌
+    }
+
+    if((GetTxConFirmHeight(dbdata->accepthash) + dbdata->hight)<GetCurRunEnvHeight()){ /// 已经超时不能揭赌
+    	return false;
+    }
+	return true;
+}
+bool WriteOpenBetAppAcc(const OPEN_DATA* const pContract,const DB_DATA *const dbdata,bool flag){
+	APP_ACC_OPERATE writecode[2];
+	S_APP_ID id;
+	APP_ACC_OPERATE pAppID;
+	id.idlen = sizeof(dbdata->sendbetid);
+	memcpy(&id.ID,&dbdata->sendbetid,sizeof(dbdata->sendbetid));
+	memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+	Int64 mul;
+	Int64Inital(&mul,"\x02",1);
+	Int64Mul(&dbdata->money, &mul,&pAppID.mMoney);
+
+	S_APP_ID tag;
+	tag.idlen = 32;
+	pAppID.outheight = GetTxConFirmHeight(dbdata->accepthash) + dbdata->hight;
+	memcpy(&tag.ID,pContract->txhash,sizeof(pContract->txhash));
+	memcpy(&pAppID.FundTag,&tag,sizeof(tag));
+	if(pContract->noperateType == OP_APPACC){
+		if(flag){  /// 从接赌约的冻结应用账户打钱到发赌约的账户
+			pAppID.opeatortype = ADD_FREE_OP;
+			writecode[0]=pAppID;
+			memcpy(&id.ID,&dbdata->acceptbetid,sizeof(dbdata->acceptbetid));
+			memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+			pAppID.opeatortype = SUB_FREEZED_OP;
+			writecode[1]=pAppID;
+			}else{
+				memcpy(&id.ID,&dbdata->acceptbetid,sizeof(dbdata->acceptbetid));  /// 接赌的人赢
+				memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+				pAppID.opeatortype = ADD_FREE_OP;
+				writecode[0]=pAppID;
+				pAppID.opeatortype = SUB_FREEZED_OP;
+				writecode[1]=pAppID;
+			}
+		if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&writecode, 2)){
+			return false;
+		}
+	}else if(pContract->noperateType == OP_SYSTEMACC){
+		memcpy(&id.ID,&dbdata->acceptbetid,sizeof(dbdata->acceptbetid));
+		memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+		pAppID.opeatortype = SUB_FREEZED_OP;
+		if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&pAppID, 1)){
+					return false;
+		}
 	}
 
 	return true;
 }
+bool WriteOpenBetSysAcc(const OPEN_DATA* const pContract,const DB_DATA *const dbdata,bool flag){
 
-/**
- * @brief send a p2p bet
- * @param pdata:contract data
- * @return
- */
-static bool SendP2PBet(const BET_CTX *pbetctx)
-{
-//	if(pbetctx == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
+	VM_OPERATE writeCode[2];
+	VM_OPERATE ret;
+	if(flag){
+		memcpy(ret.accountid,&dbdata->sendbetid,sizeof(ret.accountid));
+	}else{
+		memcpy(ret.accountid,&dbdata->acceptbetid,sizeof(ret.accountid));
+	}
+	memcpy(&ret.money,&dbdata->money,sizeof(ret.money));
+	ret.opeatortype = ADD_FREE;
+	writeCode[0]=ret;
 
-	if(!SendDataCheck(pbetctx))
-	{
-//		ErrorCheck(0);
+	char accountid[6] = {0};
+	if(!GetScriptID(&accountid)){
 		return false;
 	}
 
-	if(!SendOperateAccount(pbetctx))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	if(!RecordSendBetStatus(pbetctx))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
+	ret.opeatortype = MINUS_FREE;
+	memcpy(ret.accountid,&accountid,sizeof(ret.accountid));
+	writeCode[1]=ret;
+	WriteOutput((VM_OPERATE*)&writeCode,2);
 	return true;
 }
+bool WriteOpenBetPackage(const OPEN_DATA* const pContract,const DB_DATA *const dbdata,bool flag){
+	/// 表示发赌约的人赢
 
-/**
- * @brief check if the database have someone send a bet
- * @return
- */
-static bool IsHaveSendBet(const void * phash)
-{
-//	if(phash == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-	if(!ReadData(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
-	{
-//		ErrorCheck(0);
-		return false;
+	if(pContract->noperateType ==OP_APPACC){
+		if(WriteOpenBetAppAcc(pContract,dbdata,flag))
+			return true;
+	}else if(pContract->noperateType ==OP_SYSTEMACC){
+		if(!WriteOpenBetAppAcc(pContract,dbdata,flag))
+			return false;
+		if(WriteOpenBetSysAcc(pContract,dbdata,flag)){
+			return true;
+		}
 	}
-	return (gSaveData.status == BETSEND)?(true):(false);
+
+	return false;
 }
+bool OpenBetPackage(const OPEN_DATA* const pContract){
 
-static bool IsEqualSendAmount(const Int64 *pdata)
-{
-//	if(pdata == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	if(Int64Compare(pdata, &gSaveData.money) != COMP_EQU)
-	{
-//		ErrorCheck(0);
+	DB_DATA dbdata;
+	if(!ReadData(pContract->txhash,sizeof(pContract->txhash), &dbdata,sizeof(dbdata))){
+		LogPrint("OpenBetPackage read db error",sizeof("OpenBetPackage read db error")+1,STRING);
+		LogPrint(pContract->txhash,32,HEX);
 		return false;
 	}
 
+	if(!CheckOpenBetPackage(pContract,(DB_DATA*)&dbdata)){
+		return false;
+	}
+	char winnum = pContract->senddata[32];
+    unsigned char flagbig = 0x01;   /// 初始表示数字是大
+	if(0<winnum && winnum<=3){
+		flagbig= 0x00;          // 表示猜小是赢
+	}
+	bool wflag  =true;             ///初始表示发赌约者赢
+	if(dbdata.acceptebetdata == flagbig){
+		wflag  =false;         //// 表示猜赌的人赢
+	}
+	if(!WriteOpenBetPackage(pContract,&dbdata,wflag)){
+		return false;
+	}
+	if(!DeleteData(pContract->txhash,sizeof(pContract->txhash))){
+		return false;
+	}
 	return true;
 }
+bool WriteWithDrawal(const char *account,Int64 money){
 
-/**
- * @brief accept bet data check
- * @param pdata:accept bet contract data
- * @return
- */
-static bool AcceptDataCheck(const BET_CTX *pbetctx)
-{
-#pragma data_alignment = 1
-	ACCEPT_DATA *psdata = (ACCEPT_DATA *)gContractData;
-#pragma data_alignment = 1
-	Int64 balance;
+	VM_OPERATE writeCode[2];
+	VM_OPERATE ret;
+	memcpy(ret.accountid,&account,sizeof(ret.accountid));
+	memcpy(&ret.money,&money,sizeof(Int64));
 
-//	if(pbetctx == NULL)
-//	{
-////		ErrorCheck(0);
-//		return false;
-//	}
+	ret.opeatortype = ADD_FREE;
+	writeCode[0]=ret;
 
-	if(!IsHaveSendBet(psdata->targetkey))
-	{
-//		ErrorCheck(0);
+	char accountid[6] = {0};
+	if(!GetScriptID(&accountid)){
 		return false;
 	}
 
-	if(!IsEqualSendAmount(&psdata->money))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	if(!QueryAccountBalance(pbetctx->accid, &balance))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	if(Int64Compare(&balance, &psdata->money) != COMP_LARGER)
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-//	if(gSaveData.hight - GetCurRunEnvHeight() < REMAINHIGHT)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-//	if(!CheckDataHash(psdata->dhash))
-//	{
-//		return false;
-//	}
-
+	ret.opeatortype = MINUS_FREE;
+	memcpy(ret.accountid,&accountid,sizeof(ret.accountid));
+	writeCode[1]=ret;
+	WriteOutput((VM_OPERATE*)&writeCode,2);
 	return true;
 }
-
-/**
- * @brief record accept bet status
- * @param pdata:the contract data
- * @return
- */
-static bool RecordAcceptBetStatus(const BET_CTX *pbetctx)
-{
-#pragma data_alignment = 1
-	ACCEPT_DATA *psdata = (ACCEPT_DATA *)gContractData;
-//	if(pbetctx == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	gSaveData.status = BETACCEPT;
-	memcpy(gSaveData.adata, psdata->data, sizeof(psdata->data));
-	memcpy(gSaveData.acceptid, pbetctx->accid, sizeof(pbetctx->accid));
-	gSaveData.hight = curhigh+gSaveData.delyhight;
-//	if(!WriteDataDB(pbetctx->txhash, sizeof(pbetctx->txhash), &savedata, sizeof(SAVE_DATA), savedata.hight))
-	if(!WriteDataDB(psdata->targetkey, sizeof(psdata->targetkey), &gSaveData, sizeof(SAVE_DATA),gSaveData.hight))
-	{
-//		ErrorCheck(0);
+bool WithDrawal(){
+	char account[6];
+	if(!GetCurTxAccount(account,sizeof(account))){
 		return false;
 	}
-
-	return true;
+	S_APP_ID id;
+	id.idlen = sizeof(account);
+	memcpy(&id.ID,&account,sizeof(account));
+	Int64 pRet;
+	if(!GetUserAppAccFreeValue(&pRet,&id)){
+		return false;
+	}
+	Int64 compare;
+	Int64Inital(&compare,"\x00",1);
+	if(Int64Compare(&pRet, &pRet) == COMP_EQU){
+		   return false;
+	}
+        
+        return true;
 }
-
-/**
- * @brief accept a bet
- * @param pdata:the contract data
- * @return
- */
-static bool AcceptP2PBet(const BET_CTX *pbetctx)
-{
-//	if(pbetctx == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	if(!AcceptDataCheck(pbetctx))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	if(!AcceptOperateAccount(pbetctx))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	if(!RecordAcceptBetStatus(pbetctx))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	return true;
-}
-
-/**
- * @brief check if the database have a full bet
- * @return
- */
-static bool IsHaveP2PBet(const void * phash)
-{
-//	if(phash == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	if(!ReadData(phash, 32, &gSaveData, sizeof(SAVE_DATA)))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-//	LogPrint(&gSaveData.status, sizeof(gSaveData.status), HEX);
-
-	if(gSaveData.status != BETACCEPT)
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	return true;
-}
-
-/**
- * @brief check if the open data is meet with hashdata
- * @param pdata:input data
- * @param len:input len
- * @return
- */
-static bool IsDataVaild(const BET_CTX *pbetctx)
-{
-	uchar checkhash[32] = {0};
-#pragma data_alignment = 1
-	OPEN_DATA *podata = (OPEN_DATA *)gContractData;
-
-//	if(pbetctx == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	SHA256(podata->data, sizeof(podata->data), checkhash);
-
-	if(memcmp(checkhash, gSaveData.shash, sizeof(checkhash)) != 0)
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	return true;
-}
-
-/**
- * @brief open bet data check
- * @param pdata:the open bet contract data
- * @return
- */
-static bool OpenDataCheck(const BET_CTX *pbetctx)
-{
-#pragma data_alignment = 1
-	OPEN_DATA *podata = (OPEN_DATA *)gContractData;
-
-//	if(pbetctx == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	if(!IsHaveP2PBet(podata->targetkey))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	if(!IsDataVaild(pbetctx))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	return true;
-}
-
-/**
- * @brief record open bet status
- * @param pdata:the contract data
- * @return
- */
-static bool RecordOpenBetStatus(const BET_CTX *pdata)
-{
-#pragma data_alignment = 1
-	OPEN_DATA *podata = (OPEN_DATA *)gContractData;
-//	if(pdata == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	gSaveData.status = BETOPEN;
-
-	memcpy(gSaveData.sdata, podata->data, sizeof(podata->data));
-	gSaveData.hight += gSaveData.delyhight;
-	if(!WriteDataDB(podata->targetkey, sizeof(podata->targetkey), &gSaveData, sizeof(SAVE_DATA),gSaveData.hight))
-	{
-		ErrorCheck(0);
-		return false;
-	}
-
-	return true;
-}
-
-/**
- * @brief open a bet
- * @param pdata:the open bet contract data
- * @return
- */
-static bool OpenP2PBet(const BET_CTX *pbetctx)
-{
-//	if(pbetctx == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	if(!OpenDataCheck(pbetctx))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	if(!OpenOperateAccount(pbetctx))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	if(!RecordOpenBetStatus(pbetctx))
-	{
-//		ErrorCheck(0);
-		return true;
-	}
-
-	return true;
-}
-
-/**
- * @brief according to the contract data,run the script
- * @param pdata:contract data handle
- * @return
- */
-static bool RunContractData(const BET_CTX *pbetctx)
-{
-#pragma data_alignment = 1
-	OPEN_DATA *phandle = (OPEN_DATA *)gContractData;
-	bool ret = false;
-
-//	if(pbetctx == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	switch(phandle->type)
-	{
-	case SEND:
-		ret = SendP2PBet(pbetctx);
-		break;
-
-	case ACCEPT:
-		ret = AcceptP2PBet(pbetctx);
-		break;
-
-	case OPEN:
-		ret = OpenP2PBet(pbetctx);
-		break;
-
-	default:
-//		ErrorCheck(0);
-		ret = false;
-		break;
-	}
-
-	return ret;
-}
-
-static bool InitCtxData(BET_CTX const *pctxdata)
-{
-//	if(pctxdata == NULL)
-//	{
-//		ErrorCheck(0);
-//		return false;
-//	}
-
-	if(!GetCurTxHash((void *)pctxdata->txhash))
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	if(GetCurTxAccount((void *)pctxdata->accid, sizeof(pctxdata->accid)) == 0)
-	{
-//		ErrorCheck(0);
-		return false;
-	}
-
-	return true;
-}
-
 int main()
 {
-	__xdata __no_init static BET_CTX BetCtx;
-//	RecordSendBetStatus(NULL);
-	if(!InitCtxData(&BetCtx))
-	{
-//		ErrorCheck(0);
-		__exit(RUN_SCRIPT_DATA_ERR);
-	}
-
-	if(!GetContractData(&BetCtx))
-	{
-//		ErrorCheck(0);
-		__exit(RUN_SCRIPT_DATA_ERR);
-	}
-
-	curhigh = GetCurRunEnvHeight() ;
-
-	if(!RunContractData(&BetCtx))
-	{
-//		ErrorCheck(0);
-		__exit(RUN_SCRIPT_DATA_ERR);
-	}
-
-	__exit(RUN_SCRIPT_OK);
-	return 1;
+	 __xdata static  char pcontact[100];
+		unsigned long len = 100;
+		GetCurTxContact(pcontact,len);
+	 	switch(pcontact[0])
+	 	{
+			case TX_SENDBET:
+			{
+				LogPrint("SendBetPackage",sizeof("SendBetPackage"),STRING);
+				if(!SendBetPackage((SEND_DATA*)pcontact))
+				{
+					LogPrint("SendBetPackage error",sizeof("SendBetPackage error"),STRING);
+					__exit(RUN_SCRIPT_DATA_ERR);
+				}
+				LogPrint("SendBetPackage end",sizeof("SendBetPackage end"),STRING);
+				break;
+			}
+			case TX_ACCEPTBET:
+			{
+				LogPrint("AcceptBetPackage",sizeof("AcceptBetPackage"),STRING);
+				if(!AcceptBetPackage((ACCEPT_DATA*) pcontact))
+				{
+					LogPrint("AcceptBetPackage error",sizeof("AcceptBetPackage error"),STRING);
+					__exit(RUN_SCRIPT_DATA_ERR);
+				}
+				break;
+			}
+			case  TX_OPENBET:
+			{
+				LogPrint("OpenBetPackage",sizeof("OpenBetPackage"),STRING);
+				if(!OpenBetPackage((OPEN_DATA* )pcontact))
+				{
+					LogPrint("OpenBetPackage error",sizeof("OpenBetPackage error"),STRING);
+					__exit(RUN_SCRIPT_DATA_ERR);
+				}
+				break;
+			}
+			case  TX_WITHDRAWAL:
+			{
+				LogPrint("WithDrawal",sizeof("WithDrawal"),STRING);
+				if(!WithDrawal())
+				{
+					LogPrint("WithDrawal error",sizeof("WithDrawal error"),STRING);
+					__exit(RUN_SCRIPT_DATA_ERR);
+				}
+				break;
+			}
+			default:
+			{
+				LogPrint("tx format error",sizeof("tx format error"),STRING);
+				__exit(RUN_SCRIPT_DATA_ERR);
+				break;
+			}
+	 	}
+	 	__exit(RUN_SCRIPT_OK);
+	 	return 0;
 }
 

@@ -109,6 +109,7 @@ void InsertOutData(void const* pfrist, unsigned short len) {
 //                bool flag = IsOverShortFlow(len2,(len + sizeof(len)));
 //                bool flag1 = IsOverShortFlow(len,sizeof(len));
 	if (IsOverShortFlow(len2, (len + sizeof(len))) || IsOverShortFlow(len, sizeof(len))) {
+		LogPrint("IsOverShortFlow error",sizeof("IsOverShortFlow error")+1,STRING);
 		__exit(RUN_SCRIPT_DATA_ERR);
 	}
 	memcpy(pbuffer, &len3, sizeof(len3));
