@@ -144,9 +144,9 @@ int main() {
 	PrintString("777.....res is %d",bRes);
 
 	if (bRes) {
-		__exit(RUN_SCRIPT_OK);
+		__VmExit(RUN_SCRIPT_OK);
 	} else {
-		__exit(RUN_SCRIPT_DATA_ERR);
+		__VmExit(RUN_SCRIPT_DATA_ERR);
 	}
 	return 0;
 }

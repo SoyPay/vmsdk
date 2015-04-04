@@ -118,7 +118,7 @@ bool CheckSendBetPackage(const SEND_DATA* const pContract){
 bool WriteSendBetPakage(const DB_DATA* const pContract,const char*const txhash,char type){
 
 	APP_ACC_OPERATE writecode[2];
-	int count = type == OP_APPACC?2:1;
+	unsigned short  count = type == OP_APPACC?2:1;
 	S_APP_ID id;
 	APP_ACC_OPERATE pAppID;
 	id.idlen = sizeof(pContract->sendbetid);
@@ -473,7 +473,7 @@ int main()
 				if(!SendBetPackage((SEND_DATA*)pcontact))
 				{
 					LogPrint("SendBetPackage error",sizeof("SendBetPackage error"),STRING);
-					__exit(RUN_SCRIPT_DATA_ERR);
+					__VmExit(RUN_SCRIPT_DATA_ERR);
 				}
 				LogPrint("SendBetPackage end",sizeof("SendBetPackage end"),STRING);
 				break;
@@ -484,7 +484,7 @@ int main()
 				if(!AcceptBetPackage((ACCEPT_DATA*) pcontact))
 				{
 					LogPrint("AcceptBetPackage error",sizeof("AcceptBetPackage error"),STRING);
-					__exit(RUN_SCRIPT_DATA_ERR);
+					__VmExit(RUN_SCRIPT_DATA_ERR);
 				}
 				break;
 			}
@@ -494,7 +494,7 @@ int main()
 				if(!OpenBetPackage((OPEN_DATA* )pcontact))
 				{
 					LogPrint("OpenBetPackage error",sizeof("OpenBetPackage error"),STRING);
-					__exit(RUN_SCRIPT_DATA_ERR);
+					__VmExit(RUN_SCRIPT_DATA_ERR);
 				}
 				break;
 			}
@@ -504,18 +504,18 @@ int main()
 				if(!WithDrawal())
 				{
 					LogPrint("WithDrawal error",sizeof("WithDrawal error"),STRING);
-					__exit(RUN_SCRIPT_DATA_ERR);
+					__VmExit(RUN_SCRIPT_DATA_ERR);
 				}
 				break;
 			}
 			default:
 			{
 				LogPrint("tx format error",sizeof("tx format error"),STRING);
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 				break;
 			}
 	 	}
-	 	__exit(RUN_SCRIPT_OK);
+	 	__VmExit(RUN_SCRIPT_OK);
 	 	return 0;
 }
 

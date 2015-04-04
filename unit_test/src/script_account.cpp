@@ -46,6 +46,6 @@ bool ProcessScript(char*pcontact)
 		}
 
 	}
-	__exit(RUN_SCRIPT_OK);
-	  return true;
+	__VmExit(RUN_SCRIPT_OK);
+
 }

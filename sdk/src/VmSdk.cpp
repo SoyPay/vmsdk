@@ -6,7 +6,7 @@
 /***
  *  @brief 虚拟机调用系统功能的函数指令
  */
-enum CALL_API_FUN {
+typedef enum tagCALL_API_FUN {
 	COMP_FUNC = 0,            //!< COMP_FUNC
 	MULL_MONEY ,              //!< MULL_MONEY
 	ADD_MONEY ,               //!< ADD_MONEY
@@ -47,8 +47,8 @@ enum CALL_API_FUN {
 	GET_APP_USER_ACC_VALUE_FUN,             //!<GET_APP_USER_ACC_FUN
 	GET_APP_USER_ACC_FUND_WITH_TAG_FUN,             //!<GET_APP_USER_ACC_FUND_WITH_TAG_FUN
 	GET_WIRITE_OUT_APP_OPERATE_FUN,             //!<GET_WIRITE_OUT_APP_OPERATE_FUN
-};
-enum COMPRESS_TYPE {
+}CALL_API_FUN;
+typedef enum tagCOMPRESS_TYPE {
 	U16_TYPE = 0,					// U16_TYPE
 	I16_TYPE = 1,					// I16_TYPE
 	U32_TYPE = 2,					// U32_TYPE
@@ -56,13 +56,13 @@ enum COMPRESS_TYPE {
 	U64_TYPE = 4,					// U64_TYPE
 	I64_TYPE = 5,					// I64_TYPE
 	NO_TYPE = 6,                   // NO_TYPE +n (tip char)
-};
+}COMPRESS_TYPE;
 __root __code static const char aa[]@0x0008 = {0x22,0x22}; //{0,0,0,0x80,0xFB};
 __root __code static const char a12[]@0x0012 = {0x22,0x22};
 __root __xdata __no_init static  unsigned char Communicate[4*1024]@0xEFFF;
 __root __xdata __no_init static unsigned char Result[2]@0xEFFD;
 
-__noreturn __root void __exit(EXIT_CODE tep) {
+__noreturn  void __VmExit(EXIT_CODE tep) {
 	Result[0] = tep;
 	((void (*)(void)) (0x0008))();
 }
@@ -110,7 +110,7 @@ void InsertOutData(void const* pfrist, unsigned short len) {
 //                bool flag1 = IsOverShortFlow(len,sizeof(len));
 	if (IsOverShortFlow(len2, (len + sizeof(len))) || IsOverShortFlow(len, sizeof(len))) {
 		LogPrint("IsOverShortFlow error",sizeof("IsOverShortFlow error")+1,STRING);
-		__exit(RUN_SCRIPT_DATA_ERR);
+		__VmExit(RUN_SCRIPT_DATA_ERR);
 	}
 	memcpy(pbuffer, &len3, sizeof(len3));
 	memcpy(&pbuffer[len2 + 2], &len, sizeof(len));
@@ -454,7 +454,6 @@ bool GetDBValue(const unsigned long index,void* const key,unsigned char * const 
 //	memcpy(key,retdata->buffer, retdata->len);
 	memcpy(key,retdata->buffer, retdata->len);
 	*keylen = retdata->len;
-   #pragma data_alignment = 1
 	retdata = (FUN_RET_DATA *) ((unsigned char*) retdata->buffer + retdata->len);
 	if (retdata->len > *maxbuffer) {
 		return false;
@@ -606,7 +605,7 @@ bool GetCurPayAmount(Int64* const pM2){
 	return true;
 }
 
-bool GetUserAppAccFreeValue(Int64* const pRet,const S_APP_ID const *  pAppID)
+bool GetUserAppAccFreeValue( Int64* const pRet,const S_APP_ID *  pAppID)
 {
 	ClearParaSpace()
 	;
@@ -645,5 +644,17 @@ bool WriteAppOperateOutput( const APP_ACC_OPERATE* pOpertate, const unsigned sho
 	return true;
 }
 
+void PrintfLine(unsigned short sort)
+{
+	char bffer[20];
+	sprintf(bffer,"line:%d ",sort);
+	LogPrint(bffer,strlen(bffer),STRING);
+}
 
+void  PrintfFileAndLine(unsigned short line, const char *pfile)
+{
+	char bffer[256];
+	sprintf(bffer,"func:%sline:%d ",pfile, line);
+	LogPrint(bffer,strlen(bffer),STRING);
+}
 

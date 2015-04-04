@@ -252,7 +252,7 @@ int main()
 			if(!ProcessFirstContract((FIRST_CONTRACT*)pcontact))
 			{
 				LogPrint("ProcessFirstContract error",sizeof("ProcessFirstContract error"),STRING);
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
@@ -262,17 +262,17 @@ int main()
 			if(!ProcessSecondContract((NEXT_CONTRACT*) pcontact))
 			{
 				LogPrint("ProcessSecondContract error",sizeof("ProcessSecondContract error"),STRING);
-				__exit(RUN_SCRIPT_DATA_ERR);
+				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
 		default:
 		{
 			LogPrint("tx format error",sizeof("tx format error"),STRING);
-			__exit(RUN_SCRIPT_DATA_ERR);
+			__VmExit(RUN_SCRIPT_DATA_ERR);
 			break;
 		}
  	}
- 	__exit(RUN_SCRIPT_OK);
+ 	__VmExit(RUN_SCRIPT_OK);
     return 0;
 }

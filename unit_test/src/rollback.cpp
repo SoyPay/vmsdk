@@ -62,7 +62,7 @@ int ProcessRollBack(char*pcontact)
 					if(!testWriteDataDB1())
 					{
 						LogPrint("testWriteDataDB error",sizeof("testWriteDataDB error"),STRING);
-						__exit(RUN_SCRIPT_DATA_ERR);
+						__VmExit(RUN_SCRIPT_DATA_ERR);
 					}
 					break;
 				}
@@ -71,7 +71,7 @@ int ProcessRollBack(char*pcontact)
 					if(!testModifyDataDB1())
 					{
 						LogPrint("testModifyDataDB error",sizeof("testModifyDataDB error"),STRING);
-						__exit(RUN_SCRIPT_DATA_ERR);
+						__VmExit(RUN_SCRIPT_DATA_ERR);
 					}
 					break;
 				}
@@ -80,7 +80,7 @@ int ProcessRollBack(char*pcontact)
 					if(!testDeleteDataDB1())
 					{
 						LogPrint("testDeleteDataDB error",sizeof("testDeleteDataDB error"),STRING);
-						__exit(RUN_SCRIPT_DATA_ERR);
+						__VmExit(RUN_SCRIPT_DATA_ERR);
 					}
 					break;
 				}
@@ -89,7 +89,7 @@ int ProcessRollBack(char*pcontact)
 					if(!testCheckDeleteRoolbackDB())
 					{
 						LogPrint("testCheckDeleteRoolbackDB error",sizeof("testCheckDeleteRoolbackDB error"),STRING);
-						__exit(RUN_SCRIPT_DATA_ERR);
+						__VmExit(RUN_SCRIPT_DATA_ERR);
 					}
 					break;
 				}
@@ -98,7 +98,7 @@ int ProcessRollBack(char*pcontact)
 					if(!testCheckModifyRoolbackDB())
 					{
 						LogPrint("testCheckModifyRoolbackDB error",sizeof("testCheckModifyRoolbackDB error"),STRING);
-						__exit(RUN_SCRIPT_DATA_ERR);
+						__VmExit(RUN_SCRIPT_DATA_ERR);
 					}
 					break;
 				}
@@ -107,16 +107,16 @@ int ProcessRollBack(char*pcontact)
 					if(!testCheckWriteRoolbackDB())
 					{
 						LogPrint("testCheckWriteRoolbackDB error",sizeof("testCheckWriteRoolbackDB error"),STRING);
-						__exit(RUN_SCRIPT_DATA_ERR);
+						__VmExit(RUN_SCRIPT_DATA_ERR);
 					}
 					break;
 				}
 		default:
 				{
-					__exit(RUN_SCRIPT_DATA_ERR);
+					__VmExit(RUN_SCRIPT_DATA_ERR);
 					break;
 				}
 	}
-	__exit(RUN_SCRIPT_OK);
-  return 0;
+	__VmExit(RUN_SCRIPT_OK);
+
 }
