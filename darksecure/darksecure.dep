@@ -2,23 +2,15 @@
 
 <project>
   <fileVersion>2</fileVersion>
-  <fileChecksum>234224397</fileChecksum>
+  <fileChecksum>8414453</fileChecksum>
   <configuration>
     <name>Debug</name>
     <outputs>
+      <file>$PROJ_DIR$\Debug\Obj\unsecure.r51</file>
+      <file>$PROJ_DIR$\src\unsecure.cpp</file>
       <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
       <file>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</file>
       <file>$PROJ_DIR$\src\darksecuremain.cpp</file>
-      <file>$PROJ_DIR$\Debug\Exe\darksecure.bin</file>
-      <file>$PROJ_DIR$\Debug\Exe\darksecure.d51</file>
-      <file>$PROJ_DIR$\main.cpp</file>
-      <file>$PROJ_DIR$\Debug\Obj\darksecuremain.r51</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\darksecuremain.pbi</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
       <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
@@ -32,27 +24,61 @@
       <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
+      <file>$PROJ_DIR$\Debug\Exe\darksecure.bin</file>
+      <file>$PROJ_DIR$\Debug\Exe\darksecure.d51</file>
+      <file>$PROJ_DIR$\main.cpp</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\darksecuremain.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\darksecuremain.r51</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
     </outputs>
     <file>
-      <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>
+      <name>$PROJ_DIR$\src\unsecure.cpp</name>
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 21</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 9</file>
+          <file> 0</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 11 24 25 20 18 8 7 12 16 15 17 13 0</file>
+          <file> 21 16 17 12 10 24 25 27 8 7 9 5 2</file>
         </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 19 18</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>
+      <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 11 24 25 20 18 8 7 12 16 15 17 13 0</file>
+          <file> 23</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 13</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 21 16 17 12 10 24 25 27 8 7 9 5 2</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 21 16 17 12 10 24 25 27 8 7 9 5 2</file>
         </tool>
       </inputs>
     </file>
@@ -60,22 +86,22 @@
       <name>$PROJ_DIR$\src\darksecuremain.cpp</name>
       <outputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 6</file>
+          <name>BICOMP</name>
+          <file> 22</file>
         </tool>
         <tool>
-          <name>BICOMP</name>
-          <file> 10</file>
+          <name>ICC8051</name>
+          <file> 26</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 11 24 25 20 18 8 7 12 16 15 17 13 0</file>
+          <name>BICOMP</name>
+          <file> 21 16 17 12 10 24 25 27 8 7 9 5 2</file>
         </tool>
         <tool>
-          <name>BICOMP</name>
-          <file> 11 24 25 20 18 8 7 12 16 15 17 13 0</file>
+          <name>ICC8051</name>
+          <file> 21 16 17 12 10 24 25 27 8 7 9 5 2</file>
         </tool>
       </inputs>
     </file>
@@ -84,13 +110,13 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 3</file>
+          <file> 18</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 14 21 6 19</file>
+          <file> 6 13 0 11</file>
         </tool>
       </inputs>
     </file>
@@ -98,21 +124,12 @@
       <name>$PROJ_DIR$\main.cpp</name>
       <outputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 23</file>
-        </tool>
-        <tool>
           <name>BICOMP</name>
-          <file> 22</file>
+          <file> 14</file>
         </tool>
-      </outputs>
-    </file>
-    <file>
-      <name>[ROOT_NODE]</name>
-      <outputs>
         <tool>
-          <name>XLINK</name>
-          <file> 4 3</file>
+          <name>ICC8051</name>
+          <file> 15</file>
         </tool>
       </outputs>
     </file>

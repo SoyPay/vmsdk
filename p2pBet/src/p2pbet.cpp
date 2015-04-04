@@ -138,7 +138,7 @@ bool WriteSendBetPakage(const DB_DATA* const pContract,const char*const txhash,c
 		pAppID.opeatortype=SUB_FREE_OP;
 		writecode[1] = pAppID;
 	}
-	if(!WriteAppOperateOutput(&pAppID, count)){
+	if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&writecode, count)){
 		return false;
 	}
 
@@ -403,6 +403,8 @@ bool OpenBetPackage(const OPEN_DATA* const pContract){
 		return false;
 	}
 	char winnum = pContract->senddata[32];
+	LogPrint("winnum:",sizeof("winnum:"),STRING);
+	LogPrint(&winnum,1,HEX);
     unsigned char flagbig = 0x01;   /// 初始表示数字是大
 	if(0<winnum && winnum<=3){
 		flagbig= 0x00;          // 表示猜小是赢
@@ -410,7 +412,14 @@ bool OpenBetPackage(const OPEN_DATA* const pContract){
 	bool wflag  =true;             ///初始表示发赌约者赢
 	if(dbdata.acceptebetdata == flagbig){
 		wflag  =false;         //// 表示猜赌的人赢
+		LogPrint("winb:",sizeof("winb:"),STRING);
+		LogPrint(&dbdata.acceptebetdata,1,HEX);
+		LogPrint(&dbdata.acceptbetid,sizeof(dbdata.acceptbetid),HEX);
+	}else{
+		LogPrint("winA:",sizeof("winA:"),STRING);
+		LogPrint(&dbdata.sendbetid,sizeof(dbdata.sendbetid),HEX);
 	}
+
 	if(!WriteOpenBetPackage(pContract,&dbdata,wflag)){
 		return false;
 	}
