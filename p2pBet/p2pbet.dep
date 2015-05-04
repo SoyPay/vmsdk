@@ -6,20 +6,20 @@
   <configuration>
     <name>Debug</name>
     <outputs>
-      <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
       <file>$PROJ_DIR$\..\sdk\src\VmSdk.h</file>
       <file>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</file>
       <file>$PROJ_DIR$\src\p2pbet.cpp</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\string.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
       <file>$PROJ_DIR$\Debug\Obj\p2pbet.r51</file>
       <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
       <file>$PROJ_DIR$\src\main.cpp</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
       <file>$PROJ_DIR$\Debug\Exe\p2pbet.bin</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
       <file>$PROJ_DIR$\Debug\Exe\p2pbet.d51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
@@ -38,7 +38,7 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 14 13</file>
+          <file> 14 12</file>
         </tool>
       </outputs>
     </file>
@@ -46,22 +46,22 @@
       <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>
       <outputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 25</file>
+          <name>BICOMP</name>
+          <file> 4</file>
         </tool>
         <tool>
-          <name>BICOMP</name>
-          <file> 0</file>
+          <name>ICC8051</name>
+          <file> 25</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 4 8 9 16 22 5 23 17 24 15 12 10 1</file>
+          <name>BICOMP</name>
+          <file> 5 6 3 16 22 13 23 17 24 15 10 11 0</file>
         </tool>
         <tool>
-          <name>BICOMP</name>
-          <file> 4 8 9 16 22 5 23 17 24 15 12 10 1</file>
+          <name>ICC8051</name>
+          <file> 5 6 3 16 22 13 23 17 24 15 10 11 0</file>
         </tool>
       </inputs>
     </file>
@@ -70,13 +70,13 @@
       <outputs>
         <tool>
           <name>ICC8051</name>
-          <file> 6</file>
+          <file> 7</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 4 8 9 16 22 5 23 17 24 15 12 10 1</file>
+          <file> 5 6 3 16 22 13 23 17 24 15 10 11 0</file>
         </tool>
       </inputs>
     </file>
@@ -84,22 +84,22 @@
       <name>$PROJ_DIR$\src\main.cpp</name>
       <outputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 18</file>
-        </tool>
-        <tool>
           <name>BICOMP</name>
           <file> 19</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 4 8 9 16 22 5 23 17 24 15 12 10 1</file>
+          <name>BICOMP</name>
+          <file> 5 6 3 16 22 13 23 17 24 15 10 11 0</file>
         </tool>
         <tool>
-          <name>BICOMP</name>
-          <file> 4 8 9 16 22 5 23 17 24 15 12 10 1</file>
+          <name>ICC8051</name>
+          <file> 5 6 3 16 22 13 23 17 24 15 10 11 0</file>
         </tool>
       </inputs>
     </file>
@@ -108,13 +108,13 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 13</file>
+          <file> 12</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 7 25 6 21</file>
+          <file> 8 25 7 21</file>
         </tool>
       </inputs>
     </file>
@@ -122,12 +122,12 @@
       <name>$PROJ_DIR$\main.cpp</name>
       <outputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 18</file>
-        </tool>
-        <tool>
           <name>BICOMP</name>
           <file> 19</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18</file>
         </tool>
       </outputs>
     </file>

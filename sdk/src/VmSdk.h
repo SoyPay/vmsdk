@@ -94,9 +94,14 @@ typedef struct tagACCOUNT_ID
 	char accounid[MAX_ACCOUNT_LEN];
 }ACCOUNT_ID;
 
-
+enum ACCOUNT_TYPE {
+	// account type
+	regid = 0x01,			//!< Registration accountid
+	base58addr = 0x02,			    //!< pulickey
+};
 typedef struct tagVMOPERATE{
-	unsigned char accountid[6];      //!< account id
+	unsigned char type;   		 //!<ACCOUNT_TYPE
+	unsigned char accountid[34];      //!< account id
 	unsigned char opeatortype;           //!< operate the account
 	unsigned long outheight;       //!< out of the height
 	Int64 money;
@@ -382,7 +387,7 @@ bool GetUserAppAccFoudWithTag(Int64* const pRet,const  APP_ACC_OPERATE  *  pAppU
  */
 bool WriteAppOperateOutput( const  APP_ACC_OPERATE* pOpertate, const unsigned short conter);
 
-
+bool GetDacrsAddress(void * const account,unsigned short len,void* const address,unsigned short retmaxlen);
 void PrintfLine(unsigned short sort);
 
 void  PrintfFileAndLine(unsigned short line, const char *pfile);

@@ -50,7 +50,7 @@ bool CheckBuyerTradePackage(const FIRST_CONTRACT* const pContract){
 }
 bool BuyerTradePackage(const FIRST_CONTRACT* const pContract){
 	if(!CheckBuyerTradePackage(pContract)){
-		LogPrint("check buyer trade package error",sizeof("check buyer trade package error")+1,STRING);
+		//LogPrint("check buyer trade package error",sizeof("check buyer trade package error")+1,STRING);
 		return false;
 	}
 
@@ -118,11 +118,11 @@ bool SellerTradePackage(const NEXT_CONTRACT* const pContract){
 	DATA_DB dbdata;
 	LogPrint(pContract->hash,32,HEX);
 	if(!ReadData(pContract->hash,sizeof(pContract->hash), &dbdata,sizeof(dbdata))){
-		LogPrint("SellerTradePackage read db error",sizeof("SellerTradePackage read db error")+1,STRING);
+		//LogPrint("SellerTradePackage read db error",sizeof("SellerTradePackage read db error")+1,STRING);
 		return false;
 	}
 	if(!CheckSellerTradePackage(&dbdata)){
-		LogPrint("SellerTradePackage check error",sizeof("SellerTradePackage check error")+1,STRING);
+		//LogPrint("SellerTradePackage check error",sizeof("SellerTradePackage check error")+1,STRING);
 		return false;
 	}
 	dbdata.flag = true;
@@ -144,6 +144,7 @@ bool WriteBuyerConfirmPackage(const DATA_DB* const pContract)
 
 	VM_OPERATE writeCode[3];
 	VM_OPERATE ret;
+	ret.type = regid;
 	memcpy(ret.accountid,&pContract->seller,sizeof(ret.accountid));
 	memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
 	ret.opeatortype = ADD_FREE;
@@ -170,7 +171,7 @@ bool WriteBuyerConfirmPackage(const DATA_DB* const pContract)
 bool BuyerConfirmPackage(const NEXT_CONTRACT* const pContract){
 	DATA_DB dbdata;
 	if(!ReadData(pContract->hash,sizeof(pContract->hash), &dbdata,sizeof(dbdata))){
-		LogPrint("BuyerConfirmPackage read db error",sizeof("BuyerConfirmPackage read db error")+1,STRING);
+		//LogPrint("BuyerConfirmPackage read db error",sizeof("BuyerConfirmPackage read db error")+1,STRING);
 		return false;
 	}
 
@@ -178,7 +179,7 @@ bool BuyerConfirmPackage(const NEXT_CONTRACT* const pContract){
 		return false;
 	}
 	if(!DeleteData(pContract->hash,sizeof(pContract->hash))){
-		LogPrint("BuyerConfirmPackage delete db error",sizeof("BuyerConfirmPackage delete db error")+1,STRING);
+		//LogPrint("BuyerConfirmPackage delete db error",sizeof("BuyerConfirmPackage delete db error")+1,STRING);
 		return false;
 	}
 	if(!WriteBuyerConfirmPackage(&dbdata)){
@@ -193,6 +194,7 @@ bool WriteBuyerCancelPackage(const DATA_DB* const pContract)
 
 	VM_OPERATE writeCode[2];
 	VM_OPERATE ret;
+	ret.type = regid;
 	memcpy(ret.accountid,&pContract->buyer,sizeof(ret.accountid));
 	memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
 	ret.opeatortype = ADD_FREE;
@@ -214,7 +216,7 @@ bool WriteBuyerCancelPackage(const DATA_DB* const pContract)
 bool BuyerCancelPackage(const NEXT_CONTRACT* const pContract){
 	DATA_DB dbdata;
 	if(!ReadData(pContract->hash,sizeof(pContract->hash), &dbdata,sizeof(dbdata))){
-		LogPrint("BuyerConfirmPackage read db error",sizeof("BuyerConfirmPackage read db error")+1,STRING);
+		//LogPrint("BuyerConfirmPackage read db error",sizeof("BuyerConfirmPackage read db error")+1,STRING);
 		return false;
 	}
 
@@ -226,6 +228,10 @@ bool BuyerCancelPackage(const NEXT_CONTRACT* const pContract){
 		return false;
 	}
 
+	if(!DeleteData(pContract->hash,sizeof(pContract->hash))){
+		//LogPrint("BuyerCancelPackage delete db error",sizeof("BuyerCancelPackage delete db error")+1,STRING);
+		return false;
+	}
 	return true;
 }
 
@@ -238,47 +244,47 @@ int main()
  	{
 		case TX_BUYTRADE:
 		{
-			LogPrint("TX_BUYTRADE",sizeof("TX_BUYTRADE"),STRING);
+			//LogPrint("TX_BUYTRADE",sizeof("TX_BUYTRADE"),STRING);
 			if(!BuyerTradePackage((FIRST_CONTRACT*)pcontact))
 			{
-				LogPrint("TX_BUYTRADE error",sizeof("TX_BUYTRADE error"),STRING);
+				//LogPrint("TX_BUYTRADE error",sizeof("TX_BUYTRADE error"),STRING);
 				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
 		case TX_SELLERTRADE:
 		{
-			LogPrint("TX_SELLERTRADE",sizeof("TX_SELLERTRADE"),STRING);
+			//LogPrint("TX_SELLERTRADE",sizeof("TX_SELLERTRADE"),STRING);
 			if(!SellerTradePackage((NEXT_CONTRACT*) pcontact))
 			{
-				LogPrint("TX_SELLERTRADE error",sizeof("TX_SELLERTRADE error"),STRING);
+				//LogPrint("TX_SELLERTRADE error",sizeof("TX_SELLERTRADE error"),STRING);
 				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
 		case  TX_BUYERCONFIM:
 		{
-			LogPrint("TX_BUYERCONFIM",sizeof("TX_BUYERCONFIM"),STRING);
+			//LogPrint("TX_BUYERCONFIM",sizeof("TX_BUYERCONFIM"),STRING);
 			if(!BuyerConfirmPackage((NEXT_CONTRACT*) pcontact))
 			{
-				LogPrint("TX_BUYERCONFIM error",sizeof("TX_BUYERCONFIM error"),STRING);
+				//LogPrint("TX_BUYERCONFIM error",sizeof("TX_BUYERCONFIM error"),STRING);
 				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
 		case  TX_BUYERCANCEL:
 		{
-			LogPrint("TX_BUYERCANCEL",sizeof("TX_BUYERCANCEL"),STRING);
+			//LogPrint("TX_BUYERCANCEL",sizeof("TX_BUYERCANCEL"),STRING);
 			if(!BuyerCancelPackage((NEXT_CONTRACT*) pcontact))
 			{
-				LogPrint("TX_BUYERCANCEL error",sizeof("TX_BUYERCANCEL error"),STRING);
+				//LogPrint("TX_BUYERCANCEL error",sizeof("TX_BUYERCANCEL error"),STRING);
 				__VmExit(RUN_SCRIPT_DATA_ERR);
 			}
 			break;
 		}
 		default:
 		{
-			LogPrint("tx format error",sizeof("tx format error"),STRING);
+			//LogPrint("tx format error",sizeof("tx format error"),STRING);
 			__VmExit(RUN_SCRIPT_DATA_ERR);
 			break;
 		}

@@ -12,14 +12,14 @@
       <file>$PROJ_DIR$\Debug\Obj\unsecure.r51</file>
       <file>$PROJ_DIR$\src\darksecuremain.cpp</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ystdio.h</file>
-      <file>$TOOLKIT_DIR$\lib\dlib\dl-pli-nlxd-1e16x01n.r51</file>
-      <file>$PROJ_DIR$\Debug\Obj\VmSdk.r51</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
-      <file>$TOOLKIT_DIR$\lib\dlib\dl8051Normal.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ysizet.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
       <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\stdlib.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\stdio.h</file>
+      <file>$TOOLKIT_DIR$\lib\dlib\dl8051Normal.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\VmSdk.r51</file>
+      <file>$TOOLKIT_DIR$\lib\dlib\dl-pli-nlxd-1e16x01n.r51</file>
       <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
@@ -36,34 +36,25 @@
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
     </outputs>
     <file>
-      <name>[ROOT_NODE]</name>
-      <outputs>
-        <tool>
-          <name>XLINK</name>
-          <file> 19 18</file>
-        </tool>
-      </outputs>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>
       <outputs>
-        <tool>
-          <name>ICC8051</name>
-          <file> 7</file>
-        </tool>
         <tool>
           <name>BICOMP</name>
           <file> 23</file>
         </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 12</file>
+        </tool>
       </outputs>
       <inputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 21 16 17 8 9 24 25 27 11 12 10 5 0</file>
+          <name>BICOMP</name>
+          <file> 21 16 17 11 10 24 25 27 6 8 9 5 0</file>
         </tool>
         <tool>
-          <name>BICOMP</name>
-          <file> 21 16 17 8 9 24 25 27 11 12 10 5 0</file>
+          <name>ICC8051</name>
+          <file> 21 16 17 11 10 24 25 27 6 8 9 5 0</file>
         </tool>
       </inputs>
     </file>
@@ -78,7 +69,7 @@
       <inputs>
         <tool>
           <name>ICC8051</name>
-          <file> 21 16 17 8 9 24 25 27 11 12 10 5 0</file>
+          <file> 21 16 17 11 10 24 25 27 6 8 9 5 0</file>
         </tool>
       </inputs>
     </file>
@@ -86,22 +77,22 @@
       <name>$PROJ_DIR$\src\darksecuremain.cpp</name>
       <outputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 26</file>
-        </tool>
-        <tool>
           <name>BICOMP</name>
           <file> 22</file>
+        </tool>
+        <tool>
+          <name>ICC8051</name>
+          <file> 26</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
-          <name>ICC8051</name>
-          <file> 21 16 17 8 9 24 25 27 11 12 10 5 0</file>
+          <name>BICOMP</name>
+          <file> 21 16 17 11 10 24 25 27 6 8 9 5 0</file>
         </tool>
         <tool>
-          <name>BICOMP</name>
-          <file> 21 16 17 8 9 24 25 27 11 12 10 5 0</file>
+          <name>ICC8051</name>
+          <file> 21 16 17 11 10 24 25 27 6 8 9 5 0</file>
         </tool>
       </inputs>
     </file>
@@ -116,7 +107,7 @@
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 13 7 3 6</file>
+          <file> 7 12 3 13</file>
         </tool>
       </inputs>
     </file>
@@ -124,12 +115,21 @@
       <name>$PROJ_DIR$\main.cpp</name>
       <outputs>
         <tool>
+          <name>BICOMP</name>
+          <file> 14</file>
+        </tool>
+        <tool>
           <name>ICC8051</name>
           <file> 15</file>
         </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
         <tool>
-          <name>BICOMP</name>
-          <file> 14</file>
+          <name>XLINK</name>
+          <file> 19 18</file>
         </tool>
       </outputs>
     </file>

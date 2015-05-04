@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include"VmSdk.h"
 
+#define freeze_height  500
 #define min_out_height  10
 typedef struct {
 	unsigned char nType;
@@ -49,14 +50,17 @@ enum TXTYPE{
 	TX_SENDBET = 0x01,
 	TX_ACCEPTBET = 0x02,
 	TX_OPENBET = 0x03,
-	TX_WITHDRAWAL = 0x04,
+//	TX_WITHDRAWAL = 0x04,
 };
 enum OPERATE{
 	OP_SYSTEMACC = 0x00,
 	OP_APPACC = 0x01,
 	OP_NULL = 0x02,
 };
-
+enum GETDAWEL{
+	TX_REGID = 0x01,
+	TX_BASE58 = 0x02,
+};
 bool CheckAccVaild(unsigned char type,Int64 money){
 
 	Int64 paymoey;
@@ -79,8 +83,10 @@ bool CheckAccVaild(unsigned char type,Int64 money){
 			Int64 compare;
 			Int64Inital(&compare,"\x00",1);
 			if(Int64Compare(&compare, &paymoey) != COMP_EQU){  /// 不能从系统账户扣钱
-			 return false;
+	    		 LogPrint("82",sizeof("93")+1,STRING);
+				return false;
 			}
+
 
 			S_APP_ID id;
 			id.idlen = sizeof(account);
@@ -90,6 +96,7 @@ bool CheckAccVaild(unsigned char type,Int64 money){
 			Int64Inital(&pRet,"\x00",1);
 			GetUserAppAccFreeValue(&pRet,&id);
 	    	 if(Int64Compare(&pRet, &money) == COMP_LESS){      //系统应用账户中要有足够的自由金额
+	    		 LogPrint("97",sizeof("93")+1,STRING);
 	    		 return false;
 	    	 }
 	    	break;
@@ -112,6 +119,7 @@ bool CheckSendBetPackage(const SEND_DATA* const pContract){
 	if(!CheckAccVaild(pContract->noperateType,pContract->money)){
 		return false;
 	}
+
 	return true;
 }
 
@@ -128,7 +136,7 @@ bool WriteSendBetPakage(const DB_DATA* const pContract,const char*const txhash,c
 
 	S_APP_ID tag;
 	tag.idlen = 32;
-	pAppID.outheight = GetCurRunEnvHeight() + pContract->hight;;
+	pAppID.outheight = GetCurRunEnvHeight() + pContract->hight + freeze_height;
 	memcpy(&tag.ID,txhash,32);
 	memcpy(&pAppID.FundTag,&tag,sizeof(S_APP_ID));
 
@@ -165,7 +173,7 @@ bool SendBetPackage(const SEND_DATA* const pContract){
 	memcpy(&dbdata.money,&pContract->money,sizeof(dbdata.money));
 	memcpy(&dbdata.dhash,&pContract->dhash,sizeof(dbdata.dhash));
 	memcpy(&dbdata.sendbetid,&account,sizeof(dbdata.sendbetid));
-	dbdata.hight = GetCurRunEnvHeight() + pContract->hight;
+	dbdata.hight = pContract->hight;
 	if( !WriteData(txhash,sizeof(txhash),&dbdata,sizeof(dbdata))){
 		return false;
 	}
@@ -180,18 +188,15 @@ bool CheckAcceptBetPackage(const ACCEPT_DATA* const pContract,Int64 sendmoney,un
 	if(!CheckAccVaild(pContract->noperateType,pContract->money)){
 		return false;
 	}
-	Int64 paymoey;
-	Int64Inital(&paymoey,"\x00",1);
-	 if(!GetCurPayAmount(&paymoey)){
-		 return false;
-	 }
-	 if(Int64Compare(&paymoey, &sendmoney) != COMP_EQU){
-		 return false;
-	 }
 	 if(pContract->acceptdata != 0x00 && pContract->acceptdata != 0x01){
 		 return false;
 	 }
-     if(betsate&0x01 == 0x01){
+
+	 if(Int64Compare(&pContract->money, &sendmoney) != COMP_EQU){      //系统应用账户中要有足够的自由金额
+		 return false;
+	 }
+     if(betsate == 0x01){
+    	 LogPrint("199",sizeof("271")+1,STRING);
     	 return  false;      //已经被接赌
      }
 	 return true;
@@ -210,7 +215,7 @@ bool WritAcceptBetPakage(const DB_DATA* const pContract,const char*const txhash,
 
 	S_APP_ID tag;
 	tag.idlen = 32;
-	pAppID.outheight = GetTxConFirmHeight(txhash)  + pContract->hight;
+	pAppID.outheight = GetTxConFirmHeight(txhash)  + pContract->hight + freeze_height;
 	memcpy(&tag.ID,txhash,32);
 	memcpy(&pAppID.FundTag,&tag,sizeof(tag));
 	pAppID.opeatortype = SUB_FREEZED_OP;
@@ -228,6 +233,7 @@ bool WritAcceptBetPakage(const DB_DATA* const pContract,const char*const txhash,
 	writecode[1]=pAppID;
 	if(type == OP_APPACC){
 		pAppID.opeatortype=SUB_FREE_OP;
+		memcpy(&pAppID.mMoney, &pContract->money,sizeof(pAppID.mMoney));
 		writecode[2]=pAppID;
 	}
 	if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&writecode, count)){
@@ -266,7 +272,7 @@ bool AcceptBetPackage(const ACCEPT_DATA* const pContract){
 		return false;
 	}
 	///表示接赌
-	dbdata.acceptebetdata = 0x01;
+	dbdata.betstate = 0x01;
 	if( !WriteData(pContract->txhash,sizeof(pContract->txhash),&dbdata,sizeof(dbdata))){
 		LogPrint(pContract->txhash,32,HEX);
 		return false;
@@ -293,13 +299,17 @@ bool CheckOpenBetPackage(const OPEN_DATA* const pContract,const DB_DATA* const d
 	}
 	SHA256(pContract->senddata, sizeof(pContract->senddata), checkhash);
 	if(memcmp(checkhash,dbdata->dhash,sizeof(dbdata->dhash)) != 0){
+		LogPrint(checkhash,sizeof(checkhash)+1,STRING);
+		LogPrint(dbdata->dhash,sizeof(dbdata->dhash)+1,STRING);
 		return false;
 	}
-    if(dbdata->betstate&0x01 != 0x01){
+    if(dbdata->betstate != 0x01){
+    	 LogPrint("304",sizeof("271")+1,STRING);
    	 return  false;      //未被接赌
     }
 
     if((GetTxConFirmHeight(dbdata->accepthash) + dbdata->hight)<GetCurRunEnvHeight()){ /// 已经超时不能揭赌
+    	LogPrint("309",sizeof("271")+1,STRING);
     	return false;
     }
 	return true;
@@ -354,12 +364,16 @@ bool WriteOpenBetSysAcc(const OPEN_DATA* const pContract,const DB_DATA *const db
 
 	VM_OPERATE writeCode[2];
 	VM_OPERATE ret;
+	ret.type = regid;
 	if(flag){
 		memcpy(ret.accountid,&dbdata->sendbetid,sizeof(ret.accountid));
 	}else{
 		memcpy(ret.accountid,&dbdata->acceptbetid,sizeof(ret.accountid));
 	}
-	memcpy(&ret.money,&dbdata->money,sizeof(ret.money));
+	Int64 mul;
+	Int64Inital(&mul,"\x02",1);
+	Int64Mul(&dbdata->money, &mul,&ret.money);
+
 	ret.opeatortype = ADD_FREE;
 	writeCode[0]=ret;
 
@@ -423,16 +437,19 @@ bool OpenBetPackage(const OPEN_DATA* const pContract){
 	if(!WriteOpenBetPackage(pContract,&dbdata,wflag)){
 		return false;
 	}
+	LogPrint("WriteOpenBetPackage:",sizeof("WriteOpenBetPackage:"),STRING);
 	if(!DeleteData(pContract->txhash,sizeof(pContract->txhash))){
 		return false;
 	}
+	LogPrint("DeleteData:",sizeof("DeleteData:"),STRING);
 	return true;
 }
 bool WriteWithDrawal(const char *account,Int64 money){
 
 	VM_OPERATE writeCode[2];
 	VM_OPERATE ret;
-	memcpy(ret.accountid,&account,sizeof(ret.accountid));
+	ret.type = regid;
+	memcpy(ret.accountid,account,sizeof(ret.accountid));
 	memcpy(&ret.money,&money,sizeof(Int64));
 
 	ret.opeatortype = ADD_FREE;
@@ -449,25 +466,38 @@ bool WriteWithDrawal(const char *account,Int64 money){
 	WriteOutput((VM_OPERATE*)&writeCode,2);
 	return true;
 }
-bool WithDrawal(){
+bool WithDrawal(char type){
+
+	if(type != TX_REGID&&type != TX_BASE58)
+		return false;
 	char account[6];
 	if(!GetCurTxAccount(account,sizeof(account))){
 		return false;
 	}
 	S_APP_ID id;
-	id.idlen = sizeof(account);
-	memcpy(&id.ID,&account,sizeof(account));
+	if(type == TX_REGID){
+		id.idlen = sizeof(account);
+		memcpy(&id.ID,&account,sizeof(account));
+	}else if(type == TX_BASE58){
+		char dacrsaddr[34];
+		if(!GetDacrsAddress(account,sizeof(account),dacrsaddr,sizeof(account)))
+			return false;
+		id.idlen = sizeof(dacrsaddr);
+		memcpy(&id.ID,&dacrsaddr,sizeof(dacrsaddr));
+	}
 	Int64 pRet;
 	if(!GetUserAppAccFreeValue(&pRet,&id)){
 		return false;
 	}
 	Int64 compare;
 	Int64Inital(&compare,"\x00",1);
-	if(Int64Compare(&pRet, &pRet) == COMP_EQU){
+	if(Int64Compare(&pRet, &compare) == COMP_EQU){
 		   return false;
 	}
-        
-        return true;
+  if(!WriteWithDrawal(account,pRet)){
+	  return false;
+  }
+   return true;
 }
 int main()
 {
@@ -505,12 +535,16 @@ int main()
 					LogPrint("OpenBetPackage error",sizeof("OpenBetPackage error"),STRING);
 					__VmExit(RUN_SCRIPT_DATA_ERR);
 				}
+				LogPrint("OpenBetPackage end:",sizeof("OpenBetPackage end:"),STRING);
 				break;
 			}
-			case  TX_WITHDRAWAL:
+			case  0xff:
 			{
 				LogPrint("WithDrawal",sizeof("WithDrawal"),STRING);
-				if(!WithDrawal())
+				if(pcontact[1] != 0x01){
+					__VmExit(RUN_SCRIPT_DATA_ERR);
+				}
+				if(!WithDrawal(pcontact[2]))
 				{
 					LogPrint("WithDrawal error",sizeof("WithDrawal error"),STRING);
 					__VmExit(RUN_SCRIPT_DATA_ERR);
