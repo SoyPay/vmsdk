@@ -2,6 +2,9 @@
 
 <workspace>
   <project>
+    <path>$WS_DIR$\anony\anony.ewp</path>
+  </project>
+  <project>
     <path>$WS_DIR$\darksecure\darksecure.ewp</path>
   </project>
   <project>

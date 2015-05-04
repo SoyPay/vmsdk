@@ -47,6 +47,7 @@ typedef enum tagCALL_API_FUN {
 	GET_APP_USER_ACC_VALUE_FUN,             //!<GET_APP_USER_ACC_FUN
 	GET_APP_USER_ACC_FUND_WITH_TAG_FUN,             //!<GET_APP_USER_ACC_FUND_WITH_TAG_FUN
 	GET_WIRITE_OUT_APP_OPERATE_FUN,             //!<GET_WIRITE_OUT_APP_OPERATE_FUN
+	GET_DACRS_ADDRESS_FUN,                      //!<GET_DACRS_ADDRESS_FUN
 }CALL_API_FUN;
 typedef enum tagCOMPRESS_TYPE {
 	U16_TYPE = 0,					// U16_TYPE
@@ -644,7 +645,17 @@ bool WriteAppOperateOutput( const APP_ACC_OPERATE* pOpertate, const unsigned sho
 	__CallApi(GET_WIRITE_OUT_APP_OPERATE_FUN);
 	return true;
 }
-
+bool GetDacrsAddress(void * const account,unsigned short len,void* const address,unsigned short retmaxlen){
+	ClearParaSpace()
+	;
+	InsertOutData(account, len);
+	__CallApi(GET_DACRS_ADDRESS_FUN);
+	FUN_RET_DATA *retdata = GetInterflowP();
+	if (retdata->len > retmaxlen)
+		return false;
+	memcpy(address, retdata->buffer,retdata->len);
+	return true;
+}
 void PrintfLine(unsigned short sort)
 {
 	char bffer[20];
