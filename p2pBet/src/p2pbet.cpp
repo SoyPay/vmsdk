@@ -364,7 +364,7 @@ bool WriteOpenBetSysAcc(const OPEN_DATA* const pContract,const DB_DATA *const db
 
 	VM_OPERATE writeCode[2];
 	VM_OPERATE ret;
-	ret.type = regid;
+	ret.type = REG_ID;
 	if(flag){
 		memcpy(ret.accountid,&dbdata->sendbetid,sizeof(ret.accountid));
 	}else{
@@ -448,7 +448,7 @@ bool WriteWithDrawal(const char *account,Int64 money){
 
 	VM_OPERATE writeCode[2];
 	VM_OPERATE ret;
-	ret.type = regid;
+	ret.type = REG_ID;
 	memcpy(ret.accountid,account,sizeof(ret.accountid));
 	memcpy(&ret.money,&money,sizeof(Int64));
 

@@ -11,28 +11,31 @@
       <file>$PROJ_DIR$\src\anonymain.cpp</file>
       <file>$PROJ_DIR$\Debug\Exe\anony.d51</file>
       <file>$PROJ_DIR$\Debug\Obj\anony.pbd</file>
-      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$TOOLKIT_DIR$\inc\clib\sysmac.h</file>
       <file>$TOOLKIT_DIR$\inc\clib\string.h</file>
       <file>$TOOLKIT_DIR$\inc\clib\stdarg.h</file>
       <file>$TOOLKIT_DIR$\inc\clib\stdlib.h</file>
       <file>$TOOLKIT_DIR$\inc\clib\stdio.h</file>
       <file>$PROJ_DIR$\Debug\Obj\anonymain.r51</file>
-      <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
       <file>$PROJ_DIR$\Debug\Obj\anonymain.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.r51</file>
       <file>$PROJ_DIR$\Debug\Obj\VmSdk.pbi</file>
       <file>$TOOLKIT_DIR$\config\devices\_generic\lnk51ew_plain.xcl</file>
       <file>$PROJ_DIR$\Debug\Exe\anony.bin</file>
       <file>$TOOLKIT_DIR$\lib\clib\cl-pli-nlxd-1e16x01.r51</file>
-      <file>$PROJ_DIR$\main.c</file>
+      <file>$PROJ_DIR$\..\p2pBet\src\p2pbet.cpp</file>
+      <file>$PROJ_DIR$\..\darksecure\src\unsecure.cpp</file>
+      <file>$PROJ_DIR$\..\lottery\src\main.cpp</file>
+      <file>$PROJ_DIR$\..\unit_test\src\sdk.cpp</file>
+      <file>$PROJ_DIR$\..\unit_test\src\test.cpp</file>
+      <file>$PROJ_DIR$\..\unit_test\src\script_account.cpp</file>
     </outputs>
     <file>
       <name>[ROOT_NODE]</name>
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 3 17</file>
+          <file> 3 15</file>
         </tool>
       </outputs>
     </file>
@@ -40,22 +43,22 @@
       <name>$PROJ_DIR$\..\sdk\src\VmSdk.cpp</name>
       <outputs>
         <tool>
-          <name>BICOMP</name>
-          <file> 15</file>
+          <name>ICC8051</name>
+          <file> 12</file>
         </tool>
         <tool>
-          <name>ICC8051</name>
-          <file> 14</file>
+          <name>BICOMP</name>
+          <file> 13</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
-          <name>BICOMP</name>
-          <file> 7 6 9 10 8 1</file>
+          <name>ICC8051</name>
+          <file> 6 5 8 9 7 1</file>
         </tool>
         <tool>
-          <name>ICC8051</name>
-          <file> 7 6 9 10 8 1</file>
+          <name>BICOMP</name>
+          <file> 6 5 8 9 7 1</file>
         </tool>
       </inputs>
     </file>
@@ -63,22 +66,22 @@
       <name>$PROJ_DIR$\src\anonymain.cpp</name>
       <outputs>
         <tool>
-          <name>BICOMP</name>
-          <file> 13</file>
+          <name>ICC8051</name>
+          <file> 10</file>
         </tool>
         <tool>
-          <name>ICC8051</name>
+          <name>BICOMP</name>
           <file> 11</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
-          <name>BICOMP</name>
-          <file> 7 6 9 10 8 1</file>
+          <name>ICC8051</name>
+          <file> 6 5 8 9 7 1</file>
         </tool>
         <tool>
-          <name>ICC8051</name>
-          <file> 7 6 9 10 8 1</file>
+          <name>BICOMP</name>
+          <file> 6 5 8 9 7 1</file>
         </tool>
       </inputs>
     </file>
@@ -87,33 +90,16 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 17</file>
+          <file> 15</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 16 14 11 18</file>
+          <file> 14 12 10 16</file>
         </tool>
       </inputs>
     </file>
-    <file>
-      <name>$PROJ_DIR$\main.c</name>
-      <outputs>
-        <tool>
-          <name>BICOMP</name>
-          <file> 5</file>
-        </tool>
-        <tool>
-          <name>ICC8051</name>
-          <file> 12</file>
-        </tool>
-      </outputs>
-    </file>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\main.c</name>
-      <tool>ICC8051</tool>
-    </forcedrebuild>
   </configuration>
   <configuration>
     <name>Release</name>

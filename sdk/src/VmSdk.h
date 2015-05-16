@@ -96,8 +96,8 @@ typedef struct tagACCOUNT_ID
 
 enum ACCOUNT_TYPE {
 	// account type
-	regid = 0x01,			//!< Registration accountid
-	base58addr = 0x02,			    //!< pulickey
+	REG_ID = 0x01,			//!< Registration accountid
+	BASE_58_ADDR = 0x02,	//!< pulickey
 };
 typedef struct tagVMOPERATE{
 	unsigned char type;   		 //!<ACCOUNT_TYPE

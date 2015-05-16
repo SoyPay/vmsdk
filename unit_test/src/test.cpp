@@ -19,7 +19,7 @@ bool CancelOrder(){
 	QueryAccountBalance((const unsigned char* )scriptid,&paymoney);
 
 	VM_OPERATE ret;
-	ret.type = regid;
+	ret.type = REG_ID;
 	memcpy(ret.accountid,scriptid,sizeof(ret.accountid));
 	ret.opeatortype = MINUS_FREE;
 	ret.outheight = 10;

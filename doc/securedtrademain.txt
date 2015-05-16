@@ -21,7 +21,7 @@
    3. 买家收到货没有问题，则超时后卖家钱自动到账	
    4. 其它一些异常情况，和攻击方法请仔细查看 《DACRS 白皮书》 4.1	担保交易应用 http://bbs.dspay.org/forum.php?mod=viewthread&tid=899
 
-- \section 在系统中的演示 
+- \section 在系统中的演示 (第一期公测版本，第二版随后推出，敬请期待)
 	http://bbs.dspay.org/forum.php?mod=viewthread&tid=1446   
 
 

@@ -144,7 +144,7 @@ bool WriteBuyerConfirmPackage(const DATA_DB* const pContract)
 
 	VM_OPERATE writeCode[3];
 	VM_OPERATE ret;
-	ret.type = regid;
+	ret.type = REG_ID;
 	memcpy(ret.accountid,&pContract->seller,sizeof(ret.accountid));
 	memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
 	ret.opeatortype = ADD_FREE;
@@ -194,7 +194,7 @@ bool WriteBuyerCancelPackage(const DATA_DB* const pContract)
 
 	VM_OPERATE writeCode[2];
 	VM_OPERATE ret;
-	ret.type = regid;
+	ret.type = REG_ID;
 	memcpy(ret.accountid,&pContract->buyer,sizeof(ret.accountid));
 	memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
 	ret.opeatortype = ADD_FREE;
