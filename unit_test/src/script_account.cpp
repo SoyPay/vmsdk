@@ -3,7 +3,7 @@
 void processTx(unsigned char*account,OperType type)
 {
 	VM_OPERATE ret;
-	ret.type = regid;
+	ret.type = REG_ID;
 	memcpy(ret.accountid,account,sizeof(ret.accountid));
 	ret.opeatortype = type;
 	ret.outheight = 10;

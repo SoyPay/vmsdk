@@ -58,8 +58,9 @@ typedef enum tagCOMPRESS_TYPE {
 	I64_TYPE = 5,					// I64_TYPE
 	NO_TYPE = 6,                   // NO_TYPE +n (tip char)
 }COMPRESS_TYPE;
-__root __code static const char aa[]@0x0008 = {0x22,0x22}; //{0,0,0,0x80,0xFB};
-__root __code static const char a12[]@0x0012 = {0x22,0x22};
+__root __code static const char version[]@0x0004 = {0x00,0x01,0x01};
+__root __code static const char exitcall[]@0x0008 = {0x22,0x22};
+__root __code static const char apicall[]@0x0012 = {0x22,0x22};
 __root __xdata __no_init static  unsigned char Communicate[4*1024]@0xEFFF;
 __root __xdata __no_init static unsigned char Result[2]@0xEFFD;
 

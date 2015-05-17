@@ -91,7 +91,7 @@ bool ReadContactAndWrite(char *hash)
 	char accountid[6] = {0};
 	if(GetScriptID(&accountid))
 	{
-		ret.type =regid;
+		ret.type =REG_ID;
 		ret.opeatortype = MINUS_FREE;
 		memcpy(ret.accountid,&accountid,sizeof(ret.accountid));
 		memcpy(&ret.money,&pContract->nPayMoney,sizeof(Int64));
