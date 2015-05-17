@@ -13,7 +13,6 @@
 #define min_out_height  10
 typedef struct {
 	unsigned char nType;
-	unsigned char noperateType;
 	Int64 money;
 	unsigned int hight;
 	unsigned char dhash[32];//32 + one byte checksum
@@ -33,7 +32,6 @@ typedef struct {
 
 typedef struct {
 	unsigned char nType;
-	unsigned char noperateType;
 	Int64 money;
 	unsigned char acceptdata;
 	unsigned char txhash[32];
@@ -41,7 +39,6 @@ typedef struct {
 
 typedef struct {
 	unsigned char nType;
-	unsigned char noperateType;
 	unsigned char txhash[32];
 	unsigned char senddata[33];
 }OPEN_DATA;
@@ -50,7 +47,6 @@ enum TXTYPE{
 	TX_SENDBET = 0x01,
 	TX_ACCEPTBET = 0x02,
 	TX_OPENBET = 0x03,
-//	TX_WITHDRAWAL = 0x04,
 };
 enum OPERATE{
 	OP_SYSTEMACC = 0x00,
@@ -61,54 +57,37 @@ enum GETDAWEL{
 	TX_REGID = 0x01,
 	TX_BASE58 = 0x02,
 };
-bool CheckAccVaild(unsigned char type,Int64 money){
+bool CheckAccVaild(Int64 money){
 
 	Int64 paymoey;
 	Int64Inital(&paymoey,"\x00",1);
 	 if(!GetCurPayAmount(&paymoey)){
 		 return false;
 	 }
-	 switch(type){
-	    case OP_SYSTEMACC:{ //// 从脚本账户中扣金额 检查金额是否和合约中的金额一致
-	    	 if( Int64Compare(&money, &paymoey) != COMP_EQU){
-	    		 return false;
-	    	 }
-	    	break;
-	    }
-	    case OP_APPACC:{//// 从应用账户中扣金额 检查 检查应用账户中是否有足够的金额，已经是系统账户中没有扣钱
-	    	char account[6];
-	    	if(!GetCurTxAccount(account,sizeof(account))){
-	    		return false;
-	    	}
-			Int64 compare;
-			Int64Inital(&compare,"\x00",1);
-			if(Int64Compare(&compare, &paymoey) != COMP_EQU){  /// 不能从系统账户扣钱
-	    		 LogPrint("82",sizeof("93")+1,STRING);
-				return false;
-			}
+	//// 从应用账户中扣金额 检查 检查应用账户中是否有足够的金额，已经是系统账户中没有扣钱
+	char account[6];
+	if(!GetCurTxAccount(account,sizeof(account))){
+		return false;
+	}
+	Int64 compare;
+	Int64Inital(&compare,"\x00",1);
+	if(Int64Compare(&compare, &paymoey) != COMP_EQU){  /// 检查给脚本账户的金额不为0
+		 LogPrint("82",sizeof("93")+1,STRING);
+		return false;
+	}
 
 
-			S_APP_ID id;
-			id.idlen = sizeof(account);
-			memcpy(&id.ID,account,sizeof(account));
+	S_APP_ID id;
+	id.idlen = sizeof(account);
+	memcpy(&id.ID,account,sizeof(account));
 
-			Int64 pRet;
-			Int64Inital(&pRet,"\x00",1);
-			GetUserAppAccFreeValue(&pRet,&id);
-	    	 if(Int64Compare(&pRet, &money) == COMP_LESS){      //系统应用账户中要有足够的自由金额
-	    		 LogPrint("97",sizeof("93")+1,STRING);
-	    		 return false;
-	    	 }
-	    	break;
-	    }
-	    case OP_NULL:{
-	   	    	return false;
-	   	    }
-		default:
-				{
-					return false;
-				}
-	    }
+	Int64 pRet;
+	Int64Inital(&pRet,"\x00",1);
+	GetUserAppAccFreeValue(&pRet,&id);
+	 if(Int64Compare(&pRet, &money) == COMP_LESS){      //系统应用账户中要有足够的自由金额
+		 LogPrint("97",sizeof("93")+1,STRING);
+		 return false;
+	 }
 	 return true;
 }
 bool CheckSendBetPackage(const SEND_DATA* const pContract){
@@ -116,17 +95,17 @@ bool CheckSendBetPackage(const SEND_DATA* const pContract){
 		return false;
 	}
 
-	if(!CheckAccVaild(pContract->noperateType,pContract->money)){
+	if(!CheckAccVaild(pContract->money)){
 		return false;
 	}
 
 	return true;
 }
 
-bool WriteSendBetPakage(const DB_DATA* const pContract,const char*const txhash,char type){
+bool WriteSendBetPakage(const DB_DATA* const pContract,const char*const txhash){
 
 	APP_ACC_OPERATE writecode[2];
-	unsigned short  count = type == OP_APPACC?2:1;
+
 	S_APP_ID id;
 	APP_ACC_OPERATE pAppID;
 	id.idlen = sizeof(pContract->sendbetid);
@@ -140,13 +119,13 @@ bool WriteSendBetPakage(const DB_DATA* const pContract,const char*const txhash,c
 	memcpy(&tag.ID,txhash,32);
 	memcpy(&pAppID.FundTag,&tag,sizeof(S_APP_ID));
 
+	/// 从自由金额转到冻结金额
 	pAppID.opeatortype = ADD_FREEZED_OP;
 	writecode[0] = pAppID;
-	if(type == OP_APPACC){
-		pAppID.opeatortype=SUB_FREE_OP;
-		writecode[1] = pAppID;
-	}
-	if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&writecode, count)){
+
+	pAppID.opeatortype=SUB_FREE_OP;
+	writecode[1] = pAppID;
+	if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&writecode, 2)){
 		return false;
 	}
 
@@ -177,7 +156,7 @@ bool SendBetPackage(const SEND_DATA* const pContract){
 	if( !WriteData(txhash,sizeof(txhash),&dbdata,sizeof(dbdata))){
 		return false;
 	}
-	if(!WriteSendBetPakage(&dbdata,txhash,pContract->noperateType)){
+	if(!WriteSendBetPakage(&dbdata,txhash)){
 		return false;
 	}
 
@@ -185,14 +164,14 @@ bool SendBetPackage(const SEND_DATA* const pContract){
 }
 
 bool CheckAcceptBetPackage(const ACCEPT_DATA* const pContract,Int64 sendmoney,unsigned char betsate){
-	if(!CheckAccVaild(pContract->noperateType,pContract->money)){
+	if(!CheckAccVaild(pContract->money)){
 		return false;
 	}
 	 if(pContract->acceptdata != 0x00 && pContract->acceptdata != 0x01){
 		 return false;
 	 }
 
-	 if(Int64Compare(&pContract->money, &sendmoney) != COMP_EQU){      //系统应用账户中要有足够的自由金额
+	 if(Int64Compare(&pContract->money, &sendmoney) != COMP_EQU){      //接赌的金额要与发赌约的金额一致
 		 return false;
 	 }
      if(betsate == 0x01){
@@ -202,10 +181,10 @@ bool CheckAcceptBetPackage(const ACCEPT_DATA* const pContract,Int64 sendmoney,un
 	 return true;
 }
 
-bool WritAcceptBetPakage(const DB_DATA* const pContract,const char*const txhash,unsigned char type){
+bool WritAcceptBetPakage(const DB_DATA* const pContract,const char*const txhash){
 
 	APP_ACC_OPERATE writecode[3];
-	int count = type == OP_APPACC?3:2;
+
 	S_APP_ID id;
 	APP_ACC_OPERATE pAppID;
 	id.idlen = sizeof(pContract->sendbetid);
@@ -213,6 +192,7 @@ bool WritAcceptBetPakage(const DB_DATA* const pContract,const char*const txhash,
 	memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
 	memcpy(&pAppID.mMoney,&pContract->money,sizeof(Int64));
 
+	/// 发起赌约者的冻结金额打给接赌的冻结金额
 	S_APP_ID tag;
 	tag.idlen = 32;
 	pAppID.outheight = GetTxConFirmHeight(txhash)  + pContract->hight + freeze_height;
@@ -231,12 +211,12 @@ bool WritAcceptBetPakage(const DB_DATA* const pContract,const char*const txhash,
 	pAppID.opeatortype = ADD_FREEZED_OP;
 
 	writecode[1]=pAppID;
-	if(type == OP_APPACC){
-		pAppID.opeatortype=SUB_FREE_OP;
-		memcpy(&pAppID.mMoney, &pContract->money,sizeof(pAppID.mMoney));
-		writecode[2]=pAppID;
-	}
-	if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&writecode, count)){
+
+	/// 接赌的自由金额到冻结金额
+	pAppID.opeatortype=SUB_FREE_OP;
+	memcpy(&pAppID.mMoney, &pContract->money,sizeof(pAppID.mMoney));
+	writecode[2]=pAppID;
+	if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&writecode, 3)){
 		return false;
 	}
 
@@ -268,7 +248,7 @@ bool AcceptBetPackage(const ACCEPT_DATA* const pContract){
 	if(!CheckAcceptBetPackage(pContract,dbdata.money,dbdata.betstate)){
 		return false;
 	}
-	if(!WritAcceptBetPakage((DB_DATA*)&dbdata,(char*)pContract->txhash,pContract->noperateType)){
+	if(!WritAcceptBetPakage((DB_DATA*)&dbdata,(char*)pContract->txhash)){
 		return false;
 	}
 	///表示接赌
@@ -314,7 +294,10 @@ bool CheckOpenBetPackage(const OPEN_DATA* const pContract,const DB_DATA* const d
     }
 	return true;
 }
-bool WriteOpenBetAppAcc(const OPEN_DATA* const pContract,const DB_DATA *const dbdata,bool flag){
+
+/// flag true 表示发赌约者赢
+bool WriteOpenBetPackage(const OPEN_DATA* const pContract,const DB_DATA *const dbdata,bool flag){
+	/// 表示发赌约的人赢
 	APP_ACC_OPERATE writecode[2];
 	S_APP_ID id;
 	APP_ACC_OPERATE pAppID;
@@ -330,79 +313,26 @@ bool WriteOpenBetAppAcc(const OPEN_DATA* const pContract,const DB_DATA *const db
 	pAppID.outheight = GetTxConFirmHeight(dbdata->accepthash) + dbdata->hight;
 	memcpy(&tag.ID,pContract->txhash,sizeof(pContract->txhash));
 	memcpy(&pAppID.FundTag,&tag,sizeof(tag));
-	if(pContract->noperateType == OP_APPACC){
-		if(flag){  /// 从接赌约的冻结应用账户打钱到发赌约的账户
-			pAppID.opeatortype = ADD_FREE_OP;
-			writecode[0]=pAppID;
-			memcpy(&id.ID,&dbdata->acceptbetid,sizeof(dbdata->acceptbetid));
-			memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
-			pAppID.opeatortype = SUB_FREEZED_OP;
-			writecode[1]=pAppID;
-			}else{
-				memcpy(&id.ID,&dbdata->acceptbetid,sizeof(dbdata->acceptbetid));  /// 接赌的人赢
-				memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
-				pAppID.opeatortype = ADD_FREE_OP;
-				writecode[0]=pAppID;
-				pAppID.opeatortype = SUB_FREEZED_OP;
-				writecode[1]=pAppID;
-			}
-		if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&writecode, 2)){
-			return false;
-		}
-	}else if(pContract->noperateType == OP_SYSTEMACC){
+
+	if(flag){  /// 从接赌约的冻结应用账户打钱到发赌约的账户
+		pAppID.opeatortype = ADD_FREE_OP;
+		writecode[0]=pAppID;
 		memcpy(&id.ID,&dbdata->acceptbetid,sizeof(dbdata->acceptbetid));
 		memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
 		pAppID.opeatortype = SUB_FREEZED_OP;
-		if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&pAppID, 1)){
-					return false;
+		writecode[1]=pAppID;
+		}else{
+			memcpy(&id.ID,&dbdata->acceptbetid,sizeof(dbdata->acceptbetid));  /// 接赌的人赢
+			memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+			pAppID.opeatortype = ADD_FREE_OP;
+			writecode[0]=pAppID;
+			pAppID.opeatortype = SUB_FREEZED_OP;
+			writecode[1]=pAppID;
 		}
-	}
-
-	return true;
-}
-bool WriteOpenBetSysAcc(const OPEN_DATA* const pContract,const DB_DATA *const dbdata,bool flag){
-
-	VM_OPERATE writeCode[2];
-	VM_OPERATE ret;
-	ret.type = regid;
-	if(flag){
-		memcpy(ret.accountid,&dbdata->sendbetid,sizeof(ret.accountid));
-	}else{
-		memcpy(ret.accountid,&dbdata->acceptbetid,sizeof(ret.accountid));
-	}
-	Int64 mul;
-	Int64Inital(&mul,"\x02",1);
-	Int64Mul(&dbdata->money, &mul,&ret.money);
-
-	ret.opeatortype = ADD_FREE;
-	writeCode[0]=ret;
-
-	char accountid[6] = {0};
-	if(!GetScriptID(&accountid)){
+	if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&writecode, 2)){
 		return false;
 	}
-
-	ret.opeatortype = MINUS_FREE;
-	memcpy(ret.accountid,&accountid,sizeof(ret.accountid));
-	writeCode[1]=ret;
-	WriteOutput((VM_OPERATE*)&writeCode,2);
 	return true;
-}
-bool WriteOpenBetPackage(const OPEN_DATA* const pContract,const DB_DATA *const dbdata,bool flag){
-	/// 表示发赌约的人赢
-
-	if(pContract->noperateType ==OP_APPACC){
-		if(WriteOpenBetAppAcc(pContract,dbdata,flag))
-			return true;
-	}else if(pContract->noperateType ==OP_SYSTEMACC){
-		if(!WriteOpenBetAppAcc(pContract,dbdata,flag))
-			return false;
-		if(WriteOpenBetSysAcc(pContract,dbdata,flag)){
-			return true;
-		}
-	}
-
-	return false;
 }
 bool OpenBetPackage(const OPEN_DATA* const pContract){
 
@@ -499,6 +429,35 @@ bool WithDrawal(char type){
   }
    return true;
 }
+//// 充值
+bool Recharge()
+{
+	char account[6];
+	if(!GetCurTxAccount(account,sizeof(account))){
+		return false;
+	}
+	Int64 paymoey;
+	Int64Inital(&paymoey,"\x00",1);
+	 if(!GetCurPayAmount(&paymoey)){
+		 return false;
+	 }
+
+	S_APP_ID id;
+	APP_ACC_OPERATE pAppID;
+	id.idlen = sizeof(account);
+	memcpy(&id.ID,&account,sizeof(account));
+	memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+	memcpy(&pAppID.mMoney,&paymoey,sizeof(Int64));
+
+	/// 从自由金额转到冻结金额
+	pAppID.opeatortype = ADD_FREE_OP;
+
+	if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&pAppID, 1)){
+		return false;
+	}
+
+	return true;
+}
 int main()
 {
 	 __xdata static  char pcontact[100];
@@ -541,13 +500,20 @@ int main()
 			case  0xff:
 			{
 				LogPrint("WithDrawal",sizeof("WithDrawal"),STRING);
-				if(pcontact[1] != 0x01){
+				if(pcontact[1] != 0x01 && pcontact[1] != 0x02){
 					__VmExit(RUN_SCRIPT_DATA_ERR);
 				}
 				if(!WithDrawal(pcontact[2]))
 				{
 					LogPrint("WithDrawal error",sizeof("WithDrawal error"),STRING);
 					__VmExit(RUN_SCRIPT_DATA_ERR);
+				}else
+				{
+					if(!Recharge())
+					{
+						LogPrint("Recharge error",sizeof("Recharge error"),STRING);
+						__VmExit(RUN_SCRIPT_DATA_ERR);
+					}
 				}
 				break;
 			}
