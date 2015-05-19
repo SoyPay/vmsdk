@@ -12,7 +12,7 @@ bool WriteAcct(){
 		LogPrint("get aacount failed",strlen("get aacount failed")+1,STRING);
 		return false;
 	}
-	 if(!GetCurPayAmount(&paymoey)){
+	 if(!GetCurTxPayAmount(&paymoey)){
 		 LogPrint("get aacount money failed",strlen("get aacount money failed")+1,STRING);
 		 return false;
 	 }

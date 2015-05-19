@@ -38,7 +38,7 @@ bool CheckBuyerTradePackage(const FIRST_CONTRACT* const pContract){
 	Int64 paymoey;
 	Int64Inital(&paymoey,"\x00",1);
 
-	 if(!GetCurPayAmount(&paymoey)){
+	 if(!GetCurTxPayAmount(&paymoey)){
 		 return false;
 	 }
 	Int64 compare;
@@ -56,7 +56,7 @@ bool BuyerTradePackage(const FIRST_CONTRACT* const pContract){
 
 	Int64 paymoey;
 	Int64Inital(&paymoey,"\x00",1);
-	 if(!GetCurPayAmount(&paymoey)){
+	 if(!GetCurTxPayAmount(&paymoey)){
 		 return false;
 	 }
 
@@ -83,7 +83,7 @@ bool BuyerTradePackage(const FIRST_CONTRACT* const pContract){
 bool CheckSellerTradePackage(const DATA_DB* const Pdbdata){
 	Int64 paymoey;
 	Int64Inital(&paymoey,"\x00",1);
-	if(!GetCurPayAmount(&paymoey)){
+	if(!GetCurTxPayAmount(&paymoey)){
 		 return false;
 	 }
 

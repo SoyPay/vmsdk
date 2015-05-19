@@ -61,7 +61,7 @@ bool CheckAccVaild(Int64 money){
 
 	Int64 paymoey;
 	Int64Inital(&paymoey,"\x00",1);
-	 if(!GetCurPayAmount(&paymoey)){
+	 if(!GetCurTxPayAmount(&paymoey)){
 		 return false;
 	 }
 	//// 从应用账户中扣金额 检查 检查应用账户中是否有足够的金额，已经是系统账户中没有扣钱
@@ -438,7 +438,7 @@ bool Recharge()
 	}
 	Int64 paymoey;
 	Int64Inital(&paymoey,"\x00",1);
-	 if(!GetCurPayAmount(&paymoey)){
+	 if(!GetCurTxPayAmount(&paymoey)){
 		 return false;
 	 }
 
