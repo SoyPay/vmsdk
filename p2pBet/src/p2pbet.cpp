@@ -378,7 +378,7 @@ bool WriteWithDrawal(const char *account,Int64 money){
 
 	VM_OPERATE writeCode[2];
 	VM_OPERATE ret;
-	ret.type = regid;
+	ret.type = REG_ID;
 	memcpy(ret.accountid,account,sizeof(ret.accountid));
 	memcpy(&ret.money,&money,sizeof(Int64));
 

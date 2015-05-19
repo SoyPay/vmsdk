@@ -350,7 +350,12 @@ bool GetScriptData(const void* const scriptID,void* const pkey,short len,void* c
  */
 bool GetScriptID(void* const account);
 
-bool GetCurPayAmount(Int64* const pM2);
+/**@brief   获取当前合约交易金额
+ *@param pM2: 当前交易金额
+ *@return return true if 成功
+ *
+ */
+bool GetCurTxPayAmount(Int64* const pM2);
 /**@brief
  *@param account: obtain the currnet tx sign account
  *@param maxlen: the account of length

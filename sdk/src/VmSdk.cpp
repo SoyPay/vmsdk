@@ -95,25 +95,19 @@ unsigned short GetVecLen(unsigned char const * data) {
 
 
 
-//static unsigned short GetInterflowLen(void) {
-//	return sizeof(Communicate);
-//}
-
-static bool IsOverShortFlow(unsigned short len1, unsigned short len2) {
-	unsigned short len3 = len1 + len2;
-	return (len3 < len1 || len3 < len2);
-}
 
 void InsertOutData(void const* pfrist, unsigned short len) {
 	unsigned char * pbuffer = (unsigned char *) GetInterflowP();
 	unsigned short len2 = GetVecLen(pbuffer);
-	unsigned short len3 = len2 + (len + sizeof(len));
-//                bool flag = IsOverShortFlow(len2,(len + sizeof(len)));
-//                bool flag1 = IsOverShortFlow(len,sizeof(len));
-	if (IsOverShortFlow(len2, (len + sizeof(len))) || IsOverShortFlow(len, sizeof(len))) {
+	unsigned short maxlen = sizeof(Communicate)-2-len2;
+
+	if(len >= maxlen )
+	{
 		LogPrint("IsOverShortFlow error",sizeof("IsOverShortFlow error")+1,STRING);
 		__VmExit(RUN_SCRIPT_DATA_ERR);
 	}
+	unsigned short len3 = len2 + (len + sizeof(len));
+
 	memcpy(pbuffer, &len3, sizeof(len3));
 	memcpy(&pbuffer[len2 + 2], &len, sizeof(len));
 	memcpy(&pbuffer[len2 + 4], pfrist, len);
@@ -595,10 +589,9 @@ unsigned short DeCompressContact(unsigned char *pformat,unsigned short formlen,c
 	memcpy(poutContact, retdata->buffer, retdata->len);
 	return retdata->len;
 }
-bool GetCurPayAmount(Int64* const pM2){
+bool GetCurTxPayAmount(Int64* const pM2){
 	ClearParaSpace();
 	__CallApi(GETCURPAYMONEY_FUN);
-
 	FUN_RET_DATA *retdata = GetInterflowP();
 	if (retdata->len != sizeof(Int64)) {
 			return false;
