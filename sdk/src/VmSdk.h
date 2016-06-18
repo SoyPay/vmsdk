@@ -364,7 +364,7 @@ bool GetCurTxPayAmount(Int64* const pM2);
  */
 unsigned short GetCurTxAccount(void * const account,unsigned short maxlen);
 unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen);
-unsigned short GetDeCompressContact(void * const pinContact,unsigned short inlen,void * const poutContact,unsigned short outmaxlen);
+//unsigned short GetDeCompressContact(void * const pinContact,unsigned short inlen,void * const poutContact,unsigned short outmaxlen);
 
 /**@brief
  *@param pRet: the ret app account value
@@ -394,6 +394,14 @@ bool WriteAppOperateOutput( const  APP_ACC_OPERATE* pOpertate, const unsigned sh
 
 bool GetDacrsAddress(void * const account,unsigned short len,void* const address,unsigned short retmaxlen);
 void PrintfLine(unsigned short sort);
+/**@brief
+ * 		 Recharge or withdraw for vm to  operate
+ *@param  unsigned char *pcontact
+ *@param
+ *@return return true  never false
+ *
+ */
+bool RechargeWithdraw(unsigned char *pcontact);
 
 void  PrintfFileAndLine(unsigned short line, const char *pfile);
 

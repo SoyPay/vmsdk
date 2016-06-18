@@ -58,7 +58,8 @@ typedef enum tagCOMPRESS_TYPE {
 	I64_TYPE = 5,					// I64_TYPE
 	NO_TYPE = 6,                   // NO_TYPE +n (tip char)
 }COMPRESS_TYPE;
-__root __code static const char version[]@0x0004 = {0x00,0x01,0x01};
+__root __code static const char version[]@0x0004 = {0x00,0x02,0x02};  // {0x00,0x01,0x01}
+//__root __code static const char version[]@0x0004 = {0x00,0x01,0x01};
 __root __code static const char exitcall[]@0x0008 = {0x22,0x22};
 __root __code static const char apicall[]@0x0012 = {0x22,0x22};
 __root __xdata __no_init static  unsigned char Communicate[4*1024]@0xEFFF;
@@ -87,14 +88,9 @@ unsigned char buffer[1];
 
 #define  ClearParaSpace()   {((unsigned char * )GetInterflowP())[0] = 0 ;((unsigned char * )GetInterflowP())[1] = 0;}
 
-static void InsertOutData(void const* pfrist, unsigned short len);
 unsigned short GetVecLen(unsigned char const * data) {
 	return *((unsigned short*)data);
 }
-
-
-
-
 
 void InsertOutData(void const* pfrist, unsigned short len) {
 	unsigned char * pbuffer = (unsigned char *) GetInterflowP();
@@ -258,7 +254,7 @@ unsigned long GetCurRunEnvHeight() {
 		return 0;
 	}
 	unsigned long height = 0;
-	memcpy(&height, retdata->buffer, sizeof(long));
+	memcpy(&height, retdata->buffer, sizeof(height));  //long
 	return height;
 }
 
@@ -331,7 +327,7 @@ unsigned long GetTxConFirmHeight(const void * const txhash) {
 	__CallApi(GETTXCONFIRH_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len != sizeof(long)) {
+	if (retdata->len != sizeof(unsigned long)) {
 		return 0;
 	}
 
@@ -419,7 +415,7 @@ unsigned long GetDBSize() {
 	__CallApi(GETDBSIZE_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
-	if (retdata->len != sizeof(long)) {
+	if (retdata->len != sizeof(unsigned long)) {
 		return false;
 	}
 	unsigned long size = 0;
@@ -557,7 +553,16 @@ unsigned short GetCurTxContact(void * const pContact,unsigned short maxlen)
 	__CallApi(GETCURTXCONTACT_FUNC);
 
 	FUN_RET_DATA *retdata = GetInterflowP();
-	memcpy(pContact, retdata->buffer, retdata->len);
+    if(retdata->len > 0)
+    {
+    	if(retdata->len <= maxlen)
+    	{
+    		memcpy(pContact, retdata->buffer, retdata->len);
+    	}else{
+    		memcpy(pContact, retdata->buffer, maxlen);
+    	}
+    }
+//    memcpy(pContact, retdata->buffer, retdata->len);
 	return retdata->len;
 }
 unsigned short CurDeCompressContact(unsigned char *pformat,unsigned short formlen,void * const poutContact, unsigned short outmaxlen) {
@@ -661,5 +666,213 @@ void  PrintfFileAndLine(unsigned short line, const char *pfile)
 	char bffer[256];
 	sprintf(bffer,"func:%sline:%d ",pfile, line);
 	LogPrint(bffer,strlen(bffer),STRING);
+}
+
+
+//////////////////////
+////下述是给应用 的公共 充值提现接口
+
+enum GETDAWEL{
+	TX_REGID = 0x01,
+	TX_BASE58 = 0x02,
+};
+typedef struct {
+	unsigned char type;
+	Int64 money;
+}DAWEL_DATA;
+
+static bool WriteWithDrawal(const char *account,Int64 money){
+	VM_OPERATE writeCode[2];
+	VM_OPERATE ret;
+	ret.type = REG_ID;
+	memcpy(ret.accountid,account,sizeof(ret.accountid));
+	memcpy(&ret.money,&money,sizeof(Int64));
+	ret.opeatortype = ADD_FREE;
+	writeCode[0]=ret;
+
+	char accountid[6] = {0};
+	if(!GetScriptID(&accountid)){
+		return false;
+	}
+
+	ret.opeatortype = MINUS_FREE;
+	memcpy(ret.accountid,&accountid,sizeof(ret.accountid));
+	writeCode[1]=ret;
+	WriteOutput((VM_OPERATE*)&writeCode,2);
+	return true;
+}
+/*
+* @brief 	step1:检查传来的地址的合法性\n
+* 			step2:检查账户中能够体现的自由金额不能为零\n
+* 			step3:将自由金额到了账户中,同时脚本账户中要减去相应的金额\n
+*/
+static bool WithDrawal(char type){
+
+	if(type != TX_REGID&&type != TX_BASE58)
+		return false;
+	char account[6];
+	if(!GetCurTxAccount(account,sizeof(account))){
+		return false;
+	}
+	S_APP_ID id;
+	if(type == TX_REGID){
+		id.idlen = sizeof(account);
+		memcpy(&id.ID[0],&account[0],sizeof(account));
+	}else if(type == TX_BASE58){
+		char dacrsaddr[35] ={0};
+		if(!GetDacrsAddress(account,sizeof(account),dacrsaddr,sizeof(dacrsaddr)))
+			{
+				LogPrint("get base58addr error",sizeof("get base58addr error")+1,STRING);
+				return false;
+			}
+		id.idlen = strlen((char*)dacrsaddr);
+		memcpy(&id.ID[0],&dacrsaddr[0],sizeof(dacrsaddr));
+	}
+
+	Int64 ret;
+	if(!GetUserAppAccFreeValue(&ret,&id)){
+		LogPrint("get accountfree value error ",sizeof("get accountfree value error")+1,STRING);
+		return false;
+	}
+	Int64 compare;
+	Int64Inital(&compare,"\x00",1);
+	if(Int64Compare(&ret, &compare) == COMP_EQU){
+		LogPrint("the account money is zero",sizeof("the account money is zero")+1,STRING);
+		   return false;
+	}
+
+	APP_ACC_OPERATE pAppID;
+	memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+	memcpy(&pAppID.mMoney,&ret,sizeof(Int64));
+	pAppID.FundTag.idlen = 0 ;
+	pAppID.opeatortype = SUB_FREE_OP;
+
+	if(!WriteAppOperateOutput(&pAppID, 1)){
+				return false;
+			}
+
+  if(!WriteWithDrawal(account,ret)){
+	  return false;
+  }
+   return true;
+}
+//// 提现一定的金额
+static bool WithDrawalSomeMoney(const DAWEL_DATA* const pContract){
+
+	if(pContract->type != TX_REGID&&pContract->type != TX_BASE58)
+		return false;
+	char account[6];
+	if(!GetCurTxAccount(account,sizeof(account))){
+		return false;
+	}
+	S_APP_ID id;
+	if(pContract->type == TX_REGID){
+		id.idlen = sizeof(account);
+		memcpy(&id.ID[0],&account[0],sizeof(account));
+	}else if(pContract->type == TX_BASE58){
+		char dacrsaddr[35] ={0};
+		if(!GetDacrsAddress(account,sizeof(account),dacrsaddr,sizeof(dacrsaddr)))
+			{
+				LogPrint("get base58addr error",sizeof("get base58addr error")+1,STRING);
+				return false;
+			}
+		id.idlen = strlen((char*)dacrsaddr);
+		memcpy(&id.ID[0],&dacrsaddr[0],sizeof(dacrsaddr));
+	}
+
+	Int64 ret;
+	if(!GetUserAppAccFreeValue(&ret,&id)){
+		LogPrint("get accountfree value error ",sizeof("get accountfree value error")+1,STRING);
+		return false;
+	}
+
+	if(Int64Compare(&ret, &pContract->money) == COMP_LESS){
+		LogPrint("the account money not enough money",sizeof("the account money not enough money")+1,STRING);
+		   return false;
+	}
+
+	APP_ACC_OPERATE pAppID;
+	memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+	memcpy(&pAppID.mMoney,&pContract->money,sizeof(Int64));
+	pAppID.FundTag.idlen = 0 ;
+	pAppID.opeatortype = SUB_FREE_OP;
+
+	if(!WriteAppOperateOutput(&pAppID, 1)){
+				return false;
+			}
+
+  if(!WriteWithDrawal(account,pContract->money)){
+	  return false;
+  }
+   return true;
+}
+
+//// 充值
+static bool Recharge(void)
+{
+
+	char account[6];
+	if(!GetCurTxAccount(account,sizeof(account))){
+		return false;
+	}
+	Int64 paymoey,cmpmoney;
+	Int64Inital(&paymoey,"\x00",1);
+	Int64Inital(&cmpmoney,"\x00",1);
+	 if((!GetCurTxPayAmount(&paymoey)) || (Int64Compare(&paymoey, &cmpmoney) == COMP_EQU)){
+		  LogPrint("充值金额不正确或取金额错",sizeof("充值金额不正确或取金额错")+1,STRING);
+		 return false;
+	 }
+
+	S_APP_ID id;
+	APP_ACC_OPERATE pAppID;
+	id.idlen = sizeof(account);
+	memcpy(id.ID,account,sizeof(account));
+	memcpy(&pAppID.AppAccID,&id,sizeof(S_APP_ID));
+	memcpy(&pAppID.mMoney,&paymoey,sizeof(Int64));
+
+	// 往应用账户自由金额打钱
+	pAppID.opeatortype = ADD_FREE_OP;
+
+	if(!WriteAppOperateOutput((APP_ACC_OPERATE*)&pAppID, 1)){
+		return false;
+	}
+
+	return true;
+}
+
+
+/**充值，提现公共接口 */
+bool RechargeWithdraw(unsigned char *pcontact) {
+	if(pcontact[0] != 0xFF)
+	{
+		return false;
+	}
+
+//	LogPrint("WithDrawal", sizeof("WithDrawal"), STRING);
+	if (pcontact[1] != 0x01 && pcontact[1] != 0x02 && pcontact[1] != 0x03) {
+		__VmExit(RUN_SCRIPT_DATA_ERR);
+	}
+	if (pcontact[1] == 0x01) {
+		LogPrint("WithDrawal", sizeof("WithDrawal"), STRING);
+		if (!WithDrawal(pcontact[2])) {
+			LogPrint("WithDrawal error", sizeof("WithDrawal error"), STRING);
+			__VmExit(RUN_SCRIPT_DATA_ERR);
+		}
+	} else if (pcontact[1] == 0x02) {
+		LogPrint("Recharge", sizeof("Recharge"), STRING);
+		if (!Recharge()) {
+			LogPrint("Recharge error", sizeof("Recharge error"), STRING);
+			__VmExit(RUN_SCRIPT_DATA_ERR);
+		}
+	} else if (pcontact[1] == 0x03) {
+		LogPrint("WithDrawalSomeMoney", sizeof("WithDrawalSomeMoney"), STRING);
+		char buffer[12];
+		memcpy(&buffer[0], &pcontact[2], 12);
+		if (!WithDrawalSomeMoney((DAWEL_DATA*) (buffer))) {
+			LogPrint("WithDrawalSomeMoney error", sizeof("WithDrawalSomeMoney error"), STRING);
+			__VmExit(RUN_SCRIPT_DATA_ERR);
+		}
+	}
+	return true;
 }
 
